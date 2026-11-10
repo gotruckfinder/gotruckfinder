@@ -1,48 +1,396 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Browse our used truck-mounted cranes. Contact Truck Finder for current stock, specifications, photos and export details.">
-<title>Truck Cranes | TRUCK FINDER</title>
+<meta name="description" content="Browse used truck-mounted cranes for sale from China. Find the right truck crane with Truck Finder.">
+<title>Used Truck Cranes for Sale | TRUCK FINDER</title>
+
 <style>
-:root{--blue:#0646ad;--deep:#063b91;--yellow:#ffbd00;--ink:#092b78;--light:#f4f8ff}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff}
-a{text-decoration:none;color:inherit}.topbar{min-height:90px;display:flex;align-items:center;justify-content:space-between;padding:12px 3%;gap:18px;background:linear-gradient(90deg,#fff,#eef6ff);border-bottom:1px solid #dce9ff}
-.brand{font-size:30px;font-weight:900;letter-spacing:.5px;color:#0646ad}.brand span{color:#ffbd00}
-nav{display:flex;align-items:center;gap:clamp(12px,1.8vw,28px);font-size:15px;font-weight:700;flex-wrap:wrap}
-nav a:hover{color:#1685ff}.wa-top{background:#0646ad;color:#fff;padding:13px 20px;border-radius:12px;font-weight:700;white-space:nowrap}
-main{max-width:1180px;margin:0 auto;padding:34px 22px 60px}.crumb{font-size:14px;color:#66799b;margin-bottom:24px}.crumb a{color:#0646ad}
-h1{font-size:clamp(30px,4vw,44px);margin:0 0 12px;color:#063b91}.intro{font-size:17px;line-height:1.65;max-width:780px;color:#425675;margin:0 0 28px}
-.empty{background:#f4f8ff;border:1px solid #dce9ff;border-radius:14px;padding:34px 24px;text-align:center}
-.empty h2{margin:0 0 12px;font-size:24px}.empty p{margin:0 auto 20px;max-width:680px;line-height:1.6;color:#526581}
-.cta{display:inline-block;background:#20b84c;color:white;padding:13px 22px;border-radius:9px;font-weight:800}
-footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-size:13px}
-@media(max-width:760px){.topbar{justify-content:center;flex-direction:column;padding:16px 12px}nav{justify-content:center;gap:12px 18px}.wa-top{padding:10px 16px}main{padding:26px 16px 44px}.empty{padding:28px 16px}}
+:root{
+  --blue:#0646ad;
+  --deep:#063b91;
+  --yellow:#ffbd00;
+  --ink:#092b78;
+  --light:#f4f8ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:#fff;
+}
+a{text-decoration:none;color:inherit}
+
+.topbar{
+  min-height:90px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 3%;
+  gap:18px;
+  background:linear-gradient(90deg,#fff,#eef6ff);
+  border-bottom:1px solid #dce9ff;
+}
+.brand{
+  font-size:30px;
+  font-weight:900;
+  color:var(--blue);
+  white-space:nowrap;
+}
+.brand span{color:var(--yellow)}
+nav{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  font-size:14px;
+  font-weight:700;
+}
+nav a:hover{color:#1685ff}
+.wa-top{
+  background:var(--blue);
+  color:white;
+  padding:13px 20px;
+  border-radius:10px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+main{
+  max-width:1200px;
+  margin:auto;
+  padding:34px 22px 65px;
+}
+.crumb{
+  font-size:14px;
+  color:#66799b;
+  margin-bottom:24px;
+}
+.crumb a{color:var(--blue)}
+
+h1{
+  font-size:clamp(30px,4vw,44px);
+  margin:0 0 12px;
+  color:var(--deep);
+}
+.intro{
+  font-size:16px;
+  line-height:1.7;
+  max-width:800px;
+  color:#526581;
+  margin-bottom:30px;
+}
+
+.section-title{
+  font-size:25px;
+  margin:35px 0 18px;
+}
+
+.filter-box{
+  background:var(--light);
+  border:1px solid #dce9ff;
+  padding:20px;
+  border-radius:13px;
+  margin-bottom:28px;
+}
+.filter-box h3{margin:0 0 15px}
+.filters{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+.filters select{
+  width:100%;
+  padding:13px;
+  border:1px solid #cbdaf1;
+  border-radius:8px;
+  background:white;
+  font-size:14px;
+}
+
+.vehicle-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+.vehicle-card{
+  border:1px solid #e0e8f5;
+  border-radius:13px;
+  overflow:hidden;
+  background:white;
+  transition:.2s;
+}
+.vehicle-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 8px 24px #063b9115;
+}
+.vehicle-image{
+  width:100%;
+  height:215px;
+  object-fit:cover;
+  background:#edf3fb;
+}
+.vehicle-info{padding:18px}
+.vehicle-info h3{
+  font-size:19px;
+  margin:0 0 13px;
+  color:var(--deep);
+}
+.vehicle-specs{
+  font-size:14px;
+  line-height:2;
+  color:#526581;
+}
+.vehicle-specs strong{color:#163c78}
+.vehicle-buttons{
+  display:flex;
+  gap:9px;
+  margin-top:16px;
+}
+.vehicle-buttons a{
+  flex:1;
+  text-align:center;
+  padding:11px 7px;
+  border-radius:7px;
+  font-size:13px;
+  font-weight:bold;
+}
+.details-btn{
+  background:#edf4ff;
+  color:var(--blue);
+}
+.inquiry-btn{
+  background:#20b84c;
+  color:white;
+}
+
+.empty{
+  background:var(--light);
+  border:1px solid #dce9ff;
+  border-radius:14px;
+  padding:38px 24px;
+  text-align:center;
+}
+.empty h2{margin:0 0 12px}
+.empty p{
+  max-width:650px;
+  margin:0 auto 20px;
+  line-height:1.7;
+  color:#526581;
+}
+.cta{
+  display:inline-block;
+  background:#20b84c;
+  color:white;
+  padding:13px 22px;
+  border-radius:9px;
+  font-weight:bold;
+}
+
+footer{
+  background:#062f78;
+  color:#dbe8ff;
+  padding:25px 3%;
+  text-align:center;
+  font-size:13px;
+}
+
+@media(max-width:850px){
+  .vehicle-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .topbar{
+    flex-direction:column;
+    padding:16px 12px;
+  }
+  nav{justify-content:center;gap:12px}
+  .filters{grid-template-columns:1fr}
+  .vehicle-grid{grid-template-columns:1fr}
+  main{padding:25px 15px 45px}
+}
 </style>
 </head>
+
 <body>
+
 <header class="topbar">
-  <a class="brand" href="index.html" aria-label="Truck Finder home">TRUCK <span>FINDER</span></a>
-  <nav aria-label="Main navigation">
+  <a class="brand" href="index.html">
+    TRUCK <span>FINDER</span>
+  </a>
+
+  <nav>
     <a href="index.html">Home</a>
     <a href="truck-cranes.html">Truck Cranes</a>
     <a href="dump-trucks.html">Dump Trucks</a>
     <a href="aerial-work-platforms.html">Aerial Work Platforms</a>
     <a href="special-vehicles.html">Special Vehicles</a>
   </nav>
+
   <a class="wa-top" href="index.html#contact">Contact Us</a>
 </header>
+
 <main>
-  <div class="crumb"><a href="index.html">Home</a> &nbsp;›&nbsp; Truck Cranes</div>
-  <h1>Truck Cranes</h1>
-  <p class="intro">Used truck-mounted cranes from China. Truck Finder helps international buyers source used commercial vehicles from China.</p>
-  <section class="empty">
-    <h2>Looking for a truck crane?</h2>
-    <p>Browse our used truck-mounted cranes. Contact Truck Finder for current stock, specifications, photos and export details. Current vehicle listings can be added to this page as your inventory is prepared.</p>
-    <a class="cta" href="index.html#contact">Request Vehicle Information&nbsp; →</a>
-  </section>
+
+<div class="crumb">
+  <a href="index.html">Home</a> › Truck Cranes
+</div>
+
+<h1>Used Truck Cranes for Sale</h1>
+
+<p class="intro">
+Explore our selection of used truck-mounted cranes from China.
+Find different brands, lifting capacities, truck chassis and configurations.
+Contact Truck Finder for vehicle details, photos and export quotations.
+</p>
+
+<h2 class="section-title">Find Your Truck Crane</h2>
+
+<div class="filter-box">
+  <h3>Filter Vehicles</h3>
+
+  <div class="filters">
+    <select id="brandFilter">
+      <option value="">All Brands</option>
+    </select>
+
+    <select id="tonFilter">
+      <option value="">All Lifting Capacities</option>
+    </select>
+
+    <select id="yearFilter">
+      <option value="">All Years</option>
+    </select>
+  </div>
+</div>
+
+<h2 class="section-title">Available Truck Cranes</h2>
+
+<div id="vehicleGrid" class="vehicle-grid"></div>
+
+<div id="emptyMessage" class="empty" style="display:none">
+  <h2>Looking for a Truck Crane?</h2>
+  <p>
+    Our vehicle inventory is being updated.
+    Contact us to find used truck cranes matching
+    your requirements, budget and destination.
+  </p>
+  <a class="cta" href="index.html#contact">
+    Request Vehicle Information →
+  </a>
+</div>
+
 </main>
-<footer>TRUCK FINDER · Find Your Right Truck. · Used Commercial Vehicles from China</footer>
+
+<footer>
+TRUCK FINDER · Find Your Right Truck.
+· Used Commercial Vehicles from China
+</footer>
+
+<script>
+
+// Vehicle inventory
+// Add real vehicle information here.
+// Do not publish a vehicle until its information and photos are verified.
+
+const vehicles = [];
+
+// Render vehicle listings
+const grid = document.getElementById("vehicleGrid");
+const emptyMessage = document.getElementById("emptyMessage");
+
+const brandFilter = document.getElementById("brandFilter");
+const tonFilter = document.getElementById("tonFilter");
+const yearFilter = document.getElementById("yearFilter");
+
+function addOptions(select, values){
+  [...new Set(values)].filter(Boolean).sort().forEach(value=>{
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    select.appendChild(option);
+  });
+}
+
+addOptions(brandFilter,vehicles.map(v=>v.brand));
+addOptions(tonFilter,vehicles.map(v=>v.ton));
+addOptions(yearFilter,vehicles.map(v=>String(v.year)));
+
+function renderVehicles(){
+
+  const filtered = vehicles.filter(v=>
+    (!brandFilter.value || v.brand===brandFilter.value) &&
+    (!tonFilter.value || v.ton===tonFilter.value) &&
+    (!yearFilter.value || String(v.year)===yearFilter.value)
+  );
+
+  grid.innerHTML="";
+
+  emptyMessage.style.display=filtered.length ? "none":"block";
+
+  filtered.forEach(v=>{
+
+    const card=document.createElement("article");
+    card.className="vehicle-card";
+
+    const image=document.createElement("img");
+    image.className="vehicle-image";
+    image.src=v.image;
+    image.alt=v.title;
+    image.loading="lazy";
+
+    const info=document.createElement("div");
+    info.className="vehicle-info";
+
+    const title=document.createElement("h3");
+    title.textContent=v.title;
+
+    const specs=document.createElement("div");
+    specs.className="vehicle-specs";
+
+    [
+      ["Brand",v.brand],
+      ["Lifting Capacity",v.ton],
+      ["Year",v.year],
+      ["Crane Brand",v.crane],
+      ["Location",v.location]
+    ].forEach(([label,value])=>{
+      const line=document.createElement("div");
+      const strong=document.createElement("strong");
+      strong.textContent=label+": ";
+      line.append(strong,document.createTextNode(value || "Contact us"));
+      specs.appendChild(line);
+    });
+
+    const buttons=document.createElement("div");
+    buttons.className="vehicle-buttons";
+
+    const details=document.createElement("a");
+    details.className="details-btn";
+    details.href=v.url;
+    details.textContent="View Details";
+
+    const inquiry=document.createElement("a");
+    inquiry.className="inquiry-btn";
+    inquiry.href="index.html#contact";
+    inquiry.textContent="Inquire Now";
+
+    buttons.append(details,inquiry);
+    info.append(title,specs,buttons);
+    card.append(image,info);
+    grid.appendChild(card);
+
+  });
+}
+
+[brandFilter,tonFilter,yearFilter].forEach(select=>{
+  select.addEventListener("change",renderVehicles);
+});
+
+renderVehicles();
+
+</script>
+
 </body>
 </html>
