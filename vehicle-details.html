@@ -341,17 +341,48 @@ if(!vehicle){
   const buttons = document.createElement("div");
   buttons.className = "buttons";
 
+  
+  const buttons = document.createElement("div");
+  buttons.className = "buttons";
+
+  // WhatsApp inquiry
+  const message =
+    "Hello Truck Finder, I am interested in this vehicle:\n\n" +
+    "Vehicle: " + vehicle.title + "\n" +
+    "Vehicle ID: " + vehicle.id + "\n" +
+    "Brand: " + vehicle.brand + "\n" +
+    "Model: " + vehicle.model + "\n" +
+    "Year: " + vehicle.year + "\n" +
+    "Lifting Capacity: " + vehicle.ton + "\n\n" +
+    "Please send me more details and an export quotation.";
+
   const inquiry = document.createElement("a");
   inquiry.className = "whatsapp";
-  inquiry.href = "index.html#contact";
-  inquiry.textContent = "Request a Quotation";
+  inquiry.href =
+    "https://wa.me/8617362687151?text=" +
+    encodeURIComponent(message);
+  inquiry.target = "_blank";
+  inquiry.rel = "noopener noreferrer";
+  inquiry.textContent = "WhatsApp Us";
 
+  // Email inquiry
+  const email = document.createElement("a");
+  email.className = "back";
+  email.href =
+    "mailto:cscvehicle@gmail.com?subject=" +
+    encodeURIComponent("Inquiry about " + vehicle.title + " - " + vehicle.id) +
+    "&body=" +
+    encodeURIComponent(message);
+  email.textContent = "Email Us";
+
+  // Back to listings
   const back = document.createElement("a");
   back.className = "back";
   back.href = "truck-cranes.html";
   back.textContent = "Back to Listings";
 
-  buttons.append(inquiry,back);
+  buttons.append(inquiry, email, back);
+
   right.appendChild(buttons);
 
   layout.append(left,right);
