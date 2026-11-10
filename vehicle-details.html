@@ -1,1 +1,360 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Used commercial vehicle details from Truck Finder China.">
+<title>Vehicle Details | TRUCK FINDER</title>
+
+<style>
+:root{
+  --blue:#0646ad;
+  --deep:#063b91;
+  --yellow:#ffbd00;
+  --ink:#092b78;
+  --light:#f4f8ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:#fff;
+}
+a{text-decoration:none;color:inherit}
+
+header{
+  min-height:85px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 4%;
+  background:#f4f8ff;
+  border-bottom:1px solid #dce9ff;
+  gap:15px;
+}
+.brand{
+  font-size:29px;
+  font-weight:900;
+  color:var(--blue);
+}
+.brand span{color:var(--yellow)}
+nav{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  font-size:14px;
+  font-weight:bold;
+}
+.contact{
+  background:var(--blue);
+  color:white;
+  padding:12px 18px;
+  border-radius:9px;
+}
+main{
+  max-width:1150px;
+  margin:auto;
+  padding:35px 22px 65px;
+}
+.crumb{
+  color:#71809a;
+  font-size:14px;
+  margin-bottom:25px;
+}
+.crumb a{color:var(--blue)}
+h1{
+  font-size:clamp(27px,4vw,40px);
+  margin:0 0 12px;
+  color:var(--deep);
+}
+.subtitle{
+  color:#71809a;
+  margin-bottom:25px;
+}
+.layout{
+  display:grid;
+  grid-template-columns:1.15fr 1fr;
+  gap:30px;
+}
+.main-image{
+  width:100%;
+  height:390px;
+  object-fit:cover;
+  border-radius:12px;
+  background:#edf3fb;
+}
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.gallery img{
+  width:100%;
+  height:85px;
+  object-fit:cover;
+  border-radius:7px;
+  cursor:pointer;
+  background:#edf3fb;
+}
+.info{
+  border:1px solid #e0e8f5;
+  border-radius:12px;
+  padding:24px;
+}
+.info h2{margin:0 0 18px}
+.spec-row{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  padding:13px 0;
+  border-bottom:1px solid #edf1f7;
+  font-size:14px;
+}
+.spec-row span:first-child{color:#71809a}
+.spec-row strong{text-align:right}
+.description{
+  margin-top:28px;
+  line-height:1.8;
+  color:#526581;
+}
+.buttons{
+  display:flex;
+  gap:12px;
+  margin-top:25px;
+}
+.buttons a{
+  flex:1;
+  text-align:center;
+  padding:14px 10px;
+  border-radius:8px;
+  font-weight:bold;
+}
+.whatsapp{
+  background:#20b84c;
+  color:white;
+}
+.back{
+  background:#edf4ff;
+  color:var(--blue);
+}
+.not-found{
+  background:var(--light);
+  border:1px solid #dce9ff;
+  border-radius:12px;
+  padding:40px 20px;
+  text-align:center;
+}
+footer{
+  background:#062f78;
+  color:#dbe8ff;
+  text-align:center;
+  padding:25px;
+  font-size:13px;
+}
+@media(max-width:750px){
+  header{flex-direction:column}
+  nav{justify-content:center}
+  .layout{grid-template-columns:1fr}
+  .main-image{height:270px}
+  main{padding:25px 15px 45px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="brand" href="index.html">
+    TRUCK <span>FINDER</span>
+  </a>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="truck-cranes.html">Truck Cranes</a>
+    <a href="dump-trucks.html">Dump Trucks</a>
+    <a href="aerial-work-platforms.html">Aerial Work Platforms</a>
+    <a href="special-vehicles.html">Special Vehicles</a>
+  </nav>
+
+  <a class="contact" href="index.html#contact">Contact Us</a>
+</header>
+
+<main>
+
+<div class="crumb">
+  <a href="index.html">Home</a> ›
+  <a href="truck-cranes.html">Vehicles</a> › Details
+</div>
+
+<div id="vehicleContent"></div>
+
+</main>
+
+<footer>
+TRUCK FINDER · Find Your Right Truck.
+· Used Commercial Vehicles from China
+</footer>
+
+<script src="vehicles.js"></script>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const vehicleId = params.get("id");
+
+const vehicles = window.TRUCK_FINDER_VEHICLES || [];
+
+const vehicle = vehicles.find(v => v.id === vehicleId);
+
+const container = document.getElementById("vehicleContent");
+
+function addSpec(parent,label,value){
+  if(value === undefined || value === null || value === "") return;
+
+  const row = document.createElement("div");
+  row.className = "spec-row";
+
+  const name = document.createElement("span");
+  name.textContent = label;
+
+  const content = document.createElement("strong");
+  content.textContent = value;
+
+  row.append(name,content);
+  parent.appendChild(row);
+}
+
+if(!vehicle){
+
+  document.title = "Vehicle Not Found | TRUCK FINDER";
+
+  const box = document.createElement("div");
+  box.className = "not-found";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "Vehicle Not Found";
+
+  const message = document.createElement("p");
+  message.textContent =
+    "This vehicle may have been removed or the link may be incorrect.";
+
+  const link = document.createElement("a");
+  link.href = "index.html";
+  link.textContent = "Return to Home";
+  link.className = "contact";
+
+  box.append(heading,message,link);
+  container.appendChild(box);
+
+}else{
+
+  document.title = vehicle.title + " | TRUCK FINDER";
+
+  const title = document.createElement("h1");
+  title.textContent = vehicle.title;
+
+  const subtitle = document.createElement("p");
+  subtitle.className = "subtitle";
+  subtitle.textContent = "Vehicle ID: " + vehicle.id;
+
+  const layout = document.createElement("div");
+  layout.className = "layout";
+
+  const left = document.createElement("div");
+
+  const mainImage = document.createElement("img");
+  mainImage.className = "main-image";
+  mainImage.alt = vehicle.title;
+
+  const images = vehicle.images || [];
+  const firstImage = images[0] || vehicle.image || "";
+
+  if(firstImage){
+    mainImage.src = firstImage;
+  }else{
+    mainImage.style.display = "none";
+  }
+
+  left.appendChild(mainImage);
+
+  const gallery = document.createElement("div");
+  gallery.className = "gallery";
+
+  images.forEach(src=>{
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = vehicle.title;
+    img.loading = "lazy";
+
+    img.addEventListener("click",()=>{
+      mainImage.src = src;
+      mainImage.style.display = "block";
+    });
+
+    gallery.appendChild(img);
+  });
+
+  left.appendChild(gallery);
+
+  const right = document.createElement("section");
+  right.className = "info";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "Vehicle Specifications";
+  right.appendChild(heading);
+
+  addSpec(right,"Category",vehicle.category);
+  addSpec(right,"Brand",vehicle.brand);
+  addSpec(right,"Model",vehicle.model);
+  addSpec(right,"Year",vehicle.year);
+  addSpec(right,"Mileage",vehicle.mileage);
+  addSpec(right,"Chassis",vehicle.chassis);
+  addSpec(right,"Crane Brand",vehicle.crane);
+  addSpec(right,"Lifting Capacity",vehicle.ton);
+  addSpec(right,"Boom Length",vehicle.boomLength);
+  addSpec(right,"Location",vehicle.location);
+  addSpec(right,"Price",vehicle.price || "Contact for Price");
+  addSpec(right,"Status",vehicle.status);
+
+  const description = document.createElement("div");
+  description.className = "description";
+
+  const descTitle = document.createElement("h3");
+  descTitle.textContent = "Vehicle Description";
+
+  const descText = document.createElement("p");
+  descText.textContent =
+    vehicle.description || "Please contact us for more vehicle information.";
+
+  description.append(descTitle,descText);
+  right.appendChild(description);
+
+  const buttons = document.createElement("div");
+  buttons.className = "buttons";
+
+  const inquiry = document.createElement("a");
+  inquiry.className = "whatsapp";
+  inquiry.href = "index.html#contact";
+  inquiry.textContent = "Request a Quotation";
+
+  const back = document.createElement("a");
+  back.className = "back";
+  back.href = "truck-cranes.html";
+  back.textContent = "Back to Listings";
+
+  buttons.append(inquiry,back);
+  right.appendChild(buttons);
+
+  layout.append(left,right);
+  container.append(title,subtitle,layout);
+
+}
+
+</script>
+
+</body>
+</html>
