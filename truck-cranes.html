@@ -287,14 +287,14 @@ Contact Truck Finder for vehicle details, photos and export quotations.
 TRUCK FINDER · Find Your Right Truck.
 · Used Commercial Vehicles from China
 </footer>
-
+<script src="vehicles.js"></script>
 <script>
 
 // Vehicle inventory
 // Add real vehicle information here.
 // Do not publish a vehicle until its information and photos are verified.
 
-const vehicles = [];
+const vehicles = window.TRUCK_FINDER_VEHICLES || [];
 
 // Render vehicle listings
 const grid = document.getElementById("vehicleGrid");
