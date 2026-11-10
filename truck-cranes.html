@@ -368,7 +368,7 @@ function renderVehicles(){
 
     const details=document.createElement("a");
     details.className="details-btn";
-    details.href=v.url;
+    details.href="vehicle-details.html?id="+encodeURIComponent(v.id);
     details.textContent="View Details";
 
     const inquiry=document.createElement("a");
