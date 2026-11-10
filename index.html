@@ -1,1 +1,1087 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Find quality used commercial trucks in China. Truck mounted cranes, tractor trucks, dump trucks and cargo trucks for global buyers.">
+  <meta name="theme-color" content="#10243a">
+  <title>Gotruck Finder | Used Commercial Trucks from China</title>
+
+  <style>
+    :root {
+      --navy: #10243a;
+      --navy-light: #193a58;
+      --orange: #f28b24;
+      --orange-dark: #dc7413;
+      --white: #ffffff;
+      --light: #f4f6f8;
+      --text: #253548;
+      --muted: #718096;
+      --border: #e5eaf0;
+      --max: 1200px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      background: var(--white);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button, input, select { font: inherit; }
+
+    .container {
+      width: min(var(--max), 92%);
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: var(--navy);
+      color: #d9e3ed;
+      font-size: 12px;
+      padding: 8px 0;
+    }
+
+    .topbar-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    header {
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 2px 12px rgba(16,36,58,.07);
+    }
+
+    .navbar {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+      flex-shrink: 0;
+    }
+
+    .brand-main {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: var(--navy);
+    }
+
+    .brand-main span { color: var(--orange); }
+
+    .brand-sub {
+      font-size: 10px;
+      letter-spacing: 3px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 27px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--orange); }
+
+    .nav-cta, .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      border: 0;
+      cursor: pointer;
+      font-weight: 800;
+      border-radius: 4px;
+      transition: .2s;
+    }
+
+    .nav-cta {
+      background: var(--orange);
+      color: white;
+      padding: 12px 18px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .nav-cta:hover, .btn-orange:hover {
+      background: var(--orange-dark);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: 0;
+      font-size: 27px;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    .hero {
+      min-height: 540px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(9,26,44,.97) 0%, rgba(9,26,44,.88) 48%, rgba(9,26,44,.35) 100%),
+        url("https://images.gotruckfinder.com/vehicles/test-truck.jpg")
+        center 55% / cover no-repeat,
+        var(--navy);
+    }
+
+    .hero-content {
+      color: white;
+      padding: 90px 0;
+      max-width: 720px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      color: var(--orange);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 2.5px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 5.5vw, 66px);
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 span { color: var(--orange); }
+
+    .hero p {
+      font-size: 18px;
+      color: #d5e0eb;
+      max-width: 570px;
+      margin-bottom: 30px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .hero-tags span {
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 3px;
+      padding: 7px 12px;
+      font-size: 12px;
+      color: #f2f5f8;
+    }
+
+    .btn {
+      padding: 15px 25px;
+      font-size: 13px;
+    }
+
+    .btn-orange {
+      color: white;
+      background: var(--orange);
+    }
+
+    .btn-outline {
+      color: white;
+      border: 1px solid rgba(255,255,255,.6);
+      margin-left: 10px;
+      background: transparent;
+    }
+
+    .btn-outline:hover { background: rgba(255,255,255,.12); }
+
+    .benefits {
+      background: var(--orange);
+      color: white;
+    }
+
+    .benefits-inner {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .benefit {
+      padding: 23px 15px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,.3);
+    }
+
+    .benefit:last-child { border: 0; }
+
+    .benefit strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1.3;
+    }
+
+    .benefit span { font-size: 12px; opacity: .95; }
+
+    section { padding: 82px 0; }
+
+    .section-heading {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 42px;
+    }
+
+    .section-heading .eyebrow { margin-bottom: 9px; }
+
+    .section-heading h2 {
+      font-size: clamp(27px, 3.5vw, 39px);
+      color: var(--navy);
+      line-height: 1.2;
+      margin-bottom: 13px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .search-section { background: var(--light); padding: 48px 0; }
+
+    .search-panel {
+      background: white;
+      padding: 28px;
+      border-radius: 7px;
+      box-shadow: 0 8px 30px rgba(16,36,58,.06);
+    }
+
+    .search-panel h2 {
+      color: var(--navy);
+      font-size: 21px;
+      margin-bottom: 18px;
+    }
+
+    .search-fields {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr auto;
+      gap: 12px;
+    }
+
+    .search-fields select,
+    .search-fields input {
+      width: 100%;
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: white;
+      color: var(--text);
+      outline-color: var(--orange);
+    }
+
+    .search-fields button {
+      padding: 14px 24px;
+      border: 0;
+      border-radius: 4px;
+      background: var(--navy);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .search-fields button:hover { background: var(--navy-light); }
+
+    #search-message {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 20px;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .category-card {
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      background: white;
+      transition: transform .25s, box-shadow .25s;
+    }
+
+    .category-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 32px rgba(16,36,58,.12);
+    }
+
+    .category-art {
+      height: 175px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #173a59, #315b79);
+    }
+
+    .category-art::before,
+    .category-art::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+    }
+
+    .category-art::before { width: 210px; height: 210px; }
+    .category-art::after { width: 155px; height: 155px; }
+
+    .category-icon {
+      position: relative;
+      z-index: 1;
+      font-size: 65px;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,.2));
+    }
+
+    .art-tractor { background: linear-gradient(135deg, #253d50, #547184); }
+    .art-dump { background: linear-gradient(135deg, #8c4b1d, #d98a35); }
+    .art-cargo { background: linear-gradient(135deg, #304d45, #648d75); }
+
+    .category-info { padding: 20px; }
+
+    .category-info h3 {
+      color: var(--navy);
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .category-info p {
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 42px;
+    }
+
+    .learn-more {
+      display: inline-block;
+      margin-top: 14px;
+      color: var(--orange-dark);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .inventory {
+      background: var(--light);
+    }
+
+    .inventory-panel {
+      background: white;
+      border-radius: 7px;
+      padding: 35px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .inventory-panel h3 {
+      color: var(--navy);
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+
+    .inventory-panel p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .inventory-stat {
+      background: var(--navy);
+      color: white;
+      text-align: center;
+      padding: 35px 20px;
+      border-radius: 6px;
+    }
+
+    .inventory-stat strong {
+      display: block;
+      font-size: 54px;
+      color: var(--orange);
+      line-height: 1.2;
+    }
+
+    .inventory-stat span { font-size: 13px; }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+    }
+
+    .why-card {
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    .why-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      background: #fff2e5;
+      color: var(--orange-dark);
+      border-radius: 5px;
+      font-size: 23px;
+      margin-bottom: 18px;
+    }
+
+    .why-card h3 {
+      color: var(--navy);
+      font-size: 17px;
+      margin-bottom: 9px;
+    }
+
+    .why-card p { color: var(--muted); font-size: 13px; }
+
+    .about {
+      background: var(--light);
+    }
+
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 55px;
+      align-items: center;
+    }
+
+    .about-visual {
+      min-height: 340px;
+      border-radius: 7px;
+      background:
+        linear-gradient(135deg, rgba(16,36,58,.9), rgba(25,58,88,.7)),
+        url("https://images.gotruckfinder.com/vehicles/test-truck.jpg")
+        center / cover no-repeat,
+        var(--navy);
+      display: grid;
+      place-items: center;
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .about-visual strong {
+      font-size: 30px;
+      display: block;
+    }
+
+    .about-visual span {
+      color: #f6b76f;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    .about-copy .eyebrow { margin-bottom: 10px; }
+
+    .about-copy h2 {
+      color: var(--navy);
+      font-size: 34px;
+      line-height: 1.2;
+      margin-bottom: 18px;
+    }
+
+    .about-copy p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .export-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .step {
+      border-top: 3px solid var(--orange);
+      padding: 20px 17px;
+      background: var(--light);
+    }
+
+    .step-number {
+      color: var(--orange-dark);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .step h3 {
+      color: var(--navy);
+      font-size: 16px;
+      margin: 9px 0;
+    }
+
+    .step p { color: var(--muted); font-size: 13px; }
+
+    .cta-section {
+      background: var(--navy);
+      color: white;
+      text-align: center;
+      padding: 75px 0;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      margin-bottom: 14px;
+    }
+
+    .cta-section p {
+      color: #c7d4df;
+      max-width: 650px;
+      margin: 0 auto 26px;
+      font-size: 15px;
+    }
+
+    .contact-note {
+      font-size: 12px;
+      color: #c7d4df;
+      margin-top: 18px;
+    }
+
+    footer {
+      background: #0a1929;
+      color: #b8c5d1;
+      padding: 48px 0 20px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 35px;
+    }
+
+    .footer-brand { color: white; margin-bottom: 15px; }
+
+    footer p {
+      font-size: 13px;
+      color: #aebdca;
+      max-width: 380px;
+    }
+
+    footer h3 {
+      color: white;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: grid;
+      gap: 9px;
+      font-size: 13px;
+    }
+
+    .footer-links a:hover { color: var(--orange); }
+
+    .copyright {
+      border-top: 1px solid rgba(255,255,255,.12);
+      padding-top: 18px;
+      text-align: center;
+      font-size: 11px;
+      color: #8394a4;
+    }
+
+    @media (max-width: 950px) {
+      .nav-links { gap: 15px; }
+      .nav-links a { font-size: 12px; }
+      .categories-grid { grid-template-columns: repeat(2, 1fr); }
+      .search-fields { grid-template-columns: repeat(2, 1fr); }
+      .export-steps { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .topbar-inner { justify-content: center; text-align: center; }
+      .navbar { min-height: 70px; }
+      .brand-main { font-size: 21px; }
+      .menu-toggle { display: block; }
+      .nav-cta { display: none; }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 18px 4%;
+        box-shadow: 0 8px 12px rgba(0,0,0,.08);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 17px;
+      }
+
+      .nav-links.open { display: flex; }
+
+      .hero { min-height: 490px; }
+      .hero-content { padding: 70px 0; }
+      .hero p { font-size: 15px; }
+      .btn { padding: 13px 17px; font-size: 12px; }
+      section { padding: 60px 0; }
+
+      .benefits-inner { grid-template-columns: 1fr; }
+      .benefit {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,.3);
+        padding: 15px;
+      }
+
+      .search-fields { grid-template-columns: 1fr; }
+      .search-panel { padding: 20px; }
+      .categories-grid { gap: 12px; }
+      .category-art { height: 130px; }
+      .category-icon { font-size: 48px; }
+      .category-info { padding: 15px; }
+      .category-info h3 { font-size: 15px; }
+      .category-info p { font-size: 12px; }
+
+      .inventory-panel,
+      .about-layout { grid-template-columns: 1fr; gap: 25px; }
+
+      .why-grid { grid-template-columns: 1fr; }
+      .export-steps { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+      .about-copy h2 { font-size: 29px; }
+    }
+
+    @media (max-width: 380px) {
+      .categories-grid { grid-template-columns: 1fr; }
+      .export-steps { grid-template-columns: 1fr; }
+      .btn-outline { margin-left: 0; margin-top: 10px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>USED COMMERCIAL TRUCKS FROM CHINA</span>
+      <span>Serving Global Truck Buyers</span>
+    </div>
+  </div>
+
+  <header>
+    <div class="container navbar">
+      <a class="brand" href="#home">
+        <span class="brand-main">GO<span>TRUCK</span> FINDER</span>
+        <span class="brand-sub">TRUCKSTOCK GLOBAL</span>
+      </a>
+
+      <button class="menu-toggle" id="menu-toggle"
+        aria-label="Open navigation" aria-expanded="false">☰</button>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#home">HOME</a></li>
+        <li><a href="#inventory">USED TRUCKS</a></li>
+        <li><a href="#categories">CATEGORIES</a></li>
+        <li><a href="#about">ABOUT US</a></li>
+        <li><a href="#contact">CONTACT</a></li>
+      </ul>
+
+      <a class="nav-cta" href="#contact">GET A QUOTE</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-content">
+          <span class="eyebrow">YOUR TRUCK SOURCING PARTNER IN CHINA</span>
+          <h1>Find Your Right Truck <span>in China</span></h1>
+          <p>
+            Quality Used Commercial Trucks. Competitive Prices.
+            Reliable Export Support for Global Buyers.
+          </p>
+
+          <div class="hero-tags">
+            <span>Real Stock</span>
+            <span>Global Export</span>
+            <span>Professional Service</span>
+          </div>
+
+          <a href="#categories" class="btn btn-orange">EXPLORE OUR TRUCKS</a>
+          <a href="#contact" class="btn btn-outline">CONTACT US</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="benefits">
+      <div class="container benefits-inner">
+        <div class="benefit">
+          <strong>200+ Vehicles</strong>
+          <span>Available Stock</span>
+        </div>
+        <div class="benefit">
+          <strong>Worldwide</strong>
+          <span>Export Services</span>
+        </div>
+        <div class="benefit">
+          <strong>Professional</strong>
+          <span>Vehicle Sourcing Support</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="search-section" id="search">
+      <div class="container">
+        <div class="search-panel">
+          <h2>Find the Truck You Need</h2>
+          <form class="search-fields" id="truck-search">
+            <select id="truck-type" aria-label="Vehicle type">
+              <option value="">All Vehicle Types</option>
+              <option value="cranes">Truck Mounted Cranes</option>
+              <option value="tractors">Tractor Trucks</option>
+              <option value="dump">Dump Trucks</option>
+              <option value="cargo">Cargo Trucks</option>
+            </select>
+
+            <input id="truck-brand" type="text"
+              placeholder="Preferred Brand (e.g. Dongfeng)">
+
+            <select id="truck-year" aria-label="Year">
+              <option value="">Any Year</option>
+              <option>2025 or newer</option>
+              <option>2023–2024</option>
+              <option>2020–2022</option>
+              <option>Before 2020</option>
+            </select>
+
+            <button type="submit">SEARCH</button>
+          </form>
+          <p id="search-message">
+            Tell us what you are looking for. Our inventory search and inquiry system will be connected in the next development stage.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="categories">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">OUR VEHICLE CATEGORIES</span>
+          <h2>Explore Our Used Trucks</h2>
+          <p>
+            Discover commercial vehicles for construction, transportation,
+            logistics and other business needs.
+          </p>
+        </div>
+
+        <div class="categories-grid">
+          <a href="#contact" class="category-card">
+            <div class="category-art">
+              <span class="category-icon">🏗️</span>
+            </div>
+            <div class="category-info">
+              <h3>Truck Mounted Cranes</h3>
+              <p>Used crane trucks for lifting, loading and transportation.</p>
+              <span class="learn-more">ENQUIRE NOW →</span>
+            </div>
+          </a>
+
+          <a href="#contact" class="category-card">
+            <div class="category-art art-tractor">
+              <span class="category-icon">🚛</span>
+            </div>
+            <div class="category-info">
+              <h3>Tractor Trucks</h3>
+              <p>Reliable used tractor units for heavy-duty transport.</p>
+              <span class="learn-more">ENQUIRE NOW →</span>
+            </div>
+          </a>
+
+          <a href="#contact" class="category-card">
+            <div class="category-art art-dump">
+              <span class="category-icon">🚚</span>
+            </div>
+            <div class="category-info">
+              <h3>Dump Trucks</h3>
+              <p>Used dump trucks for construction and material hauling.</p>
+              <span class="learn-more">ENQUIRE NOW →</span>
+            </div>
+          </a>
+
+          <a href="#contact" class="category-card">
+            <div class="category-art art-cargo">
+              <span class="category-icon">🚚</span>
+            </div>
+            <div class="category-info">
+              <h3>Cargo Trucks</h3>
+              <p>Commercial cargo trucks for a wide range of transport jobs.</p>
+              <span class="learn-more">ENQUIRE NOW →</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="inventory" id="inventory">
+      <div class="container">
+        <div class="inventory-panel">
+          <div>
+            <span class="eyebrow">OUR INVENTORY</span>
+            <h3>Find the Right Vehicle for Your Business</h3>
+            <p>
+              We source used commercial vehicles in China and help
+              international buyers find suitable trucks based on vehicle
+              type, specifications, condition and budget.
+            </p>
+            <a href="#contact" class="btn btn-orange">ASK ABOUT AVAILABLE STOCK</a>
+          </div>
+          <div class="inventory-stat">
+            <strong>200+</strong>
+            <span>Used Commercial Vehicles Available</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="why-us">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">WHY CHOOSE US</span>
+          <h2>Your Reliable Truck Sourcing Partner</h2>
+          <p>
+            We focus on helping global buyers source suitable used
+            commercial vehicles from China.
+          </p>
+        </div>
+
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="why-icon">✓</div>
+            <h3>Real Vehicle Information</h3>
+            <p>
+              Vehicle specifications, condition details and actual photos
+              help buyers make informed decisions.
+            </p>
+          </div>
+
+          <div class="why-card">
+            <div class="why-icon">⌕</div>
+            <h3>Multiple Vehicle Choices</h3>
+            <p>
+              Explore different brands, models, configurations and budgets
+              to find a suitable vehicle.
+            </p>
+          </div>
+
+          <div class="why-card">
+            <div class="why-icon">↗</div>
+            <h3>Export Support</h3>
+            <p>
+              Assistance with vehicle sourcing, export preparation and
+              communication throughout the process.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="container about-layout">
+        <div class="about-visual">
+          <div>
+            <strong>GOTRUCK FINDER</strong>
+            <span>TRUCKSTOCK GLOBAL</span>
+          </div>
+        </div>
+
+        <div class="about-copy">
+          <span class="eyebrow">ABOUT GOTRUCK FINDER</span>
+          <h2>Connecting Global Buyers with Trucks from China</h2>
+          <p>
+            Gotruck Finder focuses on used commercial vehicles in China.
+            We aim to make vehicle sourcing clearer, more efficient and
+            more convenient for international buyers.
+          </p>
+          <p>
+            From truck mounted cranes to tractor trucks, dump trucks and
+            cargo trucks, we help buyers explore available options and
+            communicate their requirements.
+          </p>
+          <a href="#contact" class="btn btn-orange">TALK TO OUR TEAM</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="export-process">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">HOW IT WORKS</span>
+          <h2>Our Vehicle Sourcing Process</h2>
+          <p>A clear process to help you source a suitable truck from China.</p>
+        </div>
+
+        <div class="export-steps">
+          <div class="step">
+            <span class="step-number">STEP 01</span>
+            <h3>Tell Us Your Needs</h3>
+            <p>Share your preferred truck type, specifications and budget.</p>
+          </div>
+
+          <div class="step">
+            <span class="step-number">STEP 02</span>
+            <h3>Find Suitable Trucks</h3>
+            <p>Review available vehicles that match your requirements.</p>
+          </div>
+
+          <div class="step">
+            <span class="step-number">STEP 03</span>
+            <h3>Confirm Details</h3>
+            <p>Discuss vehicle condition, price and export arrangements.</p>
+          </div>
+
+          <div class="step">
+            <span class="step-number">STEP 04</span>
+            <h3>Prepare for Export</h3>
+            <p>Coordinate the next steps for your vehicle purchase and export.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+      <div class="container">
+        <span class="eyebrow">LET'S FIND YOUR TRUCK</span>
+        <h2>Drive Your Business Forward</h2>
+        <p>
+          Looking for a used commercial truck in China?
+          Tell us what you need and let us help you find the right vehicle.
+        </p>
+        <a href="#search" class="btn btn-orange">START YOUR TRUCK SEARCH</a>
+        <p class="contact-note">
+          WhatsApp, email and telephone contact details will be added before launch.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="brand footer-brand">
+            <span class="brand-main" style="color:white">
+              GO<span>TRUCK</span> FINDER
+            </span>
+            <span class="brand-sub">TRUCKSTOCK GLOBAL</span>
+          </div>
+          <p>
+            Your truck sourcing partner in China.
+            Quality used commercial vehicles for global buyers.
+          </p>
+        </div>
+
+        <div>
+          <h3>QUICK LINKS</h3>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#categories">Vehicle Categories</a></li>
+            <li><a href="#inventory">Used Trucks</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>OUR VEHICLES</h3>
+          <ul class="footer-links">
+            <li><a href="#categories">Truck Mounted Cranes</a></li>
+            <li><a href="#categories">Tractor Trucks</a></li>
+            <li><a href="#categories">Dump Trucks</a></li>
+            <li><a href="#categories">Cargo Trucks</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="copyright">
+        © 2026 Gotruck Finder · TruckStock Global. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById("menu-toggle");
+    const navLinks = document.getElementById("nav-links");
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = navLinks.classList.toggle("open");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.textContent = isOpen ? "×" : "☰";
+    });
+
+    navLinks.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.textContent = "☰";
+      });
+    });
+
+    document.getElementById("truck-search").addEventListener("submit", event => {
+      event.preventDefault();
+
+      const type = document.getElementById("truck-type");
+      const brand = document.getElementById("truck-brand").value.trim();
+      const year = document.getElementById("truck-year").value;
+      const message = document.getElementById("search-message");
+
+      const typeText = type.options[type.selectedIndex].text;
+      const details = [
+        type.value ? typeText : "Any vehicle type",
+        brand ? "Brand: " + brand : "",
+        year ? "Year: " + year : ""
+      ].filter(Boolean).join(" | ");
+
+      message.textContent =
+        "Your selection: " + details +
+        ". Live inventory search will be connected in the next development stage.";
+
+      document.getElementById("contact").scrollIntoView({
+        behavior: "smooth"
+      });
+    });
+  </script>
+
+</body>
+</html>
+
