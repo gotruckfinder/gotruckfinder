@@ -211,7 +211,14 @@ TRUCK FINDER · Find Your Right Truck.
 const params = new URLSearchParams(window.location.search);
 const vehicleId = params.get("id");
 
-const vehicles = window.TRUCK_FINDER_VEHICLES || [];
+// Vehicle inventory
+const allVehicles = window.TRUCK_FINDER_VEHICLES || [];
+
+// Show available truck cranes only
+const vehicles = allVehicles.filter(v =>
+  v.category === "Truck Cranes" &&
+  v.status === "Available"
+);
 
 const vehicle = vehicles.find(v => v.id === vehicleId);
 
