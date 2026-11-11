@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,25 +6,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Browse our used aerial work platforms. Contact Truck Finder for current stock, specifications, photos and export details.">
 <title>Aerial Work Platforms | TRUCK FINDER</title>
+
 <style>
 :root{--blue:#0646ad;--deep:#063b91;--yellow:#ffbd00;--ink:#092b78;--light:#f4f8ff}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff}
-a{text-decoration:none;color:inherit}.topbar{min-height:90px;display:flex;align-items:center;justify-content:space-between;padding:12px 3%;gap:18px;background:linear-gradient(90deg,#fff,#eef6ff);border-bottom:1px solid #dce9ff}
-.brand{font-size:30px;font-weight:900;letter-spacing:.5px;color:#0646ad}.brand span{color:#ffbd00}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff}
+a{text-decoration:none;color:inherit}
+.topbar{min-height:90px;display:flex;align-items:center;justify-content:space-between;padding:12px 3%;gap:18px;background:linear-gradient(90deg,#fff,#eef6ff);border-bottom:1px solid #dce9ff}
+.brand{font-size:30px;font-weight:900;letter-spacing:.5px;color:#0646ad}
+.brand span{color:#ffbd00}
 nav{display:flex;align-items:center;gap:clamp(12px,1.8vw,28px);font-size:15px;font-weight:700;flex-wrap:wrap}
-nav a:hover{color:#1685ff}.wa-top{background:#0646ad;color:#fff;padding:13px 20px;border-radius:12px;font-weight:700;white-space:nowrap}
-main{max-width:1180px;margin:0 auto;padding:34px 22px 60px}.crumb{font-size:14px;color:#66799b;margin-bottom:24px}.crumb a{color:#0646ad}
-h1{font-size:clamp(30px,4vw,44px);margin:0 0 12px;color:#063b91}.intro{font-size:17px;line-height:1.65;max-width:780px;color:#425675;margin:0 0 28px}
+nav a:hover{color:#1685ff}
+.wa-top{background:#0646ad;color:#fff;padding:13px 20px;border-radius:12px;font-weight:700;white-space:nowrap}
+main{max-width:1180px;margin:0 auto;padding:34px 22px 60px}
+.crumb{font-size:14px;color:#66799b;margin-bottom:24px}
+.crumb a{color:#0646ad}
+h1{font-size:clamp(30px,4vw,44px);margin:0 0 12px;color:#063b91}
+.intro{font-size:17px;line-height:1.65;max-width:780px;color:#425675;margin:0 0 28px}
 .empty{background:#f4f8ff;border:1px solid #dce9ff;border-radius:14px;padding:34px 24px;text-align:center}
-.empty h2{margin:0 0 12px;font-size:24px}.empty p{margin:0 auto 20px;max-width:680px;line-height:1.6;color:#526581}
-.cta{display:inline-block;background:#20b84c;color:white;padding:13px 22px;border-radius:9px;font-weight:800}
+.empty h2{margin:0 0 12px;font-size:24px}
+.empty p{margin:0 auto 20px;max-width:680px;line-height:1.6;color:#526581}
+.cta{display:inline-block;background:#20b84c;color:white;padding:13px 22px;border:0;border-radius:9px;font-weight:800;cursor:pointer;font-size:15px}
+.cta:hover{background:#159b3b}
 footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-size:13px}
-@media(max-width:760px){.topbar{justify-content:center;flex-direction:column;padding:16px 12px}nav{justify-content:center;gap:12px 18px}.wa-top{padding:10px 16px}main{padding:26px 16px 44px}.empty{padding:28px 16px}}
+
+/* Inquiry modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,20,60,.65);z-index:9999;align-items:center;justify-content:center;padding:18px}
+.modal.show{display:flex}
+.modal-content{background:#fff;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;border-radius:16px;padding:28px;position:relative;box-shadow:0 15px 50px rgba(0,0,0,.25)}
+.modal-content h2{margin:0 35px 8px 0;color:#063b91;font-size:25px}
+.modal-intro{color:#66799b;font-size:14px;line-height:1.5;margin:0 0 18px}
+.close-btn{position:absolute;right:18px;top:14px;border:0;background:none;font-size:30px;color:#71809a;cursor:pointer}
+.vehicle-info{background:#f1f6ff;border:1px solid #dce9ff;border-radius:9px;padding:12px;margin-bottom:18px;font-size:14px;color:#063b91;font-weight:700}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;color:#183d7c}
+.form-group input,.form-group textarea{width:100%;padding:12px;border:1px solid #cbd8eb;border-radius:8px;font-size:15px;font-family:Arial,Helvetica,sans-serif}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:#0646ad;box-shadow:0 0 0 2px rgba(6,70,173,.1)}
+.form-group textarea{min-height:100px;resize:vertical}
+.submit-btn{width:100%;border:0;background:#0646ad;color:#fff;padding:14px;border-radius:9px;font-size:16px;font-weight:800;cursor:pointer}
+.submit-btn:hover{background:#063b91}
+.submit-btn:disabled{background:#8ca5ce;cursor:not-allowed}
+.form-status{margin-top:14px;font-size:14px;line-height:1.5;text-align:center}
+.form-status.success{color:#159447}
+.form-status.error{color:#c62828}
+
+@media(max-width:760px){
+  .topbar{justify-content:center;flex-direction:column;padding:16px 12px}
+  nav{justify-content:center;gap:12px 18px}
+  .wa-top{padding:10px 16px}
+  main{padding:26px 16px 44px}
+  .empty{padding:28px 16px}
+  .modal-content{padding:23px 18px}
+}
 </style>
 </head>
+
 <body>
+
 <header class="topbar">
   <a class="brand" href="index.html" aria-label="Truck Finder home">TRUCK <span>FINDER</span></a>
+
   <nav aria-label="Main navigation">
     <a href="index.html">Home</a>
     <a href="truck-cranes.html">Truck Cranes</a>
@@ -31,18 +73,187 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
     <a href="aerial-work-platforms.html">Aerial Work Platforms</a>
     <a href="special-vehicles.html">Special Vehicles</a>
   </nav>
+
   <a class="wa-top" href="index.html#contact">Contact Us</a>
 </header>
+
 <main>
-  <div class="crumb"><a href="index.html">Home</a> &nbsp;›&nbsp; Aerial Work Platforms</div>
+  <div class="crumb">
+    <a href="index.html">Home</a> &nbsp;›&nbsp; Aerial Work Platforms
+  </div>
+
   <h1>Aerial Work Platforms</h1>
-  <p class="intro">Used aerial work platforms from China. Truck Finder helps international buyers source used commercial vehicles from China.</p>
+
+  <p class="intro">
+    Used aerial work platforms from China. Truck Finder helps international buyers source used commercial vehicles from China.
+  </p>
+
   <section class="empty">
-    <h2>Looking for a aerial work platform?</h2>
-    <p>Browse our used aerial work platforms. Contact Truck Finder for current stock, specifications, photos and export details. Current vehicle listings can be added to this page as your inventory is prepared.</p>
-    <a class="cta" href="index.html#contact">Request Vehicle Information&nbsp; →</a>
+    <h2>Looking for an aerial work platform?</h2>
+
+    <p>
+      Browse our used aerial work platforms. Contact Truck Finder for current stock,
+      specifications, photos and export details. Current vehicle listings can be
+      added to this page as your inventory is prepared.
+    </p>
+
+    <button class="cta" type="button" id="openInquiry">
+      Request Vehicle Information&nbsp; →
+    </button>
   </section>
 </main>
-<footer>TRUCK FINDER · Find Your Right Truck. · Used Commercial Vehicles from China</footer>
+
+<footer>
+  TRUCK FINDER · Find Your Right Truck. · Used Commercial Vehicles from China
+</footer>
+
+<!-- General aerial work platform inquiry modal -->
+<div class="modal" id="inquiryModal" role="dialog" aria-modal="true" aria-labelledby="inquiryTitle">
+  <div class="modal-content">
+
+    <button class="close-btn" type="button" id="closeInquiry" aria-label="Close">&times;</button>
+
+    <h2 id="inquiryTitle">Aerial Work Platform Inquiry</h2>
+
+    <p class="modal-intro">
+      Tell us what kind of aerial work platform you are looking for.
+      Our team will contact you with available options.
+    </p>
+
+    <div class="vehicle-info">
+      Vehicle Category: Aerial Work Platforms
+    </div>
+
+    <form id="inquiryForm" onsubmit="return false;">
+
+      <div class="form-group">
+        <label for="name">Your Name *</label>
+        <input type="text" id="name" name="name" required placeholder="Enter your name">
+      </div>
+
+      <div class="form-group">
+        <label for="country">Country *</label>
+        <input type="text" id="country" name="country" required placeholder="Your country">
+      </div>
+
+      <div class="form-group">
+        <label for="whatsapp">WhatsApp</label>
+        <input type="text" id="whatsapp" name="whatsapp" placeholder="Country code + phone number">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Your email address">
+      </div>
+
+      <div class="form-group">
+        <label for="message">What kind of aerial work platform do you need?</label>
+        <textarea id="message" name="message" placeholder="Please describe the platform type, working height, brand, budget or other requirements."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitInquiry">
+        Submit Inquiry
+      </button>
+
+      <div class="form-status" id="formStatus" aria-live="polite"></div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+const WORKER_URL = "https://gotruckfinder-inquiry.cscvehicle.workers.dev/";
+
+const modal = document.getElementById("inquiryModal");
+const openBtn = document.getElementById("openInquiry");
+const closeBtn = document.getElementById("closeInquiry");
+const inquiryForm = document.getElementById("inquiryForm");
+const submitBtn = document.getElementById("submitInquiry");
+const formStatus = document.getElementById("formStatus");
+
+function openInquiry() {
+  inquiryForm.reset();
+  formStatus.textContent = "";
+  formStatus.className = "form-status";
+  modal.classList.add("show");
+}
+
+function closeInquiry() {
+  modal.classList.remove("show");
+}
+
+openBtn.addEventListener("click", openInquiry);
+closeBtn.addEventListener("click", closeInquiry);
+
+modal.addEventListener("click", function(event) {
+  if (event.target === modal) {
+    closeInquiry();
+  }
+});
+
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    closeInquiry();
+  }
+});
+
+inquiryForm.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const country = document.getElementById("country").value.trim();
+  const whatsapp = document.getElementById("whatsapp").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const message = document.getElementById("message").value.trim();
+
+  if (!name || !country) {
+    formStatus.textContent = "Please enter your name and country.";
+    formStatus.className = "form-status error";
+    return;
+  }
+
+  const inquiryData = {
+    name: name,
+    country: country,
+    whatsapp: whatsapp,
+    email: email,
+    message: message,
+    vehicleId: "AERIAL-WORK-PLATFORMS",
+    vehicleTitle: "Aerial Work Platforms - General Inquiry"
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
+  formStatus.textContent = "";
+  formStatus.className = "form-status";
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(inquiryData)
+    });
+
+    if (!response.ok) {
+      throw new Error("Submission failed");
+    }
+
+    formStatus.textContent = "Thank you! Your inquiry has been submitted successfully.";
+    formStatus.className = "form-status success";
+    inquiryForm.reset();
+
+  } catch (error) {
+    formStatus.textContent = "Sorry, your inquiry could not be submitted. Please try again or contact us via WhatsApp.";
+    formStatus.className = "form-status error";
+
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit Inquiry";
+  }
+});
+</script>
+
 </body>
 </html>
