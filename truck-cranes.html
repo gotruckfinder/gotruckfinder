@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Browse used truck-mounted cranes for sale from China. Find the right truck crane with Truck Finder.">
+
 <title>Used Truck Cranes for Sale | TRUCK FINDER</title>
 
 <style>
@@ -82,7 +83,6 @@ h1{
   color:#526581;
   margin-bottom:30px;
 }
-
 .section-title{
   font-size:25px;
   margin:35px 0 18px;
@@ -110,6 +110,12 @@ h1{
   font-size:14px;
 }
 
+.inventory-count{
+  margin-bottom:18px;
+  color:#71809a;
+  font-size:14px;
+}
+
 .vehicle-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -126,17 +132,29 @@ h1{
   transform:translateY(-4px);
   box-shadow:0 8px 24px #063b9115;
 }
+
+/* Image and vehicle information link */
+.vehicle-link{
+  display:block;
+  cursor:pointer;
+}
+.vehicle-link:focus-visible{
+  outline:3px solid var(--yellow);
+  outline-offset:-3px;
+}
 .vehicle-image{
   width:100%;
   height:215px;
   object-fit:cover;
   background:#edf3fb;
+  display:block;
 }
 .vehicle-info{padding:18px}
 .vehicle-info h3{
   font-size:19px;
   margin:0 0 13px;
   color:var(--deep);
+  line-height:1.45;
 }
 .vehicle-specs{
   font-size:14px;
@@ -144,27 +162,55 @@ h1{
   color:#526581;
 }
 .vehicle-specs strong{color:#163c78}
-.vehicle-buttons{
+
+.price-row{
   display:flex;
-  gap:9px;
-  margin-top:16px;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid #edf1f7;
+}
+.price-label{
+  font-size:13px;
+  color:#71809a;
+}
+.price-value{
+  color:var(--blue);
+  font-size:16px;
+  font-weight:bold;
+  text-align:right;
+}
+
+.details-hint{
+  display:block;
+  margin-top:13px;
+  padding:12px;
+  background:#edf4ff;
+  color:var(--blue);
+  text-align:center;
+  border-radius:7px;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.vehicle-buttons{
+  padding:0 18px 18px;
 }
 .vehicle-buttons a{
-  flex:1;
+  display:block;
   text-align:center;
-  padding:11px 7px;
+  padding:12px 8px;
   border-radius:7px;
   font-size:13px;
   font-weight:bold;
-}
-.details-btn{
-  background:#edf4ff;
-  color:var(--blue);
 }
 .inquiry-btn{
   background:#20b84c;
   color:white;
 }
+.inquiry-btn:hover{background:#159b3c}
 
 .empty{
   background:var(--light);
@@ -251,8 +297,14 @@ Contact Truck Finder for vehicle details, photos and export quotations.
   <h3>Filter Vehicles</h3>
 
   <div class="filters">
-    <select id="brandFilter">
-      <option value="">All Brands</option>
+
+    <select id="priceFilter">
+      <option value="">All Prices</option>
+      <option value="10000-20000">$10,000 - $20,000</option>
+      <option value="20000-35000">$20,000 - $35,000</option>
+      <option value="35000-50000">$35,000 - $50,000</option>
+      <option value="50000+">Above $50,000</option>
+      <option value="request">Price on Request</option>
     </select>
 
     <select id="tonFilter">
@@ -262,10 +314,13 @@ Contact Truck Finder for vehicle details, photos and export quotations.
     <select id="yearFilter">
       <option value="">All Years</option>
     </select>
+
   </div>
 </div>
 
 <h2 class="section-title">Available Truck Cranes</h2>
+
+<div id="vehicleCount" class="inventory-count"></div>
 
 <div id="vehicleGrid" class="vehicle-grid"></div>
 
@@ -287,59 +342,148 @@ Contact Truck Finder for vehicle details, photos and export quotations.
 TRUCK FINDER · Find Your Right Truck.
 · Used Commercial Vehicles from China
 </footer>
+
 <script src="vehicles.js"></script>
+
 <script>
 
-// Vehicle inventory
-// Add real vehicle information here.
-// Do not publish a vehicle until its information and photos are verified.
+// Central vehicle inventory
+const allVehicles = window.TRUCK_FINDER_VEHICLES || [];
 
-const vehicles = window.TRUCK_FINDER_VEHICLES || [];
+// Show available truck cranes only
+const vehicles = allVehicles.filter(v =>
+  v.category === "Truck Cranes" &&
+  v.status === "Available"
+);
 
-// Render vehicle listings
 const grid = document.getElementById("vehicleGrid");
 const emptyMessage = document.getElementById("emptyMessage");
+const vehicleCount = document.getElementById("vehicleCount");
 
-const brandFilter = document.getElementById("brandFilter");
+const priceFilter = document.getElementById("priceFilter");
 const tonFilter = document.getElementById("tonFilter");
 const yearFilter = document.getElementById("yearFilter");
 
+// Populate lifting capacity and year filters
 function addOptions(select, values){
-  [...new Set(values)].filter(Boolean).sort().forEach(value=>{
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = value;
-    select.appendChild(option);
-  });
+  [...new Set(values)]
+    .filter(Boolean)
+    .sort()
+    .forEach(value=>{
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
 }
 
-addOptions(brandFilter,vehicles.map(v=>v.brand));
 addOptions(tonFilter,vehicles.map(v=>v.ton));
 addOptions(yearFilter,vehicles.map(v=>String(v.year)));
 
+// Price filter
+function matchesPrice(vehicle, selected){
+
+  if(!selected) return true;
+
+  const price = vehicle.priceUSD;
+
+  if(selected === "request"){
+    return price === null || price === undefined || price === "";
+  }
+
+  if(price === null || price === undefined || price === ""){
+    return false;
+  }
+
+  const amount = Number(price);
+
+  if(!Number.isFinite(amount)) return false;
+
+  if(selected === "10000-20000"){
+    return amount >= 10000 && amount < 20000;
+  }
+
+  if(selected === "20000-35000"){
+    return amount >= 20000 && amount < 35000;
+  }
+
+  if(selected === "35000-50000"){
+    return amount >= 35000 && amount < 50000;
+  }
+
+  if(selected === "50000+"){
+    return amount >= 50000;
+  }
+
+  return true;
+}
+
+// Display price
+function getPrice(vehicle){
+
+  if(vehicle.priceUSD !== null &&
+     vehicle.priceUSD !== undefined &&
+     vehicle.priceUSD !== "" &&
+     Number.isFinite(Number(vehicle.priceUSD))){
+
+    return new Intl.NumberFormat("en-US",{
+      style:"currency",
+      currency:"USD",
+      maximumFractionDigits:0
+    }).format(Number(vehicle.priceUSD));
+
+  }
+
+  return vehicle.price || "Price on Request";
+}
+
+// Render vehicle listings
 function renderVehicles(){
 
   const filtered = vehicles.filter(v=>
-    (!brandFilter.value || v.brand===brandFilter.value) &&
+    matchesPrice(v,priceFilter.value) &&
     (!tonFilter.value || v.ton===tonFilter.value) &&
     (!yearFilter.value || String(v.year)===yearFilter.value)
   );
 
   grid.innerHTML="";
 
-  emptyMessage.style.display=filtered.length ? "none":"block";
+  vehicleCount.textContent =
+    filtered.length + " vehicle(s) found";
+
+  emptyMessage.style.display =
+    filtered.length ? "none":"block";
 
   filtered.forEach(v=>{
+
+    const detailsUrl =
+      "vehicle-details.html?id=" +
+      encodeURIComponent(v.id);
 
     const card=document.createElement("article");
     card.className="vehicle-card";
 
+    // Clickable vehicle area
+    const vehicleLink=document.createElement("a");
+    vehicleLink.className="vehicle-link";
+    vehicleLink.href=detailsUrl;
+    vehicleLink.setAttribute(
+      "aria-label",
+      "View details of " + v.title
+    );
+
+    // Vehicle image
     const image=document.createElement("img");
     image.className="vehicle-image";
-    image.src=v.image;
-    image.alt=v.title;
+    image.src=v.image || "";
+    image.alt=v.title || "Used truck crane";
     image.loading="lazy";
 
+    image.onerror=function(){
+      this.style.display="none";
+    };
+
+    // Vehicle information
     const info=document.createElement("div");
     info.className="vehicle-info";
 
@@ -356,38 +500,78 @@ function renderVehicles(){
       ["Crane Brand",v.crane],
       ["Location",v.location]
     ].forEach(([label,value])=>{
+
+      if(!value) return;
+
       const line=document.createElement("div");
+
       const strong=document.createElement("strong");
       strong.textContent=label+": ";
-      line.append(strong,document.createTextNode(value || "Contact us"));
+
+      line.append(
+        strong,
+        document.createTextNode(value)
+      );
+
       specs.appendChild(line);
+
     });
 
+    // Price
+    const priceRow=document.createElement("div");
+    priceRow.className="price-row";
+
+    const priceLabel=document.createElement("span");
+    priceLabel.className="price-label";
+    priceLabel.textContent="Price";
+
+    const priceValue=document.createElement("strong");
+    priceValue.className="price-value";
+    priceValue.textContent=getPrice(v);
+
+    priceRow.append(priceLabel,priceValue);
+
+    // Details link hint
+    const detailsHint=document.createElement("span");
+    detailsHint.className="details-hint";
+    detailsHint.textContent="View Details →";
+
+    vehicleLink.append(
+      image,
+      info
+    );
+
+    info.append(
+      title,
+      specs,
+      priceRow,
+      detailsHint
+    );
+
+    // Separate inquiry button
     const buttons=document.createElement("div");
     buttons.className="vehicle-buttons";
-
-    const details=document.createElement("a");
-    details.className="details-btn";
-    details.href="vehicle-details.html?id="+encodeURIComponent(v.id);
-    details.textContent="View Details";
 
     const inquiry=document.createElement("a");
     inquiry.className="inquiry-btn";
     inquiry.href="index.html#contact";
     inquiry.textContent="Inquire Now";
 
-    buttons.append(details,inquiry);
-    info.append(title,specs,buttons);
-    card.append(image,info);
+    buttons.appendChild(inquiry);
+
+    card.append(vehicleLink,buttons);
     grid.appendChild(card);
 
   });
+
 }
 
-[brandFilter,tonFilter,yearFilter].forEach(select=>{
+// Filter events
+[priceFilter,tonFilter,yearFilter].forEach(select=>{
   select.addEventListener("change",renderVehicles);
 });
 
+// Initial display
 renderVehicles();
 
 </script>
