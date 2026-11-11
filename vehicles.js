@@ -76,7 +76,7 @@ window.TRUCK_FINDER_VEHICLES = [
   {
     id: "CH21530K",
     category: "Truck Cranes",
-    title: "Shacman Delong M3000 Tractor Head with 30 Ton Folding Boom Crane",
+    title: "Shacman M3000 Tractor Head with 30 Ton Folding Boom Crane",
     brand: "Shacman",
     model: "Delong M3000",
     year: "2021",
