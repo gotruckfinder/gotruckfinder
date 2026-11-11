@@ -103,6 +103,36 @@ window.TRUCK_FINDER_VEHICLES = [
       "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kside.jpg",
       "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kside1.jpg"
     ]
+  },
+
+  // Vehicle 4: YF21612-5SY
+  {
+    id: "YF21612-5SY",
+    category: "Truck Cranes",
+    title: "Liuqi Chenglong 12 Ton SANY 5-Section Boom Truck Crane",
+    brand: "Liuqi",
+    model: "Chenglong",
+    year: "2021",
+    mileage: "",
+    chassis: "Liuqi Chenglong",
+    crane: "SANY",
+    ton: "12 Ton",
+    boomLength: "18.5 m",
+    price: "$34,181",
+    priceUSD: 34181,
+    status: "Available",
+
+    description: "Liuqi Chenglong single-axle truck-mounted crane registered in June 2021. Powered by a Yuchai 200 HP six-cylinder engine and equipped with a SANY 12-ton, 5-section boom crane with an 18.5-meter reach. Features a high-speed winch, reinforced front and rear subframes with double-cross bracing, original SANY dual-chamber rear outriggers and a fifth outrigger. Fitted with a heavy-duty engineering cargo body measuring 6.6 meters, including a 1-meter extendable section. Excellent overall condition.",
+
+    image: "https://images.gotruckfinder.com/vehicles/YF21612-5SY/YF21612-5SYf-s.jpg",
+
+    images: [
+      "https://images.gotruckfinder.com/vehicles/YF21612-5SY/YF21612-5SYf-s.jpg",
+      "https://images.gotruckfinder.com/vehicles/YF21612-5SY/YF21612-5SYcontainer.jpg",
+      "https://images.gotruckfinder.com/vehicles/YF21612-5SY/YF21612-5SYdetail.jpg",
+      "https://images.gotruckfinder.com/vehicles/YF21612-5SY/YF21612-5SYfront.jpg",
+      "https://images.gotruckfinder.com/vehicles/YF21612-5SY/YF21612-5SYside.jpg"
+    ]
   }
 
 ];
