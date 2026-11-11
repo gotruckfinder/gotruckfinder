@@ -51,7 +51,6 @@ window.TRUCK_FINDER_VEHICLES = [
     crane: "XCMG",
     ton: "8 Ton",
     boomLength: "19.6 m",
-    location: "China",
     price: "$41,200",
     priceUSD: 41200,
     status: "Available",
