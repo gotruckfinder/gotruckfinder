@@ -9,6 +9,7 @@
 
 window.TRUCK_FINDER_VEHICLES = [
 
+  // Vehicle 1: Dongfeng K5
   {
     id: "TF0001",
     category: "Truck Cranes",
@@ -39,6 +40,7 @@ window.TRUCK_FINDER_VEHICLES = [
     ]
   },
 
+  // Vehicle 2: Liuqi 8 Ton
   {
     id: "YF2428XG",
     category: "Truck Cranes",
@@ -67,6 +69,40 @@ window.TRUCK_FINDER_VEHICLES = [
       "https://images.gotruckfinder.com/vehicles/YF2428XG/YF2428XGhead.jpg",
       "https://images.gotruckfinder.com/vehicles/YF2428XG/YF2428XGsidep.jpg",
       "https://images.gotruckfinder.com/vehicles/YF2428XG/YF2428XGtyle.jpg"
+    ]
+  },
+
+  // Vehicle 3: CH21530K
+  {
+    id: "CH21530K",
+    category: "Truck Cranes",
+    title: "Shaanxi Delong M3000 Tractor Head with Baosheng 30 Ton Folding Boom Crane",
+    brand: "Shaanxi Delong",
+    model: "New M3000",
+    year: "2021",
+    mileage: "35,000 km",
+    chassis: "Shaanxi Delong New M3000",
+    crane: "Baosheng",
+    ton: "30 Ton",
+    boomLength: "Approximately 19 m",
+    location: "China",
+    price: "RMB 328,000",
+    priceUSD: null,
+    status: "Available",
+
+    description: "2021 Shaanxi Delong New M3000 tractor head equipped with a Hong Kong Baosheng 30-ton folding boom crane. Powered by a Weichai WP12 430 HP National V diesel engine, paired with a Fast 12-speed transmission and a 16-ton hub-reduction rear axle. The crane features an 8-section boom with an approximately 19-meter reach, dual-section compound front outriggers and dual-chamber hydraulic rear outriggers. Mileage: 35,000 km. Very good overall condition.",
+
+    image: "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kf-s1.jpg",
+
+    images: [
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kf-s1.jpg",
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kf-s.jpg",
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kfront.jpg",
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Krear.jpg",
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Ks-r.jpg",
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Ks-r1.jpg",
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kside.jpg",
+      "https://images.gotruckfinder.com/vehicles/CH21530K/CH21530Kside1.jpg"
     ]
   }
 
