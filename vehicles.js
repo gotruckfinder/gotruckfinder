@@ -23,6 +23,7 @@ window.TRUCK_FINDER_VEHICLES = [
   boomLength: "",
   location: "",
   price: "Contact for Price",
+   priceUSD: null,
   status: "Available",
 
   description: "2024 Dongfeng K5 truck-mounted crane equipped with a Xuzhou Fuman 8-ton folding-boom crane and grapple. Powered by a Yuchai 245 HP six-cylinder engine, China VI emission standard. Features upper-control operation, a 6.6-meter cargo body and dump function. Mileage: over 20,000 km.",
