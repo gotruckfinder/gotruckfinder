@@ -386,20 +386,14 @@ nav a:nth-child(6){
 
   if (!brand || !topbar || !nav || !hero) return;
 
-  function moveBrand() {
-    if (window.matchMedia("(max-width: 700px)").matches) {
-     const logo = brand.querySelector("img");
-
-if (logo) {
-  logo.src = "https://images.gotruckfinder.com/brand/truck-finder-brand-logo.webp";
-  logo.alt = "Truck Finder";
-}
-
-hero.prepend(brand);
-    } else {
-      topbar.insertBefore(brand, nav);
-    }
+ function moveBrand() {
+  if (window.matchMedia("(max-width: 700px)").matches) {
+    brand.style.display = "none";
+  } else {
+    brand.style.display = "";
+    topbar.insertBefore(brand, nav);
   }
+}
 
   moveBrand();
   window.addEventListener("resize", moveBrand);
