@@ -41,21 +41,25 @@ footer{background:#062f78;color:#dbe8ff;padding:18px 3%;text-align:center;font-s
   text-decoration:none;
   box-shadow:0 3px 12px rgba(0,0,0,.25);
 }
-  .topbar{
-    padding:12px;
-  }
- .brand{
+ 
+.topbar{
+  padding:0;
+}
+
+.brand{
   display:flex;
   justify-content:center;
   width:100%;
   padding:10px 0;
 }
+
 .brand img{
   width:155px;
   max-width:100%;
   height:auto;
 }
- nav{
+
+nav{
   width:100%;
   display:flex;
   justify-content:center;
@@ -66,7 +70,8 @@ footer{background:#062f78;color:#dbe8ff;padding:18px 3%;text-align:center;font-s
   font-weight:800;
   background:#0646ad;
   padding:12px 8px;
-  border-radius:8px;
+  border-radius:0;
+  box-sizing:border-box;
 }
 
 nav a{
@@ -75,11 +80,13 @@ nav a{
   font-weight:800;
   text-decoration:none;
 }
-                        nav a:nth-child(3),
+
+nav a:nth-child(3),
 nav a:nth-child(5),
 nav a:nth-child(6){
   display:none;
 }
+
   .inquiry-top{
     display:none;
   }
