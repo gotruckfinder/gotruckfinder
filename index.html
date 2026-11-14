@@ -84,21 +84,24 @@ nav a:nth-child(6){
     display:none;
   }
   .hero{
-    min-height:0;
-    aspect-ratio:1536 / 420;
-    background-position:center;
-    background-size:100% auto;
-    padding:0;
-  }
-  .hero-copy{
-    max-width:92%;
-  }
-  .hero h1{
-    font-size:37px;
-  }
-  .hero p{
-    font-size:18px;
-  }
+  position:relative;
+  min-height:0;
+  aspect-ratio:auto;
+  background-image:none;
+  background-color:transparent;
+  padding:0;
+}
+
+.hero img.mobile-banner{
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain;
+}
+
+.hero-copy{
+  display:none;
+}
   
   .trustbar{
   background:#0646ad;
@@ -268,13 +271,21 @@ nav a:nth-child(6){
 </header>
   <a class="floating-call" href="tel:+8617362687151">☎ &nbsp;Call Now</a>
 <main id="home">
+
 <section class="hero">
+  <img
+    class="mobile-banner"
+    src="https://images.gotruckfinder.com/banners/mobile-banner.png"
+    alt="Truck Finder Mobile Banner"
+  >
+
   <div class="hero-copy">
     <h1>USED COMMERCIAL<span>VEHICLES FROM CHINA</span></h1>
     <p>Quality Used Trucks, Competitive Prices.<br>Reliable Export Support.</p>
     <a class="btn-yellow" href="#inventory">View Our Inventory&nbsp; →</a>
   </div>
 </section>
+
 <section class="trustbar" id="services">
   <div class="trust-item"><span class="trust-icon">♧</span><div>200+ Vehicles<small>In Stock</small></div></div>
   <div class="trust-item"><span class="trust-icon">◎</span><div>Worldwide Delivery<small>Export to 100+ Countries</small></div></div>
