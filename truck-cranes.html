@@ -398,17 +398,11 @@ Contact Truck Finder for vehicle details, photos and export quotations.
       <option value="">All Chassis Brands</option>
     </select>
 
-    <select id="craneBrandFilter">
-      <option value="">All Crane Brands</option>
-    </select>
 
     <select id="tonFilter">
       <option value="">All Lifting Capacities</option>
     </select>
 
-    <select id="yearFilter">
-      <option value="">All Years</option>
-    </select>
 
   </div>
 </div>
@@ -507,9 +501,7 @@ const vehicleCount = document.getElementById("vehicleCount");
 
 const priceFilter = document.getElementById("priceFilter");
 const chassisBrandFilter = document.getElementById("chassisBrandFilter");
-const craneBrandFilter = document.getElementById("craneBrandFilter");
 const tonFilter = document.getElementById("tonFilter");
-const yearFilter = document.getElementById("yearFilter");
 
 // Inquiry form elements
 const inquiryModal = document.getElementById("inquiryModal");
@@ -548,9 +540,7 @@ function addOptions(select, values){
 }
 
 addOptions(chassisBrandFilter,vehicles.map(getChassisBrand));
-addOptions(craneBrandFilter,vehicles.map(getCraneBrand));
 addOptions(tonFilter,vehicles.map(v=>v.ton));
-addOptions(yearFilter,vehicles.map(v=>String(v.year)));
 
 // Price filter
 function matchesPrice(vehicle, selected){
@@ -714,9 +704,7 @@ function renderVehicles(){
   const filtered = vehicles.filter(v=>
     matchesPrice(v,priceFilter.value) &&
     (!chassisBrandFilter.value || getChassisBrand(v)===chassisBrandFilter.value) &&
-    (!craneBrandFilter.value || getCraneBrand(v)===craneBrandFilter.value) &&
     (!tonFilter.value || v.ton===tonFilter.value) &&
-    (!yearFilter.value || String(v.year)===yearFilter.value)
   );
 
   grid.innerHTML="";
@@ -769,8 +757,6 @@ function renderVehicles(){
     [
       ["Chassis Brand",v.brand || v.chassis],
       ["Lifting Capacity",v.ton],
-      ["Year",v.year],
-      ["Crane Brand",v.crane],
       ["Location",v.location]
     ].forEach(([label,value])=>{
 
@@ -841,7 +827,7 @@ function renderVehicles(){
 }
 
 // Filter events
-[priceFilter,chassisBrandFilter,craneBrandFilter,tonFilter,yearFilter].forEach(select=>{
+[priceFilter,chassisBrandFilter,tonFilter].forEach(select=>{
   select.addEventListener("change",renderVehicles);
 });
 
