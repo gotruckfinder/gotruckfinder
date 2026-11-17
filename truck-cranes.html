@@ -522,10 +522,6 @@ function getChassisBrand(vehicle){
   return chassis ? chassis.split(/\s+/)[0] : "";
 }
 
-function getCraneBrand(vehicle){
-  return String(vehicle.crane || "").trim();
-}
-
 // Populate all filter options from available truck-crane inventory.
 function addOptions(select, values){
   [...new Set(values)]
@@ -704,7 +700,7 @@ function renderVehicles(){
   const filtered = vehicles.filter(v=>
     matchesPrice(v,priceFilter.value) &&
     (!chassisBrandFilter.value || getChassisBrand(v)===chassisBrandFilter.value) &&
-    (!tonFilter.value || v.ton===tonFilter.value) &&
+    (!tonFilter.value || v.ton===tonFilter.value)
   );
 
   grid.innerHTML="";
