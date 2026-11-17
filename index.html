@@ -234,32 +234,34 @@ nav a:nth-child(6){
 #inquiry-status.status-success{color:#16733b}
 #inquiry-status.status-error{color:#b42318}
 @media(max-width:600px){.form-grid{grid-template-columns:1fr}.full-width{grid-column:auto}.inquiry-form{margin-top:20px}}
-/* Mobile hero brand layout */
-/* Mobile hero and brand layout */
-{
 
-  .topbar .brand{
-    display:block !important;
-    width:auto;
-    padding:0;
-  }
-
+/* Unified Truck Finder hero banner */
 .topbar .brand{
-    display:none !important;
-  }
-
-  .hero{
-    aspect-ratio:1536 / 335;
-    min-height:0;
-    background-size:100% 100%;
-    background-position:center;
-  }
-
-  .hero .brand{
-    display:none !important;
-  }
+  display:none !important;
 }
+
+.hero{
+  display:block !important;
+  width:100% !important;
+  min-height:0 !important;
+  height:auto !important;
+  aspect-ratio:auto !important;
+  padding:0 !important;
+  background:none !important;
 }
+
+.hero img.mobile-banner{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:auto !important;
+  object-fit:contain !important;
+}
+
+.hero-copy{
+  display:none !important;
+}
+
 </style>
 </head>
 <body>
