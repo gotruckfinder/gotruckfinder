@@ -549,24 +549,30 @@ function matchesPrice(vehicle, selected){
     return false;
   }
 
-  const amount = Number(price);
+  const minPrice = Number(price);
+  const maxPrice = vehicle.priceMaxUSD === null ||
+                   vehicle.priceMaxUSD === undefined ||
+                   vehicle.priceMaxUSD === ""
+    ? minPrice
+    : Number(vehicle.priceMaxUSD);
 
-  if(!Number.isFinite(amount)) return false;
+  if(!Number.isFinite(minPrice) || !Number.isFinite(maxPrice)) return false;
 
+  // A vehicle matches a price band when its advertised range overlaps that band.
   if(selected === "10000-20000"){
-    return amount >= 10000 && amount < 20000;
+    return maxPrice >= 10000 && minPrice < 20000;
   }
 
   if(selected === "20000-35000"){
-    return amount >= 20000 && amount < 35000;
+    return maxPrice >= 20000 && minPrice < 35000;
   }
 
   if(selected === "35000-50000"){
-    return amount >= 35000 && amount < 50000;
+    return maxPrice >= 35000 && minPrice < 50000;
   }
 
   if(selected === "50000+"){
-    return amount >= 50000;
+    return maxPrice >= 50000;
   }
 
   return true;
@@ -580,12 +586,23 @@ function getPrice(vehicle){
      vehicle.priceUSD !== "" &&
      Number.isFinite(Number(vehicle.priceUSD))){
 
-    return new Intl.NumberFormat("en-US",{
+    const formatter = new Intl.NumberFormat("en-US",{
       style:"currency",
       currency:"USD",
       maximumFractionDigits:0
-    }).format(Number(vehicle.priceUSD));
+    });
+    const minPrice = Number(vehicle.priceUSD);
+    const maxPrice = vehicle.priceMaxUSD === null ||
+                     vehicle.priceMaxUSD === undefined ||
+                     vehicle.priceMaxUSD === ""
+      ? minPrice
+      : Number(vehicle.priceMaxUSD);
 
+    if(Number.isFinite(maxPrice) && maxPrice > minPrice){
+      return formatter.format(minPrice) + "–" + formatter.format(maxPrice);
+    }
+
+    return formatter.format(minPrice);
   }
 
   return vehicle.price || "Price on Request";
