@@ -527,7 +527,7 @@ function getChassisBrand(vehicle){
   if(explicitBrand) return explicitBrand;
 
   const chassis = String(vehicle.chassis || "").trim();
-  return chassis ? chassis.split(/\\s+/)[0] : "";
+  return chassis ? chassis.split(/\s+/)[0] : "";
 }
 
 function getCraneBrand(vehicle){
