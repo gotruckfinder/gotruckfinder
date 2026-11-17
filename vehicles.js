@@ -134,5 +134,38 @@ window.TRUCK_FINDER_VEHICLES = [
       "https://images.gotruckfinder.com/vehicles/YF21612-5SY/YF21612-5SYside.jpg"
     ]
   }
+,
+
+  // Vehicle 5: YF208SXG14-5318
+  {
+    id: "YF208SXG14-5318",
+    category: "Truck Cranes",
+    title: "Shacman M3000 8×4 Truck Crane with XCMG 14 Ton 5-Section Boom",
+    brand: "Shacman",
+    model: "Delong New M3000",
+    year: "2020",
+    mileage: "",
+    chassis: "Shacman Delong New M3000 8×4",
+    crane: "XCMG",
+    ton: "14 Ton",
+    boomLength: "19.6 m",
+    location: "",
+    price: "USD 35,000–50,000",
+    priceUSD: 35000,
+    priceMaxUSD: 50000,
+    status: "Available",
+
+    description: "Shacman Delong New M3000 8×4 truck-mounted crane, registered in August 2020. Powered by a Weichai 340 HP engine and equipped with a 16-ton maintenance-free hub-reduction rear axle. The superstructure features an XCMG 14-ton crane with a 5-section boom and a maximum reach of 19.6 meters. Equipped with dual-section compound front outriggers, original XCMG dual-chamber hydraulic rear outriggers, an 8.4-meter engineering cargo body, a reinforced through subframe and a water sprinkler system. Comprehensive insurance included. Excellent overall condition.",
+
+    image: "https://images.gotruckfinder.com/vehicles/Truck%20Crane/YF208SXG14-5318/YF208SXG14-5318/YF208SXG14-5318%20front.jpg",
+
+    images: [
+      "https://images.gotruckfinder.com/vehicles/Truck%20Crane/YF208SXG14-5318/YF208SXG14-5318/YF208SXG14-5318%20front.jpg",
+      "https://images.gotruckfinder.com/vehicles/Truck%20Crane/YF208SXG14-5318/YF208SXG14-5318/YF208SXG14-5318%20rear.jpg",
+      "https://images.gotruckfinder.com/vehicles/Truck%20Crane/YF208SXG14-5318/YF208SXG14-5318/YF208SXG14-5318%20side-f.jpg",
+      "https://images.gotruckfinder.com/vehicles/Truck%20Crane/YF208SXG14-5318/YF208SXG14-5318/YF208SXG14-5318%20side-l.jpg",
+      "https://images.gotruckfinder.com/vehicles/Truck%20Crane/YF208SXG14-5318/YF208SXG14-5318/YF208SXG14-5318%20side.jpg"
+    ]
+  }
 
 ];
