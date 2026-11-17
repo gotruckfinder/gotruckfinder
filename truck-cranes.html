@@ -515,7 +515,7 @@ function getChassisBrand(vehicle){
   const explicitBrand = String(vehicle.brand || "").trim();
   if(explicitBrand) return explicitBrand;
   const chassis = String(vehicle.chassis || "").trim();
-  return chassis ? chassis.split(/\\s+/)[0] : "";
+  return chassis ? chassis.split(/\s+/)[0] : "";
 }
 
 // Populate chassis brand and lifting-capacity filters.
