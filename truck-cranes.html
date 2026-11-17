@@ -394,6 +394,14 @@ Contact Truck Finder for vehicle details, photos and export quotations.
       <option value="request">Price on Request</option>
     </select>
 
+    <select id="chassisBrandFilter">
+      <option value="">All Chassis Brands</option>
+    </select>
+
+    <select id="craneBrandFilter">
+      <option value="">All Crane Brands</option>
+    </select>
+
     <select id="tonFilter">
       <option value="">All Lifting Capacities</option>
     </select>
@@ -498,6 +506,8 @@ const emptyMessage = document.getElementById("emptyMessage");
 const vehicleCount = document.getElementById("vehicleCount");
 
 const priceFilter = document.getElementById("priceFilter");
+const chassisBrandFilter = document.getElementById("chassisBrandFilter");
+const craneBrandFilter = document.getElementById("craneBrandFilter");
 const tonFilter = document.getElementById("tonFilter");
 const yearFilter = document.getElementById("yearFilter");
 
@@ -510,7 +520,21 @@ const selectedVehicleInfo = document.getElementById("selectedVehicleInfo");
 
 let selectedVehicle = null;
 
-// Populate lifting capacity and year filters
+// Resolve chassis brand: use the explicit brand field first,
+// then fall back to the first word in the chassis description.
+function getChassisBrand(vehicle){
+  const explicitBrand = String(vehicle.brand || "").trim();
+  if(explicitBrand) return explicitBrand;
+
+  const chassis = String(vehicle.chassis || "").trim();
+  return chassis ? chassis.split(/\\s+/)[0] : "";
+}
+
+function getCraneBrand(vehicle){
+  return String(vehicle.crane || "").trim();
+}
+
+// Populate all filter options from available truck-crane inventory.
 function addOptions(select, values){
   [...new Set(values)]
     .filter(Boolean)
@@ -523,6 +547,8 @@ function addOptions(select, values){
     });
 }
 
+addOptions(chassisBrandFilter,vehicles.map(getChassisBrand));
+addOptions(craneBrandFilter,vehicles.map(getCraneBrand));
 addOptions(tonFilter,vehicles.map(v=>v.ton));
 addOptions(yearFilter,vehicles.map(v=>String(v.year)));
 
@@ -687,6 +713,8 @@ function renderVehicles(){
 
   const filtered = vehicles.filter(v=>
     matchesPrice(v,priceFilter.value) &&
+    (!chassisBrandFilter.value || getChassisBrand(v)===chassisBrandFilter.value) &&
+    (!craneBrandFilter.value || getCraneBrand(v)===craneBrandFilter.value) &&
     (!tonFilter.value || v.ton===tonFilter.value) &&
     (!yearFilter.value || String(v.year)===yearFilter.value)
   );
@@ -739,7 +767,7 @@ function renderVehicles(){
     specs.className="vehicle-specs";
 
     [
-      ["Brand",v.brand],
+      ["Chassis Brand",getChassisBrand(v) || v.chassis],
       ["Lifting Capacity",v.ton],
       ["Year",v.year],
       ["Crane Brand",v.crane],
@@ -813,7 +841,7 @@ function renderVehicles(){
 }
 
 // Filter events
-[priceFilter,tonFilter,yearFilter].forEach(select=>{
+[priceFilter,chassisBrandFilter,craneBrandFilter,tonFilter,yearFilter].forEach(select=>{
   select.addEventListener("change",renderVehicles);
 });
 
