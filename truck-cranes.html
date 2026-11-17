@@ -767,7 +767,7 @@ function renderVehicles(){
     specs.className="vehicle-specs";
 
     [
-      ["Chassis Brand",getChassisBrand(v) || v.chassis],
+      ["Chassis Brand",v.brand || v.chassis],
       ["Lifting Capacity",v.ton],
       ["Year",v.year],
       ["Crane Brand",v.crane],
