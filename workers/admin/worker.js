@@ -1151,8 +1151,6 @@ document.getElementById("loginForm").addEventListener("submit",async function(e)
 </script>
 </body>
 </html>`;
-const IMAGE_BASE = "https://dev-images.gotruckfinder.com/";
-const IMAGE_PREFIX = "test/vehicles/";
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
 const MAX_FILES = 20;
 const SESSION_HOURS = 8;
@@ -1259,22 +1257,22 @@ function validId(value) {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
-function imageKeyFromUrl(value) {
+function imageKeyFromUrl(value, imageBase, imagePrefix) {
   try {
     const url = new URL(value);
-    const expectedOrigin = new URL(IMAGE_BASE).origin;
+    const expectedOrigin = new URL(imageBase).origin;
 
     if (url.origin !== expectedOrigin) return null;
 
     const key = decodeURIComponent(url.pathname.slice(1));
-    return key.startsWith(IMAGE_PREFIX) ? key : null;
+    return key.startsWith(imagePrefix) ? key : null;
   } catch {
     return null;
   }
 }
 
-function makeImageUrl(key) {
-  return IMAGE_BASE + key.split("/").map(encodeURIComponent).join("/");
+function makeImageUrl(key, imageBase) {
+  return imageBase + key.split("/").map(encodeURIComponent).join("/");
 }
 
 function validOrigin(request) {
@@ -1295,6 +1293,9 @@ async function readJson(request) {
 }
 
 async function handle(request, env) {
+  const IMAGE_BASE = env.IMAGE_BASE || "https://dev-images.gotruckfinder.com/";
+  const IMAGE_PREFIX = env.IMAGE_PREFIX || "test/vehicles/";
+  const DB = env.DB || env.TEST_DB;
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "") || "/";
   const method = request.method.toUpperCase();
@@ -1315,7 +1316,7 @@ async function handle(request, env) {
 
   if (path === "/" && method === "GET") {
     return json({
-      service: "Truck Finder Development API",
+      service: "Truck Finder Admin API",
       status: "online",
       version: "1.1"
     });
@@ -1325,7 +1326,7 @@ async function handle(request, env) {
     return json({ error: "Not found" }, 404);
   }
 
-  if (!env.TEST_DB || !env.BUCKET || !env.ADMIN_TOKEN) {
+  if (!DB || !env.BUCKET || !env.ADMIN_TOKEN) {
     return json({ error: "Server configuration incomplete" }, 500);
   }
 
@@ -1362,7 +1363,7 @@ async function handle(request, env) {
     return json({ error: "Unauthorized" }, 401);
   }
 
-  const db = env.TEST_DB;
+  const db = DB;
   const bucket = env.BUCKET;
 
   // Check login session
@@ -1586,7 +1587,7 @@ if (isImagesRoute && imageId !== null && method === "PATCH") {
         `${IMAGE_PREFIX}${vehicle.vehicle_code}/`;
 
       if (!imageKey.startsWith(expectedPrefix)) {
-        return json({ error: "Image is outside the development vehicle folder" }, 400);
+        return json({ error: "Image is outside the expected vehicle folder" }, 400);
       }
 
       // Delete the R2 object first
@@ -1669,14 +1670,14 @@ const result = await db.prepare(
    VALUES (?, ?, ?, ?)`
 ).bind(
   id,
-  makeImageUrl(key),
+  makeImageUrl(key, IMAGE_BASE),
   order === 0 ? 1 : 0,
   order
 ).run();
 
 uploadedRows.push({
   id: result.meta.last_row_id,
-  image_url: makeImageUrl(key),
+  image_url: makeImageUrl(key, IMAGE_BASE),
   file_name: file.name,
   is_main: order === 0,
   sort_order: order
@@ -1760,7 +1761,7 @@ order++;
       ]);
 
       for (const image of images.results || []) {
-        const key = imageKeyFromUrl(image.image_url);
+        const key = imageKeyFromUrl(image.image_url, IMAGE_BASE, IMAGE_PREFIX);
         const expectedVehiclePrefix =
           `${IMAGE_PREFIX}${vehicle.vehicle_code}/`;
 
@@ -1831,7 +1832,7 @@ order++;
         "DELETE FROM vehicle_images WHERE id = ?"
       ).bind(imageId).run();
 
-      const key = imageKeyFromUrl(image.image_url);
+      const key = imageKeyFromUrl(image.image_url, IMAGE_BASE, IMAGE_PREFIX);
       if (key) await bucket.delete(key);
 
       if (image.is_main) {
