@@ -1400,7 +1400,26 @@ async function handle(request, env) {
     const publicVehicles = vehicles.map(vehicle => {
       const images = imagesByVehicle.get(vehicle.id) || [];
       return {
-        ...vehicle,
+        id: vehicle.vehicle_code,
+        dbId: vehicle.id,
+        category: vehicle.category,
+        title: vehicle.title,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        mileage: vehicle.mileage,
+        chassis: vehicle.brand || "",
+        crane: vehicle.crane_brand,
+        ton: vehicle.crane_capacity,
+        boomLength: vehicle.boom_length,
+        price: vehicle.price,
+        priceUSD: null,
+        location: vehicle.location,
+        engine: vehicle.engine,
+        horsepower: vehicle.horsepower,
+        specifications: vehicle.specifications,
+        description: vehicle.description,
+        status: "Available",
         image: images[0]?.image_url || "",
         images: images.map(item => item.image_url)
       };
