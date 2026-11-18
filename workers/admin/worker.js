@@ -1310,7 +1310,7 @@ async function handle(request, env) {
     }
   });
 }
-  if (method === "OPTIONS") {
+  if (method === "OPTIONS" && path !== "/api/public/vehicles") {
     return json({ error: "Preflight requests are not supported" }, 405);
   }
 
