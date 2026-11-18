@@ -12,13 +12,6 @@
   },
   "d1_databases": [
     {
-      // Retained to match the existing dashboard binding.
-      // The current development Worker code uses TEST_DB, not DB.
-      "binding": "DB",
-      "database_name": "truck-finder-db",
-      "database_id": "b8084078-697e-43e1-98d8-54e4977c9cc1"
-    },
-    {
       "binding": "TEST_DB",
       "database_name": "truck-finder-test-db",
       "database_id": "1ba54e60-b529-4d1f-a361-0a0669afe9e6"
