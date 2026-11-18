@@ -424,8 +424,11 @@ if(!vehicle){
   mainImage.className = "main-image";
   mainImage.alt = vehicle.title;
 
-  const images = Array.isArray(vehicle.images) ? vehicle.images : [];
-  const firstImage = images[0] || vehicle.image || "";
+  const images = Array.isArray(vehicle.images)
+    ? vehicle.images.filter(src => typeof src === "string" && src.trim())
+    : [];
+  const fallbackImage = typeof vehicle.image === "string" ? vehicle.image.trim() : "";
+  const firstImage = images[0] || fallbackImage;
 
   if(firstImage){
     mainImage.src = firstImage;
