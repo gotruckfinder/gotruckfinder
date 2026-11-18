@@ -524,7 +524,9 @@ if(!vehicle){
   // Back to listings
   const back = document.createElement("a");
   back.className = "back";
-  back.href = "truck-cranes.html";
+  back.href = vehicle.category === "Truck Cranes"
+    ? "truck-cranes.html"
+    : "vehicle-category.html?category=" + encodeURIComponent(vehicle.category || "");
   back.textContent = "Back to Listings";
 
   buttons.append(inquiry, email, back);
