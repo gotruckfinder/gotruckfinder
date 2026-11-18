@@ -424,7 +424,7 @@ if(!vehicle){
   mainImage.className = "main-image";
   mainImage.alt = vehicle.title;
 
-  const images = vehicle.images || [];
+  const images = Array.isArray(vehicle.images) ? vehicle.images : [];
   const firstImage = images[0] || vehicle.image || "";
 
   if(firstImage){
