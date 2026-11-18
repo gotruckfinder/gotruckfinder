@@ -1322,6 +1322,117 @@ async function handle(request, env) {
     });
   }
 
+
+  // Public, read-only vehicle feed for the production website.
+  // Uses the production D1 binding and does not require an admin session.
+  if (path === "/api/public/vehicles") {
+    const origin = request.headers.get("Origin") || "";
+    const isProductionOrigin =
+      origin === "https://gotruckfinder.com" ||
+      origin === "https://www.gotruckfinder.com";
+    const isPagesPreviewOrigin =
+      origin === "https://gotruckfinder.pages.dev" ||
+      /^https:\/\/[a-z0-9-]+\.gotruckfinder\.pages\.dev$/i.test(origin);
+
+    if (origin && !isProductionOrigin && !isPagesPreviewOrigin) {
+      return json({ error: "Origin not allowed" }, 403);
+    }
+
+    const corsHeaders = origin
+      ? { "Access-Control-Allow-Origin": origin, "Vary": "Origin" }
+      : {};
+
+    if (method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          ...corsHeaders,
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Max-Age": "86400"
+        }
+      });
+    }
+
+    if (method !== "GET") {
+      return json({ error: "Method not allowed" }, 405, corsHeaders);
+    }
+
+    const publicDb = env.DB;
+    if (!publicDb) {
+      return json({ error: "Database unavailable" }, 503, corsHeaders);
+    }
+
+    const result = await publicDb.prepare(
+      `SELECT id, vehicle_code, title, category, brand, model, year,
+              mileage, price, location, engine, horsepower, crane_brand,
+              crane_capacity, boom_type, boom_length, specifications,
+              description, status, is_published
+       FROM vehicles
+       WHERE is_published = 1 AND status = 'available'
+       ORDER BY updated_at DESC, id DESC
+       LIMIT 500`
+    ).all();
+
+    const vehicles = result.results || [];
+    const ids = vehicles.map(vehicle => vehicle.id);
+    let imageRows = [];
+
+    if (ids.length) {
+      const placeholders = ids.map(() => "?").join(",");
+      const imagesResult = await publicDb.prepare(
+        `SELECT id, vehicle_id, image_url, is_main, sort_order
+         FROM vehicle_images
+         WHERE vehicle_id IN (${placeholders})
+         ORDER BY is_main DESC, sort_order ASC, id ASC`
+      ).bind(...ids).all();
+      imageRows = imagesResult.results || [];
+    }
+
+    const imagesByVehicle = new Map();
+    for (const image of imageRows) {
+      if (!imagesByVehicle.has(image.vehicle_id)) {
+        imagesByVehicle.set(image.vehicle_id, []);
+      }
+      imagesByVehicle.get(image.vehicle_id).push(image);
+    }
+
+    const publicVehicles = vehicles.map(vehicle => {
+      const images = imagesByVehicle.get(vehicle.id) || [];
+      return {
+        id: vehicle.vehicle_code,
+        dbId: vehicle.id,
+        category: vehicle.category,
+        title: vehicle.title,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        mileage: vehicle.mileage,
+        chassis: vehicle.brand || "",
+        crane: vehicle.crane_brand,
+        ton: vehicle.crane_capacity,
+        boomLength: vehicle.boom_length,
+        price: vehicle.price,
+        priceUSD: vehicle.price === null || vehicle.price === undefined || vehicle.price === ""
+          ? null
+          : (Number.isFinite(Number(vehicle.price)) ? Number(vehicle.price) : null),
+        location: vehicle.location,
+        engine: vehicle.engine,
+        horsepower: vehicle.horsepower,
+        specifications: vehicle.specifications,
+        description: vehicle.description,
+        status: "Available",
+        image: images[0]?.image_url || "",
+        images: images.map(item => item.image_url)
+      };
+    });
+
+    return json({
+      vehicles: publicVehicles,
+      total: publicVehicles.length
+    }, 200, corsHeaders);
+  }
+
   if (!path.startsWith("/api/")) {
     return json({ error: "Not found" }, 404);
   }
