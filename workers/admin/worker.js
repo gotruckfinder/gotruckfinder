@@ -1413,7 +1413,9 @@ async function handle(request, env) {
         ton: vehicle.crane_capacity,
         boomLength: vehicle.boom_length,
         price: vehicle.price,
-        priceUSD: null,
+        priceUSD: vehicle.price === null || vehicle.price === undefined || vehicle.price === ""
+          ? null
+          : (Number.isFinite(Number(vehicle.price)) ? Number(vehicle.price) : null),
         location: vehicle.location,
         engine: vehicle.engine,
         horsepower: vehicle.horsepower,
