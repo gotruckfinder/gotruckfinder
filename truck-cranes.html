@@ -746,7 +746,7 @@ function renderVehicles(){
     // Vehicle image
     const image=document.createElement("img");
     image.className="vehicle-image";
-    image.src=v.image || "";
+    image.src=v.image || (Array.isArray(v.images) ? v.images[0] : "") || "";
     image.alt=v.title || "Used truck crane";
     image.loading="lazy";
 
