@@ -9,7 +9,7 @@
     ? window.TRUCK_FINDER_VEHICLES.slice()
     : [];
 
-  const endpoint = "https://gotruckfinder.cscvehicle.workers.dev/api/public/vehicles";
+  const endpoint = "https://gotruckfinder-dev.cscvehicle.workers.dev/api/public/vehicles";
 
   window.TRUCK_FINDER_VEHICLES_READY = fetch(endpoint, {
     method: "GET",
