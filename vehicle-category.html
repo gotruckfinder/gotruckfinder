@@ -71,6 +71,15 @@ h1{font-size:30px;margin:0 0 8px}
   }
 
   function priceText(vehicle){
+    const usd = Number(vehicle.priceUSD);
+    if(vehicle.priceUSD !== null && vehicle.priceUSD !== undefined &&
+       vehicle.priceUSD !== "" && Number.isFinite(usd) && usd > 0){
+      return new Intl.NumberFormat("en-US",{
+        style:"currency",
+        currency:"USD",
+        maximumFractionDigits:0
+      }).format(usd);
+    }
     const value = String(vehicle.price || "").trim();
     return value || "Price on Request";
   }
