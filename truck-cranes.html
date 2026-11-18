@@ -481,11 +481,12 @@ TRUCK FINDER · Find Your Right Truck.
 </footer>
 
 <script src="vehicles.js"></script>
+<script src="public-vehicles.js"></script>
 
 <script>
 
 // Central vehicle inventory
-const allVehicles = window.TRUCK_FINDER_VEHICLES || [];
+window.TRUCK_FINDER_VEHICLES_READY.then(function (allVehicles) {
 
 // Show available truck cranes only
 const vehicles = allVehicles.filter(v =>
@@ -844,6 +845,8 @@ function renderVehicles(){
 
 // Initial display
 renderVehicles();
+
+});
 
 </script>
 
