@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Dedicated configuration for the development admin Worker.
+  "name": "gotruckfinder-dev",
+  "main": "workers/admin/worker.js",
+  "compatibility_date": "2026-11-10",
+  // Preserve non-secret variables managed in the Cloudflare dashboard.
+  // Encrypted secrets such as ADMIN_TOKEN are preserved by Wrangler deployments.
+  "keep_vars": true,
+  "secrets": {
+    "required": ["ADMIN_TOKEN"]
+  },
+  "d1_databases": [
+    {
+      // Retained to match the existing dashboard binding.
+      // The current development Worker code uses TEST_DB, not DB.
+      "binding": "DB",
+      "database_name": "truck-finder-db",
+      "database_id": "b8084078-697e-43e1-98d8-54e4977c9cc1"
+    },
+    {
+      "binding": "TEST_DB",
+      "database_name": "truck-finder-test-db",
+      "database_id": "1ba54e60-b529-4d1f-a361-0a0669afe9e6"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "gotruckfinder-assets-dev"
+    }
+  ]
+}
