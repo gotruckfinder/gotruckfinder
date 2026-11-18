@@ -357,10 +357,9 @@ const vehicleId = params.get("id");
 // Vehicle inventory
 window.TRUCK_FINDER_VEHICLES_READY.then(function (allVehicles) {
 
-// Show available truck cranes only
+// Details can open any published, available vehicle category.
 const vehicles = allVehicles.filter(v =>
-  v.category === "Truck Cranes" &&
-  v.status === "Available"
+  String(v.status || "").toLowerCase() === "available"
 );
 
 const vehicle = vehicles.find(v => v.id === vehicleId);
