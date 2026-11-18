@@ -471,7 +471,19 @@ if(!vehicle){
   addSpec(right,"Lifting Capacity",vehicle.ton);
   addSpec(right,"Boom Length",vehicle.boomLength);
   addSpec(right,"Location",vehicle.location);
-  addSpec(right,"Price",vehicle.price || "Contact for Price");
+  const detailPriceUSD = Number(vehicle.priceUSD);
+  const detailPrice = vehicle.priceUSD !== null &&
+    vehicle.priceUSD !== undefined &&
+    vehicle.priceUSD !== "" &&
+    Number.isFinite(detailPriceUSD) &&
+    detailPriceUSD > 0
+      ? new Intl.NumberFormat("en-US",{
+          style:"currency",
+          currency:"USD",
+          maximumFractionDigits:0
+        }).format(detailPriceUSD)
+      : (vehicle.price || "Contact for Price");
+  addSpec(right,"Price",detailPrice);
   addSpec(right,"Status",vehicle.status);
 
   const description = document.createElement("div");
