@@ -1876,3 +1876,5 @@ export default {
     }
   }
 };
+
+// GitHub-to-Cloudflare auto-deploy verification: 2026-11-18.
