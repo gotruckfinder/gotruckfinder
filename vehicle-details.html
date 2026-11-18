@@ -347,6 +347,7 @@ TRUCK FINDER · Find Your Right Truck.
 </footer>
 
 <script src="vehicles.js"></script>
+<script src="public-vehicles.js"></script>
 
 <script>
 
@@ -354,7 +355,7 @@ const params = new URLSearchParams(window.location.search);
 const vehicleId = params.get("id");
 
 // Vehicle inventory
-const allVehicles = window.TRUCK_FINDER_VEHICLES || [];
+window.TRUCK_FINDER_VEHICLES_READY.then(function (allVehicles) {
 
 // Show available truck cranes only
 const vehicles = allVehicles.filter(v =>
@@ -612,6 +613,8 @@ inquiryForm.addEventListener("submit", async (event) => {
     inquirySubmit.textContent = "Submit Inquiry";
     inquirySubmit.disabled = false;
   }
+});
+
 });
 
 </script>
