@@ -1262,7 +1262,9 @@ function validId(value) {
 function imageKeyFromUrl(value) {
   try {
     const url = new URL(value);
-    if (url.hostname !== "images.gotruckfinder.com") return null;
+    const expectedOrigin = new URL(IMAGE_BASE).origin;
+
+    if (url.origin !== expectedOrigin) return null;
 
     const key = decodeURIComponent(url.pathname.slice(1));
     return key.startsWith(IMAGE_PREFIX) ? key : null;
@@ -1663,12 +1665,11 @@ uploadedKeys.push(key);
 
 const result = await db.prepare(
   `INSERT INTO vehicle_images
-   (vehicle_id, image_url, file_name, is_main, sort_order)
-   VALUES (?, ?, ?, ?, ?)`
+   (vehicle_id, image_url, is_main, sort_order)
+   VALUES (?, ?, ?, ?)`
 ).bind(
   id,
   makeImageUrl(key),
-  file.name,
   order === 0 ? 1 : 0,
   order
 ).run();
@@ -1760,7 +1761,12 @@ order++;
 
       for (const image of images.results || []) {
         const key = imageKeyFromUrl(image.image_url);
-        if (key) await bucket.delete(key);
+        const expectedVehiclePrefix =
+          `${IMAGE_PREFIX}${vehicle.vehicle_code}/`;
+
+        if (key && key.startsWith(expectedVehiclePrefix)) {
+          await bucket.delete(key);
+        }
       }
 
       return json({ success: true, deleted_id: id });
