@@ -501,13 +501,14 @@ nav a:nth-child(6){
 </script>
 
 <script src="vehicles.js"></script>
+<script src="public-vehicles.js"></script>
 <script>
 (function () {
   const form = document.getElementById("home-search-form");
   const input = document.getElementById("home-search-input");
   const results = document.getElementById("home-search-results");
   if (!form || !input || !results) return;
-  const inventory = Array.isArray(window.TRUCK_FINDER_VEHICLES) ? window.TRUCK_FINDER_VEHICLES : [];
+  window.TRUCK_FINDER_VEHICLES_READY.then(function (inventory) {
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char];
@@ -552,6 +553,7 @@ nav a:nth-child(6){
   }
   input.addEventListener("input",function(){ if(input.value.trim()) renderResults(input.value,false); else results.hidden=true; });
   form.addEventListener("submit",function(event){ event.preventDefault(); renderResults(input.value,true); });
+  });
 })();
 </script>
 
