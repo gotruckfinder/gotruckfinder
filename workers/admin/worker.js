@@ -260,7 +260,7 @@ th{color:#777}
   <textarea name="meta_description" rows="3" maxlength="160" placeholder="Write a clear summary of this specific vehicle, ideally around 150–160 characters."></textarea>
 </div>
 <div>
-  <label>Vehicle Image ALT Text</label>
+  <label>Main Image ALT Text</label>
   <input name="image_alt" maxlength="180" placeholder="Describe the main vehicle image accurately">
 </div>
 
