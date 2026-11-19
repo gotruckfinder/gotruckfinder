@@ -458,8 +458,17 @@ async function editVehicle(id) {
           // Display original image file name
           const fileName = document.createElement("div");
 
-          fileName.textContent =
-            image.file_name || "Existing image";
+          let displayName = image.file_name || "";
+          if (!displayName && image.image_url) {
+            try {
+              displayName = decodeURIComponent(
+                new URL(image.image_url).pathname.split("/").pop()
+              );
+            } catch {
+              displayName = "Existing image";
+            }
+          }
+          fileName.textContent = displayName || "Existing image";
 
           fileName.style.cssText =
             "font-size:12px;color:#555;margin-top:6px;word-break:break-all;";
@@ -1275,6 +1284,53 @@ function makeImageUrl(key, imageBase) {
   return imageBase + key.split("/").map(encodeURIComponent).join("/");
 }
 
+function safeImageBaseName(fileName) {
+  const rawName = String(fileName || "vehicle-image").split(/[\\/]/).pop() || "vehicle-image";
+  const dot = rawName.lastIndexOf(".");
+  const rawBase = dot > 0 ? rawName.slice(0, dot) : rawName;
+  const safe = rawBase
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 100);
+  return safe || "vehicle-image";
+}
+
+function safeImageExtension(fileName, mimeType) {
+  const allowed = {
+    "image/jpeg": ["jpg", "jpeg"],
+    "image/png": ["png"],
+    "image/webp": ["webp"],
+    "image/avif": ["avif"]
+  };
+  const match = String(fileName || "").match(/\.([a-z0-9]+)$/i);
+  const originalExtension = match ? match[1].toLowerCase() : "";
+  return allowed[mimeType]?.includes(originalExtension)
+    ? originalExtension
+    : IMAGE_TYPES[mimeType];
+}
+
+async function putUniqueImage(bucket, vehicleCode, file, bytes, extension) {
+  const baseName = safeImageBaseName(file.name);
+  for (let index = 1; index <= 1000; index++) {
+    const suffix = index === 1 ? "" : "-" + index;
+    const key = IMAGE_PREFIX + vehicleCode + "/" + baseName + suffix + "." + extension;
+
+    // Conditional write: an existing R2 object is never overwritten.
+    const stored = await bucket.put(key, bytes, {
+      onlyIf: { etagDoesNotMatch: "*" },
+      httpMetadata: { contentType: file.type }
+    });
+
+    if (stored) return key;
+  }
+
+  throw new Error("Unable to allocate a unique image filename");
+}
+
+
 function validOrigin(request) {
   const origin = request.headers.get("Origin");
   if (!origin) return true;
@@ -1762,36 +1818,37 @@ if (isImagesRoute && imageId !== null && method === "PATCH") {
 
       try {
         for (const file of files) {
-          const extension = IMAGE_TYPES[file.type];
-          const key =
-            `${IMAGE_PREFIX}${vehicle.vehicle_code}/${crypto.randomUUID()}.${extension}`;
+          const extension = safeImageExtension(file.name, file.type);
+          const key = await putUniqueImage(
+            bucket,
+            vehicle.vehicle_code,
+            file,
+            await file.arrayBuffer(),
+            extension
+          );
 
+          uploadedKeys.push(key);
+          const fileName = key.split("/").pop();
 
+          const result = await db.prepare(
+            `INSERT INTO vehicle_images
+             (vehicle_id, image_url, file_name, is_main, sort_order)
+             VALUES (?, ?, ?, ?, ?)`
+          ).bind(
+            id,
+            makeImageUrl(key, IMAGE_BASE),
+            fileName,
+            order === 0 ? 1 : 0,
+            order
+          ).run();
 
-          await bucket.put(key, await file.arrayBuffer(), {
-  httpMetadata: { contentType: file.type }
-});
-
-uploadedKeys.push(key);
-
-const result = await db.prepare(
-  `INSERT INTO vehicle_images
-   (vehicle_id, image_url, is_main, sort_order)
-   VALUES (?, ?, ?, ?)`
-).bind(
-  id,
-  makeImageUrl(key, IMAGE_BASE),
-  order === 0 ? 1 : 0,
-  order
-).run();
-
-uploadedRows.push({
-  id: result.meta.last_row_id,
-  image_url: makeImageUrl(key, IMAGE_BASE),
-  file_name: file.name,
-  is_main: order === 0,
-  sort_order: order
-});
+          uploadedRows.push({
+            id: result.meta.last_row_id,
+            image_url: makeImageUrl(key, IMAGE_BASE),
+            file_name: fileName,
+            is_main: order === 0,
+            sort_order: order
+          });
 
 order++;
 
