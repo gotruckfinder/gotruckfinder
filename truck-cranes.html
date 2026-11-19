@@ -603,7 +603,7 @@ function getPrice(vehicle){
       : Number(vehicle.priceMaxUSD);
 
     if(Number.isFinite(maxPrice) && maxPrice > minPrice){
-      return formatter.format(minPrice) + "鈥? + formatter.format(maxPrice);
+      return formatter.format(minPrice) + " - " + formatter.format(maxPrice);
     }
 
     return formatter.format(minPrice);
@@ -808,7 +808,7 @@ function renderVehicles(){
     // Details link hint
     const detailsHint=document.createElement("span");
     detailsHint.className="details-hint";
-    detailsHint.textContent="View Details 鈫?;
+    detailsHint.textContent="View Details &rarr;";
 
     vehicleLink.append(image,info);
 
