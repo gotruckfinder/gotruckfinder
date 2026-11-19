@@ -239,6 +239,31 @@ th{color:#777}
   <textarea name="description" rows="5"></textarea>
 </div>
 
+<h3>SEO Settings</h3>
+<p style="font-size:13px;color:#777;margin-top:0;">These fields apply to dynamic vehicles managed in the database. Leave SEO Title or Meta Description blank to use automatic defaults.</p>
+<div class="form-grid">
+  <div>
+    <label>SEO Title (Meta Title)</label>
+    <input name="seo_title" maxlength="70" placeholder="e.g. Used Dongfeng K5 8 Ton Truck Crane for Sale">
+  </div>
+  <div>
+    <label>Focus Keyword</label>
+    <input name="focus_keyword" maxlength="120" placeholder="e.g. Used Dongfeng Truck Crane">
+  </div>
+  <div>
+    <label>Related Keywords (comma-separated)</label>
+    <input name="related_keywords" maxlength="500" placeholder="used truck crane, 8 ton crane truck, XCMG crane">
+  </div>
+</div>
+<div>
+  <label>Meta Description</label>
+  <textarea name="meta_description" rows="3" maxlength="160" placeholder="Write a clear summary of this specific vehicle, ideally around 150–160 characters."></textarea>
+</div>
+<div>
+  <label>Vehicle Image ALT Text</label>
+  <input name="image_alt" maxlength="180" placeholder="Describe the main vehicle image accurately">
+</div>
+
 <h3>Vehicle Images</h3>
 
 <div style="margin-bottom:15px;">
@@ -458,8 +483,17 @@ async function editVehicle(id) {
           // Display original image file name
           const fileName = document.createElement("div");
 
-          fileName.textContent =
-            image.file_name || "Existing image";
+          let displayName = image.file_name || "";
+          if (!displayName && image.image_url) {
+            try {
+              displayName = decodeURIComponent(
+                new URL(image.image_url).pathname.split("/").pop()
+              );
+            } catch {
+              displayName = "Existing image";
+            }
+          }
+          fileName.textContent = displayName || "Existing image";
 
           fileName.style.cssText =
             "font-size:12px;color:#555;margin-top:6px;word-break:break-all;";
@@ -1151,6 +1185,8 @@ document.getElementById("loginForm").addEventListener("submit",async function(e)
 </script>
 </body>
 </html>`;
+const IMAGE_BASE = "https://dev-images.gotruckfinder.com/";
+const IMAGE_PREFIX = "test/vehicles/";
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
 const MAX_FILES = 20;
 const SESSION_HOURS = 8;
@@ -1167,7 +1203,8 @@ const VEHICLE_FIELDS = [
   "year", "mileage", "price", "location", "engine",
   "horsepower", "crane_brand", "crane_capacity",
   "boom_type", "boom_length", "specifications",
-  "description", "status", "is_published"
+  "description", "seo_title", "meta_description", "focus_keyword",
+  "related_keywords", "image_alt", "status", "is_published"
 ];
 
 const STATUSES = ["draft", "available", "reserved", "sold"];
@@ -1257,22 +1294,68 @@ function validId(value) {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
-function imageKeyFromUrl(value, imageBase, imagePrefix) {
+function imageKeyFromUrl(value) {
   try {
     const url = new URL(value);
-    const expectedOrigin = new URL(imageBase).origin;
+    const expectedOrigin = new URL(IMAGE_BASE).origin;
 
     if (url.origin !== expectedOrigin) return null;
 
     const key = decodeURIComponent(url.pathname.slice(1));
-    return key.startsWith(imagePrefix) ? key : null;
+    return key.startsWith(IMAGE_PREFIX) ? key : null;
   } catch {
     return null;
   }
 }
 
-function makeImageUrl(key, imageBase) {
-  return imageBase + key.split("/").map(encodeURIComponent).join("/");
+function makeImageUrl(key) {
+  return IMAGE_BASE + key.split("/").map(encodeURIComponent).join("/");
+}
+
+function safeImageBaseName(fileName) {
+  const rawName = String(fileName || "vehicle-image").split(/[\\/]/).pop() || "vehicle-image";
+  const dot = rawName.lastIndexOf(".");
+  const rawBase = dot > 0 ? rawName.slice(0, dot) : rawName;
+  const safe = rawBase
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 100);
+  return safe || "vehicle-image";
+}
+
+function safeImageExtension(fileName, mimeType) {
+  const allowed = {
+    "image/jpeg": ["jpg", "jpeg"],
+    "image/png": ["png"],
+    "image/webp": ["webp"],
+    "image/avif": ["avif"]
+  };
+  const match = String(fileName || "").match(/\.([a-z0-9]+)$/i);
+  const originalExtension = match ? match[1].toLowerCase() : "";
+  return allowed[mimeType]?.includes(originalExtension)
+    ? originalExtension
+    : IMAGE_TYPES[mimeType];
+}
+
+async function putUniqueImage(bucket, vehicleCode, file, bytes, extension) {
+  const baseName = safeImageBaseName(file.name);
+  for (let index = 1; index <= 1000; index++) {
+    const suffix = index === 1 ? "" : "-" + index;
+    const key = IMAGE_PREFIX + vehicleCode + "/" + baseName + suffix + "." + extension;
+
+    // Conditional write: an existing R2 object is never overwritten.
+    const stored = await bucket.put(key, bytes, {
+      onlyIf: { etagDoesNotMatch: "*" },
+      httpMetadata: { contentType: file.type }
+    });
+
+    if (stored) return key;
+  }
+
+  throw new Error("Unable to allocate a unique image filename");
 }
 
 function validOrigin(request) {
@@ -1293,53 +1376,27 @@ async function readJson(request) {
 }
 
 async function handle(request, env) {
-  const IMAGE_BASE = env.IMAGE_BASE || "https://dev-images.gotruckfinder.com/";
-  const IMAGE_PREFIX = env.IMAGE_PREFIX || "test/vehicles/";
-  const DB = env.DB || env.TEST_DB;
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "") || "/";
   const method = request.method.toUpperCase();
-  if (path === "/admin" && method === "GET") {
-  const authenticated = await verifySession(request, env.ADMIN_TOKEN);
-  const page = authenticated ? DASHBOARD_HTML : ADMIN_HTML;
 
-  return new Response(page, {
-    headers: {
-      "Content-Type": "text/html; charset=UTF-8",
-      "Cache-Control": "no-store"
-    }
-  });
-}
-  if (method === "OPTIONS" && path !== "/api/public/vehicles") {
-    return json({ error: "Preflight requests are not supported" }, 405);
-  }
-
-  if (path === "/" && method === "GET") {
-    return json({
-      service: "Truck Finder Admin API",
-      status: "online",
-      version: "1.1"
-    });
-  }
-
-  // Public, read-only vehicle feed for the Truck Finder website.
-  // Only explicitly published vehicles with available status are exposed.
+  // Public, read-only vehicle feed for the development website.
+  // This route uses TEST_DB only and does not require an admin session.
   if (path === "/api/public/vehicles") {
     const origin = request.headers.get("Origin") || "";
-    const allowedOrigins = new Set([
-      "https://gotruckfinder.com",
-      "https://www.gotruckfinder.com"
-    ]);
+    const isProductionOrigin =
+      origin === "https://gotruckfinder.com" ||
+      origin === "https://www.gotruckfinder.com";
+    const isPagesPreviewOrigin =
+      origin === "https://gotruckfinder.pages.dev" ||
+      /^https:\/\/[a-z0-9-]+\.gotruckfinder\.pages\.dev$/i.test(origin);
 
-    if (origin && !allowedOrigins.has(origin)) {
+    if (origin && !isProductionOrigin && !isPagesPreviewOrigin) {
       return json({ error: "Origin not allowed" }, 403);
     }
 
-    const corsHeaders = origin && allowedOrigins.has(origin)
-      ? {
-          "Access-Control-Allow-Origin": origin,
-          "Vary": "Origin"
-        }
+    const corsHeaders = origin
+      ? { "Access-Control-Allow-Origin": origin, "Vary": "Origin" }
       : {};
 
     if (method === "OPTIONS") {
@@ -1358,16 +1415,17 @@ async function handle(request, env) {
       return json({ error: "Method not allowed" }, 405, corsHeaders);
     }
 
-    if (!DB) {
+    const publicDb = env.TEST_DB;
+    if (!publicDb) {
       return json({ error: "Database unavailable" }, 503, corsHeaders);
     }
 
-    const publicDb = DB;
     const result = await publicDb.prepare(
       `SELECT id, vehicle_code, title, category, brand, model, year,
               mileage, price, location, engine, horsepower, crane_brand,
               crane_capacity, boom_type, boom_length, specifications,
-              description, status, is_published
+              description, seo_title, meta_description, focus_keyword,
+              related_keywords, image_alt, status, is_published
        FROM vehicles
        WHERE is_published = 1 AND status = 'available'
        ORDER BY updated_at DESC, id DESC
@@ -1421,6 +1479,11 @@ async function handle(request, env) {
         horsepower: vehicle.horsepower,
         specifications: vehicle.specifications,
         description: vehicle.description,
+        seoTitle: vehicle.seo_title || "",
+        metaDescription: vehicle.meta_description || "",
+        focusKeyword: vehicle.focus_keyword || "",
+        relatedKeywords: vehicle.related_keywords || "",
+        imageAlt: vehicle.image_alt || "",
         status: "Available",
         image: images[0]?.image_url || "",
         images: images.map(item => item.image_url)
@@ -1433,11 +1496,34 @@ async function handle(request, env) {
     }, 200, corsHeaders);
   }
 
+  if (path === "/admin" && method === "GET") {
+  const authenticated = await verifySession(request, env.ADMIN_TOKEN);
+  const page = authenticated ? DASHBOARD_HTML : ADMIN_HTML;
+
+  return new Response(page, {
+    headers: {
+      "Content-Type": "text/html; charset=UTF-8",
+      "Cache-Control": "no-store"
+    }
+  });
+}
+  if (method === "OPTIONS") {
+    return json({ error: "Preflight requests are not supported" }, 405);
+  }
+
+  if (path === "/" && method === "GET") {
+    return json({
+      service: "Truck Finder Development API",
+      status: "online",
+      version: "1.1"
+    });
+  }
+
   if (!path.startsWith("/api/")) {
     return json({ error: "Not found" }, 404);
   }
 
-  if (!DB || !env.BUCKET || !env.ADMIN_TOKEN) {
+  if (!env.TEST_DB || !env.BUCKET || !env.ADMIN_TOKEN) {
     return json({ error: "Server configuration incomplete" }, 500);
   }
 
@@ -1474,7 +1560,7 @@ async function handle(request, env) {
     return json({ error: "Unauthorized" }, 401);
   }
 
-  const db = DB;
+  const db = env.TEST_DB;
   const bucket = env.BUCKET;
 
   // Check login session
@@ -1698,7 +1784,7 @@ if (isImagesRoute && imageId !== null && method === "PATCH") {
         `${IMAGE_PREFIX}${vehicle.vehicle_code}/`;
 
       if (!imageKey.startsWith(expectedPrefix)) {
-        return json({ error: "Image is outside the expected vehicle folder" }, 400);
+        return json({ error: "Image is outside the development vehicle folder" }, 400);
       }
 
       // Delete the R2 object first
@@ -1763,17 +1849,16 @@ if (isImagesRoute && imageId !== null && method === "PATCH") {
 
       try {
         for (const file of files) {
-          const extension = IMAGE_TYPES[file.type];
-          const key =
-            `${IMAGE_PREFIX}${vehicle.vehicle_code}/${crypto.randomUUID()}.${extension}`;
+          const extension = safeImageExtension(file.name, file.type);
+          const key = await putUniqueImage(
+            bucket,
+            vehicle.vehicle_code,
+            file,
+            await file.arrayBuffer(),
+            extension
+          );
 
-
-
-          await bucket.put(key, await file.arrayBuffer(), {
-  httpMetadata: { contentType: file.type }
-});
-
-uploadedKeys.push(key);
+          uploadedKeys.push(key);
 
 const result = await db.prepare(
   `INSERT INTO vehicle_images
@@ -1781,15 +1866,15 @@ const result = await db.prepare(
    VALUES (?, ?, ?, ?)`
 ).bind(
   id,
-  makeImageUrl(key, IMAGE_BASE),
+  makeImageUrl(key),
   order === 0 ? 1 : 0,
   order
 ).run();
 
 uploadedRows.push({
   id: result.meta.last_row_id,
-  image_url: makeImageUrl(key, IMAGE_BASE),
-  file_name: file.name,
+  image_url: makeImageUrl(key),
+  file_name: key.split("/").pop(),
   is_main: order === 0,
   sort_order: order
 });
@@ -1872,7 +1957,7 @@ order++;
       ]);
 
       for (const image of images.results || []) {
-        const key = imageKeyFromUrl(image.image_url, IMAGE_BASE, IMAGE_PREFIX);
+        const key = imageKeyFromUrl(image.image_url);
         const expectedVehiclePrefix =
           `${IMAGE_PREFIX}${vehicle.vehicle_code}/`;
 
@@ -1943,7 +2028,7 @@ order++;
         "DELETE FROM vehicle_images WHERE id = ?"
       ).bind(imageId).run();
 
-      const key = imageKeyFromUrl(image.image_url, IMAGE_BASE, IMAGE_PREFIX);
+      const key = imageKeyFromUrl(image.image_url);
       if (key) await bucket.delete(key);
 
       if (image.is_main) {
