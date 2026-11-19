@@ -1318,7 +1318,7 @@ async function putUniqueImage(bucket, vehicleCode, file, bytes, extension) {
   const baseName = safeImageBaseName(file.name);
   for (let index = 1; index <= 1000; index++) {
     const suffix = index === 1 ? "" : "-" + index;
-    const key = \`\${IMAGE_PREFIX}\${vehicleCode}/\${baseName}\${suffix}.\${extension}\`;
+    const key = IMAGE_PREFIX + vehicleCode + "/" + baseName + suffix + "." + extension;
 
     // Conditional write: an existing R2 object is never overwritten.
     const stored = await bucket.put(key, bytes, {
