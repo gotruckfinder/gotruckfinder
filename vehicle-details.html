@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -259,6 +259,7 @@ footer{
   .inquiry-panel{padding:24px 20px}
 }
 </style>
+  <script src="seo.js" defer></script>
 </head>
 
 <body>
@@ -287,8 +288,8 @@ footer{
 <main>
 
 <div class="crumb">
-  <a href="index.html">Home</a> ›
-  <a href="truck-cranes.html">Vehicles</a> › Details
+  <a href="index.html">Home</a> 鈥?
+  <a href="truck-cranes.html">Vehicles</a> 鈥?Details
 </div>
 
 <div id="vehicleContent"></div>
@@ -342,13 +343,16 @@ footer{
 </main>
 
 <footer>
-TRUCK FINDER · Find Your Right Truck.
-· Used Commercial Vehicles from China
+TRUCK FINDER 路 Find Your Right Truck.
+路 Used Commercial Vehicles from China
 </footer>
 
 <script src="vehicles.js"></script>
 
+<script src="public-vehicles.js"></script>
 <script>
+window.TRUCK_FINDER_VEHICLES_READY.then(function () {
+
 
 const params = new URLSearchParams(window.location.search);
 const vehicleId = params.get("id");
@@ -358,11 +362,10 @@ const allVehicles = window.TRUCK_FINDER_VEHICLES || [];
 
 // Show available truck cranes only
 const vehicles = allVehicles.filter(v =>
-  v.category === "Truck Cranes" &&
   v.status === "Available"
 );
 
-const vehicle = vehicles.find(v => v.id === vehicleId);
+const vehicle = allVehicles.find(v => String(v.id) === String(vehicleId));
 
 const container = document.getElementById("vehicleContent");
 
@@ -407,7 +410,16 @@ if(!vehicle){
 }else{
 
   document.title = vehicle.title + " | TRUCK FINDER";
+  const seoTitle = vehicle.seoTitle || (vehicle.title + " | TRUCK FINDER");
+  const seoDescription = vehicle.metaDescription || vehicle.description ||
+    "Explore this used commercial vehicle from China. Contact Truck Finder for details and an export quotation."; 
+  const seoImage = vehicle.image || (Array.isArray(vehicle.images) ? vehicle.images[0] : "") || "";
+  const seoImageAlt = vehicle.imageAlt || vehicle.title || "Truck Finder vehicle";
 
+  document.title = seoTitle;
+  if (typeof window.applyTruckFinderSEO === "function") {
+    window.applyTruckFinderSEO({ title: seoTitle, description: seoDescription, image: seoImage, imageAlt: seoImageAlt });
+  }
   const title = document.createElement("h1");
   title.textContent = vehicle.title;
 
@@ -422,7 +434,7 @@ if(!vehicle){
 
   const mainImage = document.createElement("img");
   mainImage.className = "main-image";
-  mainImage.alt = vehicle.title;
+  mainImage.alt = seoImageAlt;
 
   const images = vehicle.images || [];
   const firstImage = images[0] || vehicle.image || "";
@@ -441,7 +453,7 @@ if(!vehicle){
   images.forEach(src=>{
     const img = document.createElement("img");
     img.src = src;
-    img.alt = vehicle.title;
+    img.alt = seoImageAlt;
     img.loading = "lazy";
 
     img.addEventListener("click",()=>{
@@ -524,7 +536,11 @@ if(!vehicle){
   // Back to listings
   const back = document.createElement("a");
   back.className = "back";
-  back.href = "truck-cranes.html";
+  const categoryListingPages = {
+    "Truck Cranes": "truck-cranes.html",
+    "Aerial Work Platforms": "aerial-work-platforms.html"
+  };
+  back.href = categoryListingPages[vehicle.category] || "index.html";
   back.textContent = "Back to Listings";
 
   buttons.append(inquiry, email, back);
@@ -614,7 +630,11 @@ inquiryForm.addEventListener("submit", async (event) => {
   }
 });
 
+
+});
 </script>
 
 </body>
 </html>
+
+
