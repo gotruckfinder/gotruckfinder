@@ -366,6 +366,26 @@ const vehicle = vehicles.find(v => v.id === vehicleId);
 
 const container = document.getElementById("vehicleContent");
 
+function setMetaDescription(value){
+  let tag = document.querySelector('meta[name="description"]');
+  if(!tag){
+    tag = document.createElement("meta");
+    tag.name = "description";
+    document.head.appendChild(tag);
+  }
+  tag.content = value;
+}
+
+function setOpenGraph(property, value){
+  let tag = document.querySelector('meta[property="' + property + '"]');
+  if(!tag){
+    tag = document.createElement("meta");
+    tag.setAttribute("property", property);
+    document.head.appendChild(tag);
+  }
+  tag.content = value;
+}
+
 function addSpec(parent,label,value){
   if(value === undefined || value === null || value === "") return;
 
@@ -406,7 +426,31 @@ if(!vehicle){
 
 }else{
 
-  document.title = vehicle.title + " | TRUCK FINDER";
+  const isDatabaseVehicle =
+    vehicle.dbId !== undefined && vehicle.dbId !== null;
+
+  if(isDatabaseVehicle){
+    const seoTitle = String(vehicle.seoTitle || "").trim() ||
+      (vehicle.title + " | TRUCK FINDER");
+    const plainDescription = String(vehicle.description || "")
+      .replace(/\\s+/g, " ")
+      .trim();
+    const seoDescription = String(vehicle.metaDescription || "").trim() ||
+      plainDescription.slice(0, 155) ||
+      ("View specifications, photos and export details for " + vehicle.title + ".");
+
+    document.title = seoTitle;
+    setMetaDescription(seoDescription);
+    setOpenGraph("og:title", seoTitle);
+    setOpenGraph("og:description", seoDescription);
+    setOpenGraph("og:type", "product");
+    if(vehicle.image){
+      setOpenGraph("og:image", vehicle.image);
+    }
+  }else{
+    // Keep legacy static-product metadata unchanged.
+    document.title = vehicle.title + " | TRUCK FINDER";
+  }
 
   const title = document.createElement("h1");
   title.textContent = vehicle.title;
@@ -422,7 +466,9 @@ if(!vehicle){
 
   const mainImage = document.createElement("img");
   mainImage.className = "main-image";
-  mainImage.alt = vehicle.title;
+  mainImage.alt = isDatabaseVehicle && vehicle.imageAlt
+    ? vehicle.imageAlt
+    : vehicle.title;
 
   const images = Array.isArray(vehicle.images)
     ? vehicle.images.filter(src => typeof src === "string" && src.trim())
@@ -441,10 +487,14 @@ if(!vehicle){
   const gallery = document.createElement("div");
   gallery.className = "gallery";
 
-  images.forEach(src=>{
+  images.forEach((src, index)=>{
     const img = document.createElement("img");
     img.src = src;
-    img.alt = vehicle.title;
+    img.alt = isDatabaseVehicle
+      ? (index === 0 && vehicle.imageAlt
+          ? vehicle.imageAlt
+          : vehicle.title + " - vehicle image " + (index + 1))
+      : vehicle.title;
     img.loading = "lazy";
 
     img.addEventListener("click",()=>{
