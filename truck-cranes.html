@@ -568,17 +568,8 @@ TRUCK FINDER 路 Find Your Right Truck.
 
 <script src="public-vehicles.js"></script>
 <script>
-window.TRUCK_FINDER_VEHICLES_READY.then(function () {
-
-
-// Central vehicle inventory
-const allVehicles = window.TRUCK_FINDER_VEHICLES || [];
-
-// Show available truck cranes only
-const vehicles = allVehicles.filter(v =>
-  v.category === "Truck Cranes" &&
-  v.status === "Available"
-);
+// Render the local inventory immediately; the database refresh runs in the background.
+let vehicles = [];
 
 const grid = document.getElementById("vehicleGrid");
 const emptyMessage = document.getElementById("emptyMessage");
@@ -608,8 +599,14 @@ function getChassisBrand(vehicle){
   return chassis ? chassis.split(/\s+/)[0] : "";
 }
 
-// Populate chassis brand and lifting-capacity filters.
+// Rebuild dynamic filter options while preserving the visitor's selection.
 function addOptions(select, values){
+  const previousValue = select.value;
+
+  while(select.options.length > 1){
+    select.remove(1);
+  }
+
   [...new Set(values)]
     .filter(Boolean)
     .sort()
@@ -619,10 +616,11 @@ function addOptions(select, values){
       option.textContent = value;
       select.appendChild(option);
     });
-}
 
-addOptions(chassisBrandFilter,vehicles.map(getChassisBrand));
-addOptions(tonFilter,vehicles.map(v=>v.ton));
+  select.value = [...select.options].some(option => option.value === previousValue)
+    ? previousValue
+    : "";
+}
 
 // Price filter
 function matchesPrice(vehicle, selected){
@@ -968,11 +966,29 @@ function renderVehicles(){
   });
 });
 
-// Initial display
-renderVehicles();
+// Apply an inventory snapshot and refresh the filters and cards.
+function setInventory(allVehicles){
+  vehicles = (Array.isArray(allVehicles) ? allVehicles : []).filter(v =>
+    v.category === "Truck Cranes" &&
+    v.status === "Available"
+  );
 
+  addOptions(chassisBrandFilter, vehicles.map(getChassisBrand));
+  addOptions(tonFilter, vehicles.map(v => v.ton));
 
-});
+  currentPage = 1;
+  renderVehicles();
+}
+
+// First paint uses the local inventory and does not wait for the network.
+setInventory(window.TRUCK_FINDER_VEHICLES || []);
+
+// Refresh the listing when the API completes. Failure/timeout resolves to
+// the same static inventory, so the existing cards remain available.
+if(window.TRUCK_FINDER_VEHICLES_READY &&
+   typeof window.TRUCK_FINDER_VEHICLES_READY.then === "function"){
+  window.TRUCK_FINDER_VEHICLES_READY.then(setInventory);
+}
 </script>
 
 
