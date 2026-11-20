@@ -414,9 +414,7 @@ TRUCK FINDER 路 Find Your Right Truck.
 
 <script src="public-vehicles.js"></script>
 <script>
-window.TRUCK_FINDER_VEHICLES_READY.then(function () {
-
-
+(function () {
 const params = new URLSearchParams(window.location.search);
 const vehicleId = params.get("id");
 
@@ -428,7 +426,7 @@ const vehicles = allVehicles.filter(v =>
   v.status === "Available"
 );
 
-const vehicle = allVehicles.find(v => String(v.id) === String(vehicleId));
+let vehicle = allVehicles.find(v => String(v.id) === String(vehicleId));
 
 const container = document.getElementById("vehicleContent");
 
@@ -448,6 +446,7 @@ function addSpec(parent,label,value){
   parent.appendChild(row);
 }
 
+function renderVehicle(){
 if(!vehicle){
 
   document.title = "Vehicle Not Found | TRUCK FINDER";
@@ -615,6 +614,11 @@ if(!vehicle){
 
 }
 
+
+}
+
+renderVehicle();
+
 // Inquiry form controls
 const inquiryModal = document.getElementById("inquiryModal");
 const inquiryForm = document.getElementById("inquiryForm");
@@ -693,8 +697,23 @@ inquiryForm.addEventListener("submit", async (event) => {
   }
 });
 
-
-});
+// Refresh the displayed record when the background inventory request completes.
+if(window.TRUCK_FINDER_VEHICLES_READY &&
+   typeof window.TRUCK_FINDER_VEHICLES_READY.then === "function"){
+  window.TRUCK_FINDER_VEHICLES_READY.then(function(updatedInventory){
+    if(!Array.isArray(updatedInventory)) return;
+    const refreshedVehicle = updatedInventory.find(v =>
+      String(v.id) === String(vehicleId) &&
+      String(v.status || "").toLowerCase() === "available"
+    );
+    if(refreshedVehicle){
+      vehicle = refreshedVehicle;
+      container.innerHTML = "";
+      renderVehicle();
+    }
+  });
+}
+})();
 </script>
 
 
