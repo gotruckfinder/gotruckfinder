@@ -58,24 +58,91 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
   .empty{padding:28px 16px}
   .modal-content{padding:23px 18px}
 }
+
+/* Unified responsive navigation */
+.site-header{
+  width:100%;min-height:88px;display:grid;grid-template-columns:auto minmax(0,1fr) 48px;
+  align-items:center;gap:clamp(14px,2vw,30px);padding:12px clamp(18px,3vw,48px);
+  position:relative;z-index:1000;background:linear-gradient(90deg,#fff,#eef6ff);
+  border-bottom:1px solid #dce9ff;box-sizing:border-box;
+}
+.site-header .brand{display:block;white-space:nowrap;font-size:29px;font-weight:900;letter-spacing:.4px;color:#0646ad}
+.site-header .brand span{color:#ffbd00}
+.site-header .site-nav{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-around;gap:clamp(8px,1.3vw,22px);flex-wrap:nowrap;background:transparent;padding:0;margin:0;font-size:18px;font-weight:800;white-space:nowrap}
+.site-header .site-nav>a,.site-header .nav-placeholder,.site-header .nav-products{
+  display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-width:0;
+  padding:14px 4px;color:#092b78;text-decoration:none;font:inherit;font-size:18px;font-weight:800;
+  text-align:center;border:0;border-bottom:3px solid transparent;background:transparent;cursor:pointer;
+}
+.site-header .site-nav>a:hover,.site-header .nav-products:hover,.site-header .site-nav>a:focus-visible,.site-header .nav-products:focus-visible{
+  color:#0064d8;border-bottom-color:#1685ff;outline-offset:3px;
+}
+.site-header .nav-dropdown{position:relative;display:flex;flex:1 1 auto;justify-content:center;min-width:0}
+.site-header .nav-products{width:100%;gap:7px}
+.site-header .nav-dropdown-menu{
+  display:none;position:absolute;left:0;top:100%;min-width:245px;padding:8px 0;background:#fff;
+  border:1px solid #dce9ff;border-radius:0 0 10px 10px;box-shadow:0 10px 24px rgba(9,43,120,.16);z-index:1100;
+}
+.site-header .nav-dropdown-menu a{display:block;padding:12px 18px;color:#092b78;font-size:15px;font-weight:700;white-space:nowrap;text-decoration:none}
+.site-header .nav-dropdown-menu a:hover{background:#f0f6ff;color:#0064d8}
+.site-header .nav-dropdown:hover .nav-dropdown-menu,.site-header .nav-dropdown:focus-within .nav-dropdown-menu,.site-header .nav-dropdown.products-open .nav-dropdown-menu{display:block}
+.site-header .quote-button{
+  position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  background:#0646ad;color:#fff;border-radius:8px;text-decoration:none;flex:0 0 48px;
+  box-shadow:0 2px 7px rgba(6,70,173,.18);
+}
+.site-header .quote-button:hover{background:#063b91}
+.site-header .quote-icon{font-size:24px;line-height:1}
+.site-header .quote-label{
+  position:absolute;right:0;top:calc(100% + 8px);padding:7px 10px;border-radius:5px;
+  background:#092b78;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s;
+}
+.site-header .quote-button:hover .quote-label,.site-header .quote-button:focus-visible .quote-label{opacity:1;visibility:visible}
+.site-header .nav-toggle{display:none}
+@media(max-width:900px){
+ .site-header{grid-template-columns:minmax(0,1fr) 44px 48px;gap:10px;min-height:72px;padding:10px 16px}
+ .site-header .nav-toggle{display:flex;width:44px;height:44px;align-items:center;justify-content:center;border:1px solid #cbdaf0;border-radius:7px;background:#fff;color:#0646ad;font-size:25px;cursor:pointer}
+ .site-header .site-nav{display:none;position:absolute;left:0;right:0;top:100%;width:100%;padding:10px 16px 16px;flex-direction:column;align-items:stretch;gap:0;background:#0646ad;box-shadow:0 8px 18px rgba(0,0,0,.15);white-space:normal}
+ .site-header.nav-open .site-nav{display:flex}
+ .site-header .site-nav>a,.site-header .nav-placeholder,.site-header .nav-products{
+   width:100%;min-height:46px;justify-content:flex-start;padding:12px 8px;color:#fff!important;
+   font-size:16px;text-align:left;border-bottom:1px solid rgba(255,255,255,.18)
+ }
+ .site-header .nav-dropdown{display:block;width:100%}
+ .site-header .nav-products{justify-content:space-between}
+ .site-header .nav-dropdown-menu{position:static;min-width:0;border:0;border-radius:0;box-shadow:none;padding:0 0 6px;background:#0a3f91}
+ .site-header .nav-dropdown-menu a{padding:11px 22px;color:#fff;font-size:14px}
+ .site-header .nav-dropdown-menu a:hover{background:#1456ad;color:#fff}
+ .site-header .nav-dropdown:hover .nav-dropdown-menu{display:none}
+ .site-header .nav-dropdown.products-open .nav-dropdown-menu,.site-header .nav-dropdown:focus-within .nav-dropdown-menu{display:block}
+ .site-header .quote-button{width:44px;height:44px;flex-basis:44px}
+ .site-header .quote-label{display:none}
+}
+
 </style>
   <script src="seo.js" defer></script>
 </head>
 
 <body>
 
-<header class="topbar">
-  <a class="brand" href="index.html" aria-label="Truck Finder home">TRUCK <span>FINDER</span></a>
-
-  <nav aria-label="Main navigation">
-    <a href="index.html">Home</a>
-    <a href="truck-cranes.html">Truck Cranes</a>
-    <a href="tank-trucks.html">Tank Trucks</a>
-    <a href="aerial-work-platforms.html">Aerial Work Platforms</a>
-    <a href="sanitation-trucks.html">Sanitation Trucks</a>
+<header class="site-header">
+  <a class="brand" href="index.html" aria-label="TRUCK FINDER HOME">TRUCK <span>FINDER</span></a>
+  <button class="nav-toggle" type="button" aria-label="OPEN MENU" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+  <nav class="site-nav" aria-label="MAIN NAVIGATION">
+    <a class="nav-link" href="index.html">HOME</a>
+    <div class="nav-dropdown">
+      <button class="nav-products" type="button" aria-expanded="false">PRODUCTS <span aria-hidden="true">⌄</span></button>
+      <div class="nav-dropdown-menu"><a href="truck-cranes.html">TRUCK CRANES</a>
+      <a href="aerial-work-platforms.html">AERIAL WORK PLATFORMS</a>
+      <a href="sanitation-trucks.html">SANITATION TRUCKS</a>
+      <a href="tank-trucks.html">TANK TRUCKS</a></div>
+    </div>
+    <span class="nav-placeholder" aria-disabled="true">NEWS</span>
+    <span class="nav-placeholder" aria-disabled="true">VIDEO</span>
+    <a class="nav-link" href="index.html#contact">CONTACT US</a>
   </nav>
-
-  <a class="wa-top" href="index.html#contact">Contact Us</a>
+  <a class="quote-button" href="index.html#contact" aria-label="GET A QUOTE" title="GET A QUOTE"><span class="quote-icon" aria-hidden="true">✉</span><span class="quote-label">GET A QUOTE</span></a>
 </header>
 
 <main>
@@ -253,6 +320,34 @@ inquiryForm.addEventListener("submit", async function(event) {
 });
 </script>
 
+
+<script>
+document.querySelectorAll(".site-header").forEach(function(header){
+  var menuButton=header.querySelector(".nav-toggle");
+  var productsButton=header.querySelector(".nav-products");
+  var productsMenu=header.querySelector(".nav-dropdown");
+  if(menuButton){
+    menuButton.addEventListener("click",function(){
+      var opened=header.classList.toggle("nav-open");
+      menuButton.setAttribute("aria-expanded",String(opened));
+    });
+  }
+  if(productsButton&&productsMenu){
+    productsButton.addEventListener("click",function(){
+      var opened=productsMenu.classList.toggle("products-open");
+      productsButton.setAttribute("aria-expanded",String(opened));
+    });
+  }
+  document.addEventListener("click",function(event){
+    if(!header.contains(event.target)){
+      header.classList.remove("nav-open");
+      if(menuButton)menuButton.setAttribute("aria-expanded","false");
+      if(productsMenu)productsMenu.classList.remove("products-open");
+      if(productsButton)productsButton.setAttribute("aria-expanded","false");
+    }
+  });
+});
+</script>
 </body>
 </html>
 
