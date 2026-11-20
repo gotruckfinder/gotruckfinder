@@ -1,15 +1,31 @@
-﻿(function () {
+(function () {
   "use strict";
 
   const API_URL = "https://gotruckfinder.com/api/public/vehicles";
+  const API_TIMEOUT_MS = 5000;
+
+  // Keep the local inventory available immediately. The API is an enhancement,
+  // not a prerequisite for rendering the page.
+  const staticVehicles = Array.isArray(window.TRUCK_FINDER_VEHICLES)
+    ? window.TRUCK_FINDER_VEHICLES
+    : [];
+
+  window.TRUCK_FINDER_VEHICLES = staticVehicles;
 
   window.TRUCK_FINDER_VEHICLES_READY = (async function () {
-    const staticVehicles = Array.isArray(window.TRUCK_FINDER_VEHICLES)
-      ? window.TRUCK_FINDER_VEHICLES
-      : [];
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(
+      () => controller.abort(),
+      API_TIMEOUT_MS
+    );
 
     try {
-      const response = await fetch(API_URL, { method: "GET" });
+      const response = await fetch(API_URL, {
+        method: "GET",
+        signal: controller.signal,
+        cache: "no-store"
+      });
+
       if (!response.ok) {
         throw new Error("Vehicle API HTTP " + response.status);
       }
@@ -19,29 +35,43 @@
         throw new Error("Invalid vehicle API response");
       }
 
-      const existingIds = new Set(
-        staticVehicles.map(v => String(v.id || "")).filter(Boolean)
-      );
-
-      const dynamicVehicles = data.vehicles.filter(vehicle => {
-        const id = String(vehicle.id || "");
-        return id && !existingIds.has(id);
+      // Static records are inserted first; a D1 record with the same ID
+      // replaces the static version so the database remains authoritative.
+      const inventoryById = new Map();
+      staticVehicles.forEach(vehicle => {
+        const id = String(vehicle.id || "").trim();
+        if (id) inventoryById.set(id, vehicle);
       });
 
-      window.TRUCK_FINDER_VEHICLES = staticVehicles.concat(dynamicVehicles);
+      data.vehicles.forEach(vehicle => {
+        const id = String(vehicle.id || "").trim();
+        if (id) inventoryById.set(id, vehicle);
+      });
+
+      const mergedVehicles = Array.from(inventoryById.values());
+      window.TRUCK_FINDER_VEHICLES = mergedVehicles;
 
       console.info(
-        "Truck Finder inventory loaded:",
+        "Truck Finder inventory updated:",
         staticVehicles.length,
-        "static +",
-        dynamicVehicles.length,
-        "D1 vehicles"
+        "static records +",
+        data.vehicles.length,
+        "D1 records;",
+        mergedVehicles.length,
+        "unique vehicles"
       );
-    } catch (error) {
-      window.TRUCK_FINDER_VEHICLES = staticVehicles;
-      console.error("D1 vehicle loading failed; using static inventory.", error);
-    }
 
-    return window.TRUCK_FINDER_VEHICLES;
+      return mergedVehicles;
+    } catch (error) {
+      // Keep the already-rendered static inventory if the API fails or times out.
+      window.TRUCK_FINDER_VEHICLES = staticVehicles;
+      console.warn(
+        "D1 vehicle loading unavailable; keeping static inventory.",
+        error && error.name === "AbortError" ? "Request timed out." : error
+      );
+      return staticVehicles;
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
   })();
 })();
