@@ -1,7 +1,7 @@
 ﻿(function () {
   "use strict";
 
-  const API_URL = "https://gotruckfinder.cscvehicle.workers.dev/api/public/vehicles";
+  const API_URL = "https://gotruckfinder.com/api/public/vehicles";
 
   window.TRUCK_FINDER_VEHICLES_READY = (async function () {
     const staticVehicles = Array.isArray(window.TRUCK_FINDER_VEHICLES)
