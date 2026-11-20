@@ -395,6 +395,19 @@ nav a:nth-child(6){
  .site-header .quote-label{display:none}
 }
 
+
+
+/* Homepage banner carousel: preserve each image's original aspect ratio */
+.hero{display:block!important;width:100%!important;min-height:0!important;height:auto!important;aspect-ratio:auto!important;padding:0!important;background:none!important;overflow:hidden}
+.hero-carousel{position:relative;width:100%;overflow:hidden;touch-action:pan-y}
+.hero-slide{display:none;width:100%}.hero-slide.is-active{display:block}
+.hero-slide img{display:block;width:100%;max-width:100%;height:auto;object-fit:contain}
+.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:42px;height:42px;border:0;border-radius:50%;background:rgba(5,35,82,.58);color:#fff;font-size:20px;cursor:pointer;display:grid;place-items:center}
+.hero-prev{left:16px}.hero-next{right:16px}.hero-arrow:hover{background:rgba(5,35,82,.85)}
+.hero-dots{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:9px;z-index:2}
+.hero-dot{width:10px;height:10px;padding:0;border:1px solid #fff;border-radius:50%;background:rgba(255,255,255,.55);cursor:pointer}
+.hero-dot.is-active{background:#fff;transform:scale(1.2)}
+@media(max-width:600px){.hero-arrow{width:34px;height:34px;font-size:16px}.hero-prev{left:9px}.hero-next{right:9px}.hero-dots{bottom:8px}}
 </style>
 <script src="seo.js" defer></script>
 </head>
@@ -420,17 +433,20 @@ nav a:nth-child(6){
   <a class="floating-call" href="tel:+8617362687151">☎ &nbsp;Call Now</a>
 <main id="home">
 
-<section class="hero">
-  <img
-    class="mobile-banner"
-    src="https://images.gotruckfinder.com/banners/mobile-banner.png"
-    alt="Truck Finder Mobile Banner"
-  >
-
-  <div class="hero-copy">
-    <h1>USED COMMERCIAL<span>VEHICLES FROM CHINA</span></h1>
-    <p>Quality Used Trucks, Competitive Prices.<br>Reliable Export Support.</p>
-    <a class="btn-yellow" href="#inventory">View Our Inventory&nbsp; →</a>
+<section class="hero" aria-label="Featured truck banners">
+  <div class="hero-carousel" id="home-hero-carousel">
+    <div class="hero-slide is-active">
+      <img src="https://images.gotruckfinder.com/banners/truck_finder_home_hero_original.jpg" alt="Used commercial vehicles from China" fetchpriority="high">
+    </div>
+    <div class="hero-slide">
+      <img src="https://images.gotruckfinder.com/banners/four%20trucks%20banner.png" alt="Truck Finder selection of four trucks" loading="lazy">
+    </div>
+    <button class="hero-arrow hero-prev" type="button" aria-label="Previous banner">&#10094;</button>
+    <button class="hero-arrow hero-next" type="button" aria-label="Next banner">&#10095;</button>
+    <div class="hero-dots" aria-label="Choose banner">
+      <button class="hero-dot is-active" type="button" aria-label="Show banner 1" aria-current="true"></button>
+      <button class="hero-dot" type="button" aria-label="Show banner 2" aria-current="false"></button>
+    </div>
   </div>
 </section>
 
@@ -685,6 +701,26 @@ document.querySelectorAll(".site-header").forEach(function(header){
     }
   });
 });
+</script>
+
+<script>
+(function(){
+  const carousel=document.getElementById("home-hero-carousel");if(!carousel)return;
+  const slides=Array.from(carousel.querySelectorAll(".hero-slide"));
+  const dots=Array.from(carousel.querySelectorAll(".hero-dot"));
+  const prev=carousel.querySelector(".hero-prev"),next=carousel.querySelector(".hero-next");
+  let current=0,timer=null,startX=0;
+  function show(index){current=(index+slides.length)%slides.length;slides.forEach((el,i)=>el.classList.toggle("is-active",i===current));dots.forEach((el,i)=>{const active=i===current;el.classList.toggle("is-active",active);el.setAttribute("aria-current",String(active));});}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){stop();if(!document.hidden)timer=setInterval(()=>show(current+1),5000);}
+  prev.addEventListener("click",()=>{show(current-1);start();});next.addEventListener("click",()=>{show(current+1);start();});
+  dots.forEach((dot,i)=>dot.addEventListener("click",()=>{show(i);start();}));
+  carousel.addEventListener("pointerdown",e=>{startX=e.clientX;});
+  carousel.addEventListener("pointerup",e=>{const d=e.clientX-startX;if(Math.abs(d)>45){show(current+(d<0?1:-1));start();}});
+  carousel.addEventListener("mouseenter",stop);carousel.addEventListener("mouseleave",start);
+  carousel.addEventListener("focusin",stop);carousel.addEventListener("focusout",start);
+  document.addEventListener("visibilitychange",()=>document.hidden?stop():start());show(0);start();
+})();
 </script>
 </body>
 </html>
