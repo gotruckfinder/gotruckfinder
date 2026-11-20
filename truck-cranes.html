@@ -115,6 +115,17 @@ h1{
   color:#71809a;
   font-size:14px;
 }
+.pagination{
+  display:flex;justify-content:center;align-items:center;flex-wrap:wrap;
+  gap:8px;margin:28px 0 8px;
+}
+.pagination button{
+  min-width:40px;height:40px;padding:0 12px;border:1px solid #cbdaf1;
+  border-radius:7px;background:#fff;color:var(--blue);font-size:14px;
+  font-weight:700;cursor:pointer;
+}
+.pagination button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.pagination button:disabled{opacity:.4;cursor:not-allowed}
 
 .vehicle-grid{
   display:grid;
@@ -338,7 +349,10 @@ footer{
     padding:16px 12px;
   }
   nav{justify-content:center;gap:12px}
-  .filters{grid-template-columns:1fr}
+  .filter-box{padding:12px;margin-bottom:20px}
+  .filter-box h3{font-size:15px;margin:0 0 9px}
+  .filters{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .filters select{min-width:0;padding:10px 3px;font-size:11px}
   .vehicle-grid{grid-template-columns:1fr}
   main{padding:25px 15px 45px}
   .inquiry-panel{padding:24px 20px}
@@ -479,6 +493,7 @@ Contact Truck Finder for vehicle details, photos and export quotations.
 <div id="vehicleCount" class="inventory-count"></div>
 
 <div id="vehicleGrid" class="vehicle-grid"></div>
+<div id="pagination" class="pagination" aria-label="Vehicle listing pages"></div>
 
 <div id="emptyMessage" class="empty" style="display:none">
   <h2>Looking for a Truck Crane?</h2>
@@ -568,6 +583,9 @@ const vehicles = allVehicles.filter(v =>
 const grid = document.getElementById("vehicleGrid");
 const emptyMessage = document.getElementById("emptyMessage");
 const vehicleCount = document.getElementById("vehicleCount");
+const pagination = document.getElementById("pagination");
+const pageSize = 6;
+let currentPage = 1;
 
 const priceFilter = document.getElementById("priceFilter");
 const tonFilter = document.getElementById("tonFilter");
@@ -788,15 +806,48 @@ function renderVehicles(){
     (!tonFilter.value || v.ton===tonFilter.value)
   );
 
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  currentPage = Math.min(Math.max(currentPage,1),Math.max(totalPages,1));
+  const startIndex = (currentPage - 1) * pageSize;
+  const pageVehicles = filtered.slice(startIndex,startIndex + pageSize);
+
   grid.innerHTML="";
 
-  vehicleCount.textContent =
-    filtered.length + " vehicle(s) found";
+  vehicleCount.textContent = filtered.length
+    ? filtered.length + " vehicle(s) found · Showing " +
+      (startIndex + 1) + "–" + Math.min(startIndex + pageSize,filtered.length)
+    : "0 vehicles found";
 
   emptyMessage.style.display =
     filtered.length ? "none":"block";
 
-  filtered.forEach(v=>{
+  pagination.innerHTML = "";
+  if(totalPages > 1){
+    const addPageButton = (label,page,active,disabled) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.disabled = !!disabled;
+      if(active) button.className = "active";
+      if(active) button.setAttribute("aria-current","page");
+      button.addEventListener("click",() => {
+        currentPage = page;
+        renderVehicles();
+        document.getElementById("vehicleCount").scrollIntoView({
+          behavior:"smooth",block:"start"
+        });
+      });
+      pagination.appendChild(button);
+    };
+
+    addPageButton("‹",currentPage - 1,false,currentPage === 1);
+    for(let page = 1; page <= totalPages; page++){
+      addPageButton(String(page),page,page === currentPage,false);
+    }
+    addPageButton("›",currentPage + 1,false,currentPage === totalPages);
+  }
+
+  pageVehicles.forEach(v=>{
 
     const detailsUrl =
       "vehicle-details.html?id=" +
@@ -911,7 +962,10 @@ function renderVehicles(){
 
 // Filter events
 [priceFilter,chassisBrandFilter,tonFilter].forEach(select=>{
-  select.addEventListener("change",renderVehicles);
+  select.addEventListener("change",()=>{
+    currentPage = 1;
+    renderVehicles();
+  });
 });
 
 // Initial display
