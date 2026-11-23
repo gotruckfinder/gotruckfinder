@@ -1682,12 +1682,12 @@ if (imageId !== null &&
         httpMetadata: { contentType: file.type }
       });
 
-      const videoUrl = makeImageUrl(key);
+      const videoUrl = makeImageUrl(key, IMAGE_BASE);
       await db.prepare(
         "UPDATE vehicles SET video_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
       ).bind(videoUrl, id).run();
 
-      const previousKey = imageKeyFromUrl(vehicle.video_url || "");
+      const previousKey = imageKeyFromUrl(vehicle.video_url || "", IMAGE_BASE, IMAGE_PREFIX);
       if (previousKey && previousKey !== key) {
         await bucket.delete(previousKey);
       }
