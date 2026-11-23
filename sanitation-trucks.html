@@ -123,6 +123,31 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
  .site-header .quote-label{display:none}
 }
 
+
+/* Sanitation vehicle catalogue */
+.sanitation-catalog{margin-top:34px}
+.sanitation-catalog h2{font-size:26px;margin:0 0 8px;color:#063b91}
+.catalog-intro{color:#526581;line-height:1.6;margin:0 0 18px}
+.subtype-filters{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 22px}
+.subtype-filter{border:1px solid #cbdaf0;background:#fff;color:#16417f;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer}
+.subtype-filter:hover,.subtype-filter.active{background:#0646ad;border-color:#0646ad;color:#fff}
+.inventory-count{font-size:14px;color:#66799b;margin:14px 0}
+.sanitation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.sanitation-card{min-width:0;border:1px solid #e0e8f5;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(9,43,120,.06);display:flex;flex-direction:column}
+.sanitation-card-link{color:inherit;text-decoration:none;display:block;flex:1}
+.sanitation-card-image{width:100%;height:210px;object-fit:cover;background:#edf3fb;display:block}
+.sanitation-card-body{padding:16px}
+.sanitation-card h3{font-size:17px;line-height:1.4;margin:0 0 12px;color:#063b91}
+.sanitation-card-specs{font-size:13px;line-height:1.7;color:#526581}
+.sanitation-card-specs strong{color:#183d7c}
+.sanitation-card-actions{padding:0 16px 16px}
+.sanitation-card-actions button{width:100%;border:0;border-radius:8px;background:#20b84c;color:#fff;padding:12px;font-weight:800;cursor:pointer}
+.sanitation-card-actions button:hover{background:#159b3b}
+.sanitation-empty-note{background:#f4f8ff;border:1px solid #dce9ff;border-radius:14px;padding:28px 20px;text-align:center}
+.sanitation-empty-note p{color:#526581;line-height:1.6}
+@media(max-width:900px){.sanitation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.sanitation-grid{grid-template-columns:1fr}.sanitation-card-image{height:220px}.subtype-filters{gap:8px}.subtype-filter{font-size:13px;padding:9px 12px}}
+
 </style>
   <script src="seo.js" defer></script>
 </head>
@@ -159,16 +184,23 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
     Used sanitation trucks from China for municipal cleaning, waste collection and sewage services. Truck Finder helps international buyers source pre-owned sanitation vehicles and arrange export support.
   </p>
 
-  <section class="empty">
-    <h2>Looking for a Used Sanitation Truck?</h2>
-
-    <p>
-      Explore used garbage trucks, garbage compactor trucks, street sweeper trucks, sewage suction trucks and septic tank trucks from China. Contact Truck Finder for available stock, vehicle specifications, photos and export details.
-    </p>
-
-    <button class="cta" type="button" id="openInquiry">
-      Request Sanitation Truck Information&nbsp; →
-    </button>
+  <section class="sanitation-catalog" aria-labelledby="sanitationCatalogTitle">
+    <h2 id="sanitationCatalogTitle">Browse Sanitation Trucks</h2>
+    <p class="catalog-intro">Choose a vehicle type to view available used sanitation trucks from China.</p>
+    <div class="subtype-filters" id="sanitationSubtypeFilters" role="group" aria-label="Filter by sanitation truck type">
+      <button type="button" class="subtype-filter active" data-subtype="all" aria-pressed="true">All Sanitation Trucks</button>
+      <button type="button" class="subtype-filter" data-subtype="Garbage Trucks" aria-pressed="false">Garbage Trucks</button>
+      <button type="button" class="subtype-filter" data-subtype="Street Sweeper Trucks" aria-pressed="false">Street Sweeper Trucks</button>
+      <button type="button" class="subtype-filter" data-subtype="Sewage Suction Trucks" aria-pressed="false">Sewage Suction Trucks</button>
+      <button type="button" class="subtype-filter" data-subtype="Water Trucks" aria-pressed="false">Water Trucks</button>
+    </div>
+    <p class="inventory-count" id="sanitationVehicleCount" aria-live="polite">Loading available vehicles...</p>
+    <div class="sanitation-grid" id="sanitationVehicleGrid"></div>
+    <div class="empty" id="sanitationEmpty" hidden>
+      <h2 id="sanitationEmptyTitle">Looking for a Used Sanitation Truck?</h2>
+      <p id="sanitationEmptyText">Our sanitation truck inventory is being updated. Contact us with your required vehicle type, capacity and destination.</p>
+      <button class="cta" type="button" id="openInquiry">Request Sanitation Truck Information&nbsp; →</button>
+    </div>
   </section>
 </main>
 
@@ -228,6 +260,120 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
     </form>
   </div>
 </div>
+
+
+<script src="vehicles.js"></script>
+<script src="public-vehicles.js"></script>
+<script>
+(function(){
+  "use strict";
+  const grid=document.getElementById("sanitationVehicleGrid");
+  const count=document.getElementById("sanitationVehicleCount");
+  const empty=document.getElementById("sanitationEmpty");
+  const filters=document.getElementById("sanitationSubtypeFilters");
+  const buttons=Array.from(filters.querySelectorAll("[data-subtype]"));
+  let activeSubtype="all";
+  let inventory=[];
+
+  function subtypeOf(vehicle){
+    const raw=String(vehicle.subCategory||vehicle.subcategory||vehicle.sub_category||vehicle.vehicleType||vehicle.vehicle_type||"").trim().toLowerCase();
+    if(!raw) return "";
+    if(/garbage|refuse|compactor/.test(raw)) return "Garbage Trucks";
+    if(/sweep/.test(raw)) return "Street Sweeper Trucks";
+    if(/sewage|suction|vacuum|septic/.test(raw)) return "Sewage Suction Trucks";
+    if(/water/.test(raw)) return "Water Trucks";
+    return "";
+  }
+
+  function addTextLine(parent,label,value){
+    if(value===undefined||value===null||String(value).trim()==="") return;
+    const line=document.createElement("div");
+    const strong=document.createElement("strong");
+    strong.textContent=label+": ";
+    line.append(strong,document.createTextNode(String(value)));
+    parent.appendChild(line);
+  }
+
+  function openVehicleInquiry(vehicle){
+    const modal=document.getElementById("inquiryModal");
+    const info=modal.querySelector(".vehicle-info");
+    if(info) info.textContent="Vehicle: "+(vehicle.title||"Sanitation Truck")+" | Vehicle ID: "+(vehicle.id||"");
+    const message=document.getElementById("message");
+    if(message) message.value="I am interested in "+(vehicle.title||"this sanitation truck")+". Please send me more details and an export quotation.";
+    const title=document.getElementById("inquiryTitle");
+    if(title) title.textContent="Vehicle Inquiry";
+    modal.classList.add("show");
+  }
+
+  function render(){
+    const available=inventory.filter(v=>v.category==="Sanitation Trucks"&&v.status==="Available");
+    const filtered=activeSubtype==="all"?available:available.filter(v=>subtypeOf(v)===activeSubtype);
+    grid.innerHTML="";
+    count.textContent=filtered.length+" available sanitation truck(s)";
+    empty.hidden=filtered.length>0;
+    if(filtered.length===0){
+      document.getElementById("sanitationEmptyTitle").textContent=activeSubtype==="all"?"Looking for a Used Sanitation Truck?":"Looking for "+activeSubtype+"?";
+      document.getElementById("sanitationEmptyText").textContent=activeSubtype==="all"
+        ?"Our sanitation truck inventory is being updated. Contact us with your required vehicle type, capacity and destination."
+        :"We are updating our "+activeSubtype.toLowerCase()+" inventory. Contact us and our team will help source a suitable vehicle.";
+    }
+    filtered.forEach(vehicle=>{
+      const card=document.createElement("article");
+      card.className="sanitation-card";
+      const link=document.createElement("a");
+      link.className="sanitation-card-link";
+      link.href="vehicle-details.html?id="+encodeURIComponent(vehicle.id);
+      const image=document.createElement("img");
+      image.className="sanitation-card-image";
+      image.src=vehicle.image||"";
+      image.alt=vehicle.title||"Used sanitation truck";
+      image.loading="lazy";
+      image.onerror=function(){this.style.display="none";};
+      const body=document.createElement("div");
+      body.className="sanitation-card-body";
+      const heading=document.createElement("h3");
+      heading.textContent=vehicle.title||"Used Sanitation Truck";
+      const specs=document.createElement("div");
+      specs.className="sanitation-card-specs";
+      addTextLine(specs,"Type",subtypeOf(vehicle));
+      addTextLine(specs,"Brand",vehicle.brand);
+      addTextLine(specs,"Model",vehicle.model);
+      addTextLine(specs,"Year",vehicle.year);
+      addTextLine(specs,"Capacity",vehicle.capacity||vehicle.ton);
+      addTextLine(specs,"Location",vehicle.location);
+      body.append(heading,specs);
+      link.append(image,body);
+      const actions=document.createElement("div");
+      actions.className="sanitation-card-actions";
+      const inquire=document.createElement("button");
+      inquire.type="button";
+      inquire.textContent="Inquire Now";
+      inquire.addEventListener("click",()=>openVehicleInquiry(vehicle));
+      actions.appendChild(inquire);
+      card.append(link,actions);
+      grid.appendChild(card);
+    });
+  }
+
+  buttons.forEach(button=>button.addEventListener("click",()=>{
+    activeSubtype=button.dataset.subtype;
+    buttons.forEach(item=>{
+      const active=item===button;
+      item.classList.toggle("active",active);
+      item.setAttribute("aria-pressed",String(active));
+    });
+    render();
+  }));
+
+  render();
+  if(window.TRUCK_FINDER_VEHICLES_READY&&typeof window.TRUCK_FINDER_VEHICLES_READY.then==="function"){
+    window.TRUCK_FINDER_VEHICLES_READY.then(data=>{inventory=Array.isArray(data)?data:[];render();});
+  }else{
+    inventory=Array.isArray(window.TRUCK_FINDER_VEHICLES)?window.TRUCK_FINDER_VEHICLES:[];
+    render();
+  }
+})();
+</script>
 
 <script>
 const WORKER_URL = "https://gotruckfinder-inquiry.cscvehicle.workers.dev/";
