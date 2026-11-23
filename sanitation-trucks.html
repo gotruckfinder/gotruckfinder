@@ -140,6 +140,8 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
 .sanitation-card h3{font-size:17px;line-height:1.4;margin:0 0 12px;color:#063b91}
 .sanitation-card-specs{font-size:13px;line-height:1.7;color:#526581}
 .sanitation-card-specs strong{color:#183d7c}
+.sanitation-details-hint{display:block;margin-top:13px;padding:12px;background:#edf4ff;color:#0646ad;text-align:center;border-radius:7px;font-size:14px;font-weight:700}
+.sanitation-card-link:hover .sanitation-details-hint{background:#e2edff}
 .sanitation-card-actions{padding:0 16px 16px}
 .sanitation-card-actions button{width:100%;border:0;border-radius:8px;background:#20b84c;color:#fff;padding:12px;font-weight:800;cursor:pointer}
 .sanitation-card-actions button:hover{background:#159b3b}
@@ -344,7 +346,10 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
       addTextLine(specs,"Year",vehicle.year);
       addTextLine(specs,"Capacity",vehicle.capacity||vehicle.ton);
       addTextLine(specs,"Location",vehicle.location);
-      body.append(heading,specs);
+      const detailsHint=document.createElement("span");
+      detailsHint.className="sanitation-details-hint";
+      detailsHint.textContent="View Details →";
+      body.append(heading,specs,detailsHint);
       link.append(image,body);
       const actions=document.createElement("div");
       actions.className="sanitation-card-actions";
