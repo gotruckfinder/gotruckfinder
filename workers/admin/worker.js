@@ -340,6 +340,27 @@ function toggleCategoryFields() {
   const generalSubtype = document.getElementById("generalSubtype");
   const videoField = document.getElementById("vehicleVideoField");
   const craneField = document.getElementById("craneSpecificationsField");
+  const specificationsField = form.elements.specifications;
+  const subtypeValue = isSanitation
+    ? (sanitationSubtype ? sanitationSubtype.value : "")
+    : (generalSubtype ? generalSubtype.value : "");
+  const specificationPrompts = {
+    "Truck Cranes": "Crane tonnage, boom sections and length, maximum lifting moment, working radius, outrigger span, lifting configuration.",
+    "Aerial Work Platforms": "Maximum working height, platform height, rated load, platform type, working radius, chassis and stabilizer configuration.",
+    "Sanitation Trucks": {
+      "Garbage Trucks": "Body volume, loading method, compaction ratio, rated payload, waste bin capacity and discharge method.",
+      "Street Sweeper Trucks": "Sweeping width, cleaning efficiency, dustbin volume, water tank volume, suction system and operating speed.",
+      "Sewage Suction Trucks": "Tank capacity, suction depth, vacuum pressure, pump type, discharge method and pipe configuration.",
+      "Water Trucks": "Water tank capacity, spray width, front/rear/side spraying, water pump, monitor and water cannon range."
+    },
+    "Tank Trucks": "Tank capacity, tank material, number of compartments, transported medium, pump type, working pressure and loading/discharge system."
+  };
+  if (specificationsField) {
+    const prompt = isSanitation
+      ? (specificationPrompts["Sanitation Trucks"][subtypeValue] || "Select the sanitation truck type, then enter its professional specifications.")
+      : (specificationPrompts[category] || "Enter the vehicle's professional specifications.");
+    specificationsField.placeholder = prompt;
+  }
   if (sanitationField) sanitationField.style.display = isSanitation ? "block" : "none";
   if (generalField) generalField.style.display = category && !isSanitation ? "block" : "none";
   if (videoField) videoField.style.display = "block";
@@ -399,6 +420,7 @@ function showVehicleForm() {
   const form = document.getElementById("vehicleForm");
 
   form.reset();
+  toggleCategoryFields();
 
   editingVehicleId = null;
 
