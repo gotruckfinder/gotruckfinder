@@ -14,7 +14,7 @@
 
     const canonical = new URL(pathname, SITE_ORIGIN);
 
-    if (pathname.endsWith("vehicle-details.html")) {
+    if (pathname === "/vehicle-details" || pathname.endsWith("/vehicle-details") || pathname.endsWith("vehicle-details.html")) {
       const vehicleId = current.searchParams.get("id");
       if (vehicleId) {
         canonical.searchParams.set("id", vehicleId);
