@@ -150,7 +150,7 @@ th{color:#777}
 
       <div>
         <label>Category *</label>
-        <select name="category" required onchange="toggleSanitationFields()">
+        <select name="category" required onchange="toggleCategoryFields()">
           <option value="">Select Category</option>
           <option value="Truck Cranes">Truck Cranes</option>
           <option value="Aerial Work Platforms">Aerial Work Platforms</option>
@@ -339,7 +339,7 @@ th{color:#777}
 </main>
 <script>
 
-function toggleSanitationFields() {
+function toggleCategoryFields() {
   const form = document.getElementById("vehicleForm");
   if (!form) return;
   const isSanitation = form.elements.category.value === "Sanitation Trucks";
@@ -448,7 +448,7 @@ async function editVehicle(id) {
       }
     });
 
-    toggleSanitationFields();
+    toggleCategoryFields();
     editingVehicleId = Number(vehicle.id);
 
     document.getElementById("vehicleFormTitle").textContent =
@@ -857,7 +857,7 @@ async function saveVehicle(event) {
     const data = Object.fromEntries(formData.entries());
 
     data.is_published = form.elements.is_published.checked;
-    toggleSanitationFields();
+    toggleCategoryFields();
     if (data.category !== "Sanitation Trucks") {
       data.sub_category = "";
       data.video_url = "";
@@ -966,7 +966,7 @@ async function saveVehicle(event) {
 
     // Reset only after vehicle, images and video are saved successfully
     form.reset();
-    toggleSanitationFields();
+    toggleCategoryFields();
 
     editingVehicleId = null;
 
