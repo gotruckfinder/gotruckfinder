@@ -239,6 +239,31 @@ th{color:#777}
   <textarea name="description" rows="5"></textarea>
 </div>
 
+<h3>SEO Settings</h3>
+<p style="font-size:13px;color:#777;margin-top:0;">These settings apply to this vehicle only. Leave SEO Title or Meta Description blank to use automatic defaults.</p>
+<div class="form-grid">
+  <div>
+    <label>SEO Title (Meta Title)</label>
+    <input name="seo_title" maxlength="70" placeholder="e.g. Used Dongfeng K5 8 Ton Truck Crane for Sale">
+  </div>
+  <div>
+    <label>Focus Keyword</label>
+    <input name="focus_keyword" maxlength="120" placeholder="e.g. Used Dongfeng Truck Crane">
+  </div>
+  <div>
+    <label>Related Keywords (comma-separated)</label>
+    <input name="related_keywords" maxlength="500" placeholder="used truck crane, 8 ton crane truck, XCMG crane">
+  </div>
+</div>
+<div>
+  <label>Meta Description</label>
+  <textarea name="meta_description" rows="3" maxlength="160" placeholder="Write a clear summary of this specific vehicle, ideally around 150–160 characters."></textarea>
+</div>
+<div>
+  <label>Main Image ALT Text</label>
+  <input name="image_alt" maxlength="180" placeholder="Describe the main vehicle image accurately">
+</div>
+
 <div id="vehicleVideoField" style="display:block;margin-top:14px;">
   <label>Vehicle Video URL (optional)</label>
   <input name="video_url" type="url" placeholder="https://...">
@@ -1259,7 +1284,9 @@ const VEHICLE_FIELDS = [
   "year", "mileage", "price", "location", "engine",
   "horsepower", "crane_brand", "crane_capacity",
   "boom_type", "boom_length", "specifications",
-  "description", "sub_category", "video_url", "status", "is_published"
+  "description", "seo_title", "meta_description", "focus_keyword",
+  "related_keywords", "image_alt", "sub_category", "video_url",
+  "status", "is_published"
 ];
 
 const STATUSES = ["draft", "available", "reserved", "sold"];
@@ -1504,6 +1531,11 @@ async function handle(request, env) {
         horsepower: vehicle.horsepower,
         specifications: vehicle.specifications,
         description: vehicle.description,
+        seoTitle: vehicle.seo_title || "",
+        metaDescription: vehicle.meta_description || "",
+        focusKeyword: vehicle.focus_keyword || "",
+        relatedKeywords: vehicle.related_keywords || "",
+        imageAlt: vehicle.image_alt || "",
         status: "Available",
         image: images[0]?.image_url || "",
         images: images.map(item => item.image_url)
