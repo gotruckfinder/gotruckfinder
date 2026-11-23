@@ -297,6 +297,7 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
 
   function openVehicleInquiry(vehicle){
     selectedSanitationVehicle=vehicle;
+    window.selectedSanitationVehicle=vehicle;
     const modal=document.getElementById("inquiryModal");
     const info=modal.querySelector(".vehicle-info");
     if(info) info.textContent="Vehicle: "+(vehicle.title||"Sanitation Truck")+" | Vehicle ID: "+(vehicle.id||"");
@@ -388,6 +389,7 @@ const submitBtn = document.getElementById("submitInquiry");
 const formStatus = document.getElementById("formStatus");
 
 function openInquiry() {
+  window.selectedSanitationVehicle = null;
   inquiryForm.reset();
   formStatus.textContent = "";
   formStatus.className = "form-status";
@@ -434,8 +436,8 @@ inquiryForm.addEventListener("submit", async function(event) {
     whatsapp: whatsapp,
     email: email,
     message: message,
-    vehicleId: selectedSanitationVehicle ? selectedSanitationVehicle.id : "SANITATION-TRUCKS",
-    vehicleTitle: selectedSanitationVehicle ? selectedSanitationVehicle.title : "Sanitation Trucks - General Inquiry"
+    vehicleId: window.selectedSanitationVehicle ? window.selectedSanitationVehicle.id : "SANITATION-TRUCKS",
+    vehicleTitle: window.selectedSanitationVehicle ? window.selectedSanitationVehicle.title : "Sanitation Trucks - General Inquiry"
   };
 
   submitBtn.disabled = true;
