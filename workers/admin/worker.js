@@ -253,7 +253,9 @@ th{color:#777}
 <div id="sanitationVideoField" style="display:none;margin-top:14px;">
   <label>Vehicle Video URL (optional)</label>
   <input name="video_url" type="url" placeholder="https://...">
-  <p style="font-size:13px;color:#777;">Paste a public MP4 or supported video page URL. R2 video upload will be connected in the next step.</p>
+  <label style="display:block;margin-top:10px;">Or Upload a Video to R2</label>
+  <input type="file" id="vehicleVideoInput" accept="video/mp4,video/webm,video/quicktime">
+  <p style="font-size:13px;color:#777;">MP4, WebM or MOV. Maximum 100 MB. An uploaded video replaces the URL above.</p>
 </div>
 
 <h3>Vehicle Images</h3>
@@ -843,6 +845,7 @@ async function saveVehicle(event) {
   const form = document.getElementById("vehicleForm");
   const submitButton = document.getElementById("saveVehicleButton");
   const imageInput = document.getElementById("vehicleImageInput");
+  const videoInput = document.getElementById("vehicleVideoInput");
 
   const isEditing = editingVehicleId !== null;
 
@@ -942,7 +945,26 @@ async function saveVehicle(event) {
       }
     }
 
-    // Reset only after vehicle and images are saved successfully
+    // Upload an optional sanitation vehicle video to R2.
+    const videoFile = videoInput && videoInput.files ? videoInput.files[0] : null;
+    if (videoFile) {
+      const videoFormData = new FormData();
+      videoFormData.append("video", videoFile);
+      const videoResponse = await fetch(
+        "/api/vehicles/" + vehicleId + "/video",
+        {
+          method: "POST",
+          credentials: "same-origin",
+          body: videoFormData
+        }
+      );
+      const videoResult = await videoResponse.json();
+      if (!videoResponse.ok) {
+        throw new Error(videoResult.error || "Vehicle saved, but video upload failed");
+      }
+    }
+
+    // Reset only after vehicle, images and video are saved successfully
     form.reset();
     toggleSanitationFields();
 
@@ -1191,6 +1213,12 @@ document.getElementById("loginForm").addEventListener("submit",async function(e)
 </body>
 </html>`;
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
+const VIDEO_TYPES = {
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov"
+};
 const MAX_FILES = 20;
 const SESSION_HOURS = 8;
 
@@ -1501,7 +1529,7 @@ async function handle(request, env) {
   }
 
   // Vehicle-specific routes
-  const vehicleMatch = path.match(/^\/api\/vehicles\/(\d+)(?:\/(images)(?:\/(\d+))?)?$/);
+  const vehicleMatch = path.match(/^\/api\/vehicles\/(\d+)(?:\/(images|video)(?:\/(\d+))?)?$/);
 
   if (vehicleMatch) {
     const id = validId(vehicleMatch[1]);
@@ -1516,12 +1544,46 @@ if (imageId !== null &&
 }
 
     const isImagesRoute = vehicleMatch[2] === "images";
+    const isVideoRoute = vehicleMatch[2] === "video";
 
     const vehicle = await db.prepare(
       "SELECT * FROM vehicles WHERE id = ?"
     ).bind(id).first();
 
     if (!vehicle) return json({ error: "Vehicle not found" }, 404);
+
+    // Upload or replace a sanitation vehicle video in R2.
+    if (isVideoRoute && method === "POST") {
+      const form = await request.formData();
+      const file = form.get("video");
+      if (!file || typeof file.arrayBuffer !== "function" ||
+          !VIDEO_TYPES[file.type] || file.size <= 0 ||
+          file.size > MAX_VIDEO_SIZE) {
+        return json({ error: "Upload one MP4, WebM or MOV video up to 100 MB" }, 400);
+      }
+
+      const extension = VIDEO_TYPES[file.type];
+      const key = `${IMAGE_PREFIX}${vehicle.vehicle_code}/videos/${crypto.randomUUID()}.${extension}`;
+      await bucket.put(key, await file.arrayBuffer(), {
+        httpMetadata: { contentType: file.type }
+      });
+
+      const videoUrl = makeImageUrl(key);
+      await db.prepare(
+        "UPDATE vehicles SET video_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+      ).bind(videoUrl, id).run();
+
+      const previousKey = imageKeyFromUrl(vehicle.video_url || "");
+      if (previousKey && previousKey !== key) {
+        await bucket.delete(previousKey);
+      }
+
+      return json({ success: true, video_url: videoUrl }, 201);
+    }
+
+    if (isVideoRoute) {
+      return json({ error: "Method not allowed" }, 405);
+    }
 
     // Delete a single vehicle image
     // Reorder vehicle images
