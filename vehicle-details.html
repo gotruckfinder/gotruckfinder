@@ -528,6 +528,60 @@ if(!vehicle){
 
   left.appendChild(gallery);
 
+  if (vehicle.video_url) {
+    const videoSection = document.createElement("section");
+    videoSection.className = "vehicle-video";
+    videoSection.style.cssText = "margin-top:22px;width:100%;";
+
+    const videoHeading = document.createElement("h2");
+    videoHeading.textContent = "Vehicle Video";
+    videoHeading.style.cssText = "font-size:20px;margin:0 0 12px;";
+    videoSection.appendChild(videoHeading);
+
+    try {
+      const videoUrl = new URL(vehicle.video_url);
+      if (videoUrl.protocol !== "https:") throw new Error("HTTPS video URL required");
+
+      if (videoUrl.hostname === "youtu.be" || videoUrl.hostname.endsWith("youtube.com")) {
+        const videoId = videoUrl.hostname === "youtu.be"
+          ? videoUrl.pathname.slice(1)
+          : (videoUrl.searchParams.get("v") || videoUrl.pathname.split("/").filter(Boolean).pop());
+        if (!/^[A-Za-z0-9_-]{6,20}$/.test(videoId || "")) throw new Error("Invalid YouTube URL");
+        const frame = document.createElement("iframe");
+        frame.src = "https://www.youtube-nocookie.com/embed/" + videoId;
+        frame.title = vehicle.title + " video";
+        frame.loading = "lazy";
+        frame.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        frame.allowFullscreen = true;
+        frame.style.cssText = "width:100%;aspect-ratio:16/9;border:0;border-radius:10px;";
+        videoSection.appendChild(frame);
+      } else if (videoUrl.hostname === "vimeo.com" || videoUrl.hostname.endsWith(".vimeo.com")) {
+        const videoId = videoUrl.pathname.split("/").filter(Boolean).pop();
+        if (!/^\d+$/.test(videoId || "")) throw new Error("Invalid Vimeo URL");
+        const frame = document.createElement("iframe");
+        frame.src = "https://player.vimeo.com/video/" + videoId;
+        frame.title = vehicle.title + " video";
+        frame.loading = "lazy";
+        frame.allow = "autoplay; fullscreen; picture-in-picture";
+        frame.allowFullscreen = true;
+        frame.style.cssText = "width:100%;aspect-ratio:16/9;border:0;border-radius:10px;";
+        videoSection.appendChild(frame);
+      } else {
+        const video = document.createElement("video");
+        video.src = videoUrl.href;
+        video.controls = true;
+        video.preload = "metadata";
+        video.playsInline = true;
+        video.style.cssText = "display:block;width:100%;max-height:520px;background:#111;border-radius:10px;";
+        videoSection.appendChild(video);
+      }
+
+      left.appendChild(videoSection);
+    } catch (error) {
+      console.warn("Vehicle video URL is invalid or unsupported:", error);
+    }
+  }
+
   const right = document.createElement("section");
   right.className = "info";
 
@@ -536,6 +590,7 @@ if(!vehicle){
   right.appendChild(heading);
 
   addSpec(right,"Category",vehicle.category);
+  addSpec(right,"Vehicle Type",vehicle.sub_category);
   addSpec(right,"Brand",vehicle.brand);
   addSpec(right,"Model",vehicle.model);
   addSpec(right,"Year",vehicle.year);
