@@ -161,13 +161,17 @@ th{color:#777}
 
       <div id="sanitationSubtypeField" style="display:none;">
         <label>Sanitation Truck Type *</label>
-        <select name="sub_category" id="sanitationSubtype">
+        <select id="sanitationSubtype" name="sub_category">
           <option value="">Select Type</option>
           <option value="Garbage Trucks">Garbage Trucks</option>
           <option value="Street Sweeper Trucks">Street Sweeper Trucks</option>
           <option value="Sewage Suction Trucks">Sewage Suction Trucks</option>
           <option value="Water Trucks">Water Trucks</option>
         </select>
+      </div>
+      <div id="generalSubtypeField" style="display:none;">
+        <label>Sub Category</label>
+        <input id="generalSubtype" name="sub_category" placeholder="Enter vehicle subcategory">
       </div>
 
       <div>
@@ -203,46 +207,31 @@ th{color:#777}
     </div>
 
     <h3>Vehicle Specifications</h3>
-
     <div class="form-grid">
-
       <div>
         <label>Engine</label>
         <input name="engine">
       </div>
-
       <div>
         <label>Horsepower</label>
         <input name="horsepower" type="number">
       </div>
-
-      <div>
-        <label>Crane Brand</label>
-        <input name="crane_brand">
+    </div>
+    <div id="craneSpecificationsField" style="display:none;">
+      <h3>Truck Crane Specifications</h3>
+      <div class="form-grid">
+        <div><label>Crane Brand</label><input name="crane_brand"></div>
+        <div><label>Crane Capacity</label><input name="crane_capacity"></div>
+        <div><label>Boom Type</label><input name="boom_type"></div>
+        <div><label>Boom Length</label><input name="boom_length"></div>
       </div>
-
-      <div>
-        <label>Crane Capacity</label>
-        <input name="crane_capacity">
-      </div>
-
-      <div>
-        <label>Boom Type</label>
-        <input name="boom_type">
-      </div>
-
-      <div>
-        <label>Boom Length</label>
-        <input name="boom_length">
-      </div>
-
     </div>
 
 <h3>Vehicle Details</h3>
 
 <div>
-  <label>Specifications</label>
-  <textarea name="specifications" rows="4"></textarea>
+  <label>Category-specific Specifications</label>
+  <textarea name="specifications" rows="5" placeholder="Enter relevant professional specifications: tank capacity, working height, loading volume, cleaning width, suction capacity, water tank volume, or other category-specific parameters."></textarea>
 </div>
 
 <div>
@@ -250,7 +239,7 @@ th{color:#777}
   <textarea name="description" rows="5"></textarea>
 </div>
 
-<div id="sanitationVideoField" style="display:none;margin-top:14px;">
+<div id="vehicleVideoField" style="display:block;margin-top:14px;">
   <label>Vehicle Video URL (optional)</label>
   <input name="video_url" type="url" placeholder="https://...">
   <label style="display:block;margin-top:10px;">Or Upload a Video to R2</label>
@@ -342,15 +331,26 @@ th{color:#777}
 function toggleCategoryFields() {
   const form = document.getElementById("vehicleForm");
   if (!form) return;
-  const isSanitation = form.elements.category.value === "Sanitation Trucks";
-  const subtypeField = document.getElementById("sanitationSubtypeField");
-  const videoField = document.getElementById("sanitationVideoField");
-  if (subtypeField) subtypeField.style.display = isSanitation ? "block" : "none";
-  if (videoField) videoField.style.display = isSanitation ? "block" : "none";
-  const subtype = form.elements.sub_category;
-  if (subtype) {
-    subtype.required = isSanitation;
-    if (!isSanitation) subtype.value = "";
+  const category = form.elements.category.value;
+  const isSanitation = category === "Sanitation Trucks";
+  const isTruckCrane = category === "Truck Cranes";
+  const sanitationField = document.getElementById("sanitationSubtypeField");
+  const generalField = document.getElementById("generalSubtypeField");
+  const sanitationSubtype = document.getElementById("sanitationSubtype");
+  const generalSubtype = document.getElementById("generalSubtype");
+  const videoField = document.getElementById("vehicleVideoField");
+  const craneField = document.getElementById("craneSpecificationsField");
+  if (sanitationField) sanitationField.style.display = isSanitation ? "block" : "none";
+  if (generalField) generalField.style.display = category && !isSanitation ? "block" : "none";
+  if (videoField) videoField.style.display = "block";
+  if (craneField) craneField.style.display = isTruckCrane ? "block" : "none";
+  if (sanitationSubtype) {
+    sanitationSubtype.disabled = !isSanitation;
+    sanitationSubtype.required = isSanitation;
+  }
+  if (generalSubtype) {
+    generalSubtype.disabled = !category || isSanitation;
+    generalSubtype.required = false;
   }
 }
 
@@ -858,10 +858,6 @@ async function saveVehicle(event) {
 
     data.is_published = form.elements.is_published.checked;
     toggleCategoryFields();
-    if (data.category !== "Sanitation Trucks") {
-      data.sub_category = "";
-      data.video_url = "";
-    }
 
     const numberFields = [
       "year",
@@ -945,7 +941,7 @@ async function saveVehicle(event) {
       }
     }
 
-    // Upload an optional sanitation vehicle video to R2.
+    // Upload an optional vehicle video to R2.
     const videoFile = videoInput && videoInput.files ? videoInput.files[0] : null;
     if (videoFile) {
       const videoFormData = new FormData();
@@ -1666,7 +1662,7 @@ if (imageId !== null &&
 
     if (!vehicle) return json({ error: "Vehicle not found" }, 404);
 
-    // Upload or replace a sanitation vehicle video in R2.
+    // Upload or replace a vehicle video in R2.
     if (isVideoRoute && method === "POST") {
       const form = await request.formData();
       const file = form.get("video");
