@@ -446,6 +446,7 @@ async function editVehicle(id) {
       }
     });
 
+    toggleSanitationFields();
     editingVehicleId = Number(vehicle.id);
 
     document.getElementById("vehicleFormTitle").textContent =
@@ -943,6 +944,7 @@ async function saveVehicle(event) {
 
     // Reset only after vehicle and images are saved successfully
     form.reset();
+    toggleSanitationFields();
 
     editingVehicleId = null;
 
