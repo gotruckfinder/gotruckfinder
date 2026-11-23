@@ -150,12 +150,23 @@ th{color:#777}
 
       <div>
         <label>Category *</label>
-        <select name="category" required>
+        <select name="category" required onchange="toggleSanitationFields()">
           <option value="">Select Category</option>
           <option value="Truck Cranes">Truck Cranes</option>
           <option value="Aerial Work Platforms">Aerial Work Platforms</option>
           <option value="Sanitation Trucks">Sanitation Trucks</option>
           <option value="Tank Trucks">Tank Trucks</option>
+        </select>
+      </div>
+
+      <div id="sanitationSubtypeField" style="display:none;">
+        <label>Sanitation Truck Type *</label>
+        <select name="sub_category" id="sanitationSubtype">
+          <option value="">Select Type</option>
+          <option value="Garbage Trucks">Garbage Trucks</option>
+          <option value="Street Sweeper Trucks">Street Sweeper Trucks</option>
+          <option value="Sewage Suction Trucks">Sewage Suction Trucks</option>
+          <option value="Water Trucks">Water Trucks</option>
         </select>
       </div>
 
@@ -239,6 +250,12 @@ th{color:#777}
   <textarea name="description" rows="5"></textarea>
 </div>
 
+<div id="sanitationVideoField" style="display:none;margin-top:14px;">
+  <label>Vehicle Video URL (optional)</label>
+  <input name="video_url" type="url" placeholder="https://...">
+  <p style="font-size:13px;color:#777;">Paste a public MP4 or supported video page URL. R2 video upload will be connected in the next step.</p>
+</div>
+
 <h3>Vehicle Images</h3>
 
 <div style="margin-bottom:15px;">
@@ -319,6 +336,21 @@ th{color:#777}
 </div>
 </main>
 <script>
+
+function toggleSanitationFields() {
+  const form = document.getElementById("vehicleForm");
+  if (!form) return;
+  const isSanitation = form.elements.category.value === "Sanitation Trucks";
+  const subtypeField = document.getElementById("sanitationSubtypeField");
+  const videoField = document.getElementById("sanitationVideoField");
+  if (subtypeField) subtypeField.style.display = isSanitation ? "block" : "none";
+  if (videoField) videoField.style.display = isSanitation ? "block" : "none";
+  const subtype = form.elements.sub_category;
+  if (subtype) {
+    subtype.required = isSanitation;
+    if (!isSanitation) subtype.value = "";
+  }
+}
 
 const PAGE_SIZE = 20;
 let currentPage = 1;
@@ -821,6 +853,11 @@ async function saveVehicle(event) {
     const data = Object.fromEntries(formData.entries());
 
     data.is_published = form.elements.is_published.checked;
+    toggleSanitationFields();
+    if (data.category !== "Sanitation Trucks") {
+      data.sub_category = "";
+      data.video_url = "";
+    }
 
     const numberFields = [
       "year",
@@ -1167,7 +1204,7 @@ const VEHICLE_FIELDS = [
   "year", "mileage", "price", "location", "engine",
   "horsepower", "crane_brand", "crane_capacity",
   "boom_type", "boom_length", "specifications",
-  "description", "status", "is_published"
+  "description", "sub_category", "video_url", "status", "is_published"
 ];
 
 const STATUSES = ["draft", "available", "reserved", "sold"];
