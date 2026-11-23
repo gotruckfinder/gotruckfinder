@@ -171,7 +171,7 @@ th{color:#777}
       </div>
       <div id="generalSubtypeField" style="display:none;">
         <label>Sub Category</label>
-        <input id="generalSubtype" name="sub_category" placeholder="Enter vehicle subcategory">
+        <input id="generalSubtype" placeholder="Enter vehicle subcategory">
       </div>
 
       <div>
@@ -448,6 +448,8 @@ async function editVehicle(id) {
       }
     });
 
+    const generalSubtype = document.getElementById("generalSubtype");
+    if (generalSubtype) generalSubtype.value = vehicle.sub_category || "";
     toggleCategoryFields();
     editingVehicleId = Number(vehicle.id);
 
@@ -857,6 +859,11 @@ async function saveVehicle(event) {
     const data = Object.fromEntries(formData.entries());
 
     data.is_published = form.elements.is_published.checked;
+    const selectedCategory = form.elements.category.value;
+    const generalSubtype = document.getElementById("generalSubtype");
+    if (selectedCategory !== "Sanitation Trucks") {
+      data.sub_category = generalSubtype ? generalSubtype.value.trim() : "";
+    }
     toggleCategoryFields();
 
     const numberFields = [
