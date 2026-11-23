@@ -1377,6 +1377,120 @@ async function handle(request, env) {
     }
   });
 }
+  // Public, read-only inventory feed for the production website.
+  // Keep this route before admin authentication; it exposes only published,
+  // available vehicles and never exposes private/admin fields.
+  if (path === "/api/public/vehicles") {
+    const origin = request.headers.get("Origin") || "";
+    const allowedOrigins = new Set([
+      "https://gotruckfinder.com",
+      "https://www.gotruckfinder.com"
+    ]);
+    const isPagesPreviewOrigin =
+      /^https:\/\/[a-z0-9-]+\.gotruckfinder\.pages\.dev$/i.test(origin);
+
+    if (origin && !allowedOrigins.has(origin) && !isPagesPreviewOrigin) {
+      return json({ error: "Origin not allowed" }, 403);
+    }
+
+    const corsHeaders = origin
+      ? { "Access-Control-Allow-Origin": origin, "Vary": "Origin" }
+      : {};
+
+    if (method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          ...corsHeaders,
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Max-Age": "86400"
+        }
+      });
+    }
+
+    if (method !== "GET") {
+      return json({ error: "Method not allowed" }, 405, corsHeaders);
+    }
+
+    const publicDb = env.DB;
+    if (!publicDb) {
+      return json({ error: "Database unavailable" }, 503, corsHeaders);
+    }
+
+    const result = await publicDb.prepare(
+      `SELECT id, vehicle_code, title, category, sub_category, video_url,
+              brand, model, year, mileage, price, location, engine, horsepower,
+              crane_brand, crane_capacity, boom_type, boom_length,
+              specifications, description
+       FROM vehicles
+       WHERE is_published = 1 AND status = 'available'
+       ORDER BY updated_at DESC, id DESC
+       LIMIT 500`
+    ).all();
+
+    const vehicles = result.results || [];
+    const ids = vehicles.map(vehicle => vehicle.id);
+    let imageRows = [];
+
+    if (ids.length) {
+      const placeholders = ids.map(() => "?").join(",");
+      const imagesResult = await publicDb.prepare(
+        `SELECT id, vehicle_id, image_url, is_main, sort_order
+         FROM vehicle_images
+         WHERE vehicle_id IN (${placeholders})
+         ORDER BY is_main DESC, sort_order ASC, id ASC`
+      ).bind(...ids).all();
+      imageRows = imagesResult.results || [];
+    }
+
+    const imagesByVehicle = new Map();
+    for (const image of imageRows) {
+      if (!imagesByVehicle.has(image.vehicle_id)) {
+        imagesByVehicle.set(image.vehicle_id, []);
+      }
+      imagesByVehicle.get(image.vehicle_id).push(image);
+    }
+
+    const publicVehicles = vehicles.map(vehicle => {
+      const images = imagesByVehicle.get(vehicle.id) || [];
+      return {
+        id: vehicle.vehicle_code,
+        dbId: vehicle.id,
+        category: vehicle.category,
+        sub_category: vehicle.sub_category || "",
+        subCategory: vehicle.sub_category || "",
+        video_url: vehicle.video_url || "",
+        title: vehicle.title,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        mileage: vehicle.mileage,
+        chassis: vehicle.brand || "",
+        crane: vehicle.crane_brand,
+        ton: vehicle.crane_capacity,
+        boomLength: vehicle.boom_length,
+        price: vehicle.price,
+        priceUSD: vehicle.price === null || vehicle.price === undefined || vehicle.price === ""
+          ? null
+          : (Number.isFinite(Number(vehicle.price)) ? Number(vehicle.price) : null),
+        location: vehicle.location,
+        engine: vehicle.engine,
+        horsepower: vehicle.horsepower,
+        specifications: vehicle.specifications,
+        description: vehicle.description,
+        status: "Available",
+        image: images[0]?.image_url || "",
+        images: images.map(item => item.image_url)
+      };
+    });
+
+    return json({
+      vehicles: publicVehicles,
+      total: publicVehicles.length
+    }, 200, corsHeaders);
+  }
+
   if (method === "OPTIONS") {
     return json({ error: "Preflight requests are not supported" }, 405);
   }
