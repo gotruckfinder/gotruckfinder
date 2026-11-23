@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Dedicated production configuration for the admin Worker.
+  "name": "gotruckfinder",
+  "main": "workers/admin/worker.js",
+  "compatibility_date": "2026-11-10",
+  "keep_vars": true,
+  "secrets": {
+    "required": ["ADMIN_TOKEN"]
+  },
+  "vars": {
+    "IMAGE_BASE": "https://images.gotruckfinder.com/",
+    "IMAGE_PREFIX": "vehicles/"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "truck-finder-db",
+      "database_id": "b8084078-697e-43e1-98d8-54e4977c9cc1"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "gotruckfinder-assets"
+    }
+  ]
+}
