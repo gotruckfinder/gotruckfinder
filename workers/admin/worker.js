@@ -317,6 +317,22 @@ th{color:#777}
 
     </div>
 
+    <h3>Homepage Recommendation</h3>
+    <div class="form-grid">
+      <div>
+        <label>
+          <input type="checkbox" name="is_featured">
+          Recommend this vehicle in HOT PRODUCTS
+        </label>
+        <p style="font-size:13px;color:#777;margin:6px 0 0;">Only published vehicles with Available status can be recommended. Maximum 8 vehicles on the homepage.</p>
+      </div>
+      <div>
+        <label>Recommendation Order</label>
+        <input name="featured_order" type="number" min="1" max="999" step="1" value="1">
+        <p style="font-size:13px;color:#777;margin:6px 0 0;">Smaller numbers appear first. Vehicles with the same order are displayed in the order returned by the database.</p>
+      </div>
+    </div>
+
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button type="submit" id="saveVehicleButton">Save Vehicle</button>
       <button type="button" onclick="hideVehicleForm()">Cancel</button>
@@ -906,6 +922,8 @@ async function saveVehicle(event) {
     const data = Object.fromEntries(formData.entries());
 
     data.is_published = form.elements.is_published.checked;
+    data.is_featured = form.elements.is_featured.checked;
+    data.featured_order = Number(form.elements.featured_order.value || 1);
     const selectedCategory = form.elements.category.value;
     const generalSubtype = document.getElementById("generalSubtype");
     if (selectedCategory !== "Sanitation Trucks") {
@@ -2075,9 +2093,10 @@ order++;
         ? Boolean(data.is_published)
         : Boolean(vehicle.is_published);
       const currentFeatured = Boolean(vehicle.is_featured);
-      const isFeatured = data.is_featured !== undefined
-        ? data.is_featured === true
-        : currentFeatured && finalStatus === "available" && finalPublished;
+      const isFeatured = finalStatus === "available" && finalPublished &&
+        (data.is_featured !== undefined
+          ? data.is_featured === true
+          : currentFeatured);
       const featuredOrder = data.featured_order !== undefined
         ? data.featured_order
         : vehicle.featured_order;
