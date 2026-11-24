@@ -362,14 +362,14 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 
 
 <style id="about-hero-image-scale">
-/* Hero image is the primary visual: give it a taller, editorial presence */
-.about-page .about-hero-layout{align-items:stretch;grid-template-columns:minmax(0,1fr) minmax(390px,1fr);gap:42px}
-.about-page .about-hero-image{align-self:stretch;min-height:580px;padding:10px;overflow:hidden}
-.about-page .about-hero-image img{display:block;width:100%;height:560px;max-width:none;max-height:none;object-fit:cover;object-position:center}
+/* Show the complete original hero image without cropping */
+.about-page .about-hero-layout{align-items:center;grid-template-columns:minmax(0,1fr) minmax(390px,1fr);gap:42px}
+.about-page .about-hero-image{align-self:center;min-height:0;height:auto;padding:10px;overflow:visible}
+.about-page .about-hero-image img{display:block;width:100%;height:auto;max-width:none;max-height:none;object-fit:contain;object-position:center}
 @media(max-width:760px){
  .about-page .about-hero-layout{grid-template-columns:1fr;align-items:center;gap:26px}
- .about-page .about-hero-image{min-height:0;padding:10px}
- .about-page .about-hero-image img{width:100%;height:auto;max-height:440px;object-fit:contain}
+ .about-page .about-hero-image{min-height:0;height:auto;padding:10px}
+ .about-page .about-hero-image img{width:100%;height:auto;max-height:none;object-fit:contain}
 }
 </style>
 
