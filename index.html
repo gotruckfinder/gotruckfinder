@@ -435,6 +435,11 @@ nav a:nth-child(6){
 .home-section-heading{max-width:1320px;margin:0 auto 26px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
 .home-section-kicker{margin:0 0 9px;color:#3972bd;font-size:12px;font-weight:800;letter-spacing:1.8px}
 .home-section-heading h2{margin:0;color:#063b91;font-size:clamp(25px,2.6vw,34px);font-weight:900;letter-spacing:.2px}
+.featured-vehicles .home-section-heading h2{position:relative;color:#222;font-size:clamp(34px,3.2vw,52px);font-weight:900;letter-spacing:-.8px;line-height:1.12;padding-bottom:25px}
+.featured-vehicles .home-section-heading h2:after{content:"";position:absolute;left:0;bottom:7px;width:122px;height:2px;background:linear-gradient(to right,#ed1c2e 0 42%,transparent 42% 56%,#ed1c2e 56% 100%)}
+.featured-vehicles .home-section-kicker{display:none}
+.featured-vehicles .home-section-link{padding:17px 28px;background:#ed1c2e;border:0;border-radius:0;color:#fff;font-size:16px;font-weight:800;letter-spacing:0;white-space:nowrap}
+.featured-vehicles .home-section-link span{padding-left:8px;font-size:18px}
 .home-section-intro{margin:9px 0 0;color:#52647d;font-size:15px;line-height:1.6}
 .home-section-link{flex:0 0 auto;color:#0646ad;font-size:13px;font-weight:800;letter-spacing:.35px;padding-bottom:5px;border-bottom:2px solid #8bbcff}
 .home-section-link span{padding-left:7px;font-size:17px}
@@ -465,6 +470,8 @@ nav a:nth-child(6){
  .featured-vehicles,.how-it-works{padding:35px 14px}
  .home-section-heading{align-items:flex-start;margin-bottom:19px;gap:12px}
  .home-section-heading h2{font-size:24px}
+ .featured-vehicles .home-section-heading h2{font-size:34px;padding-bottom:22px}
+ .featured-vehicles .home-section-link{padding:12px 14px;font-size:11px}
  .home-section-intro{font-size:13px;line-height:1.5}
  .home-section-link{font-size:10px;white-space:nowrap;margin-top:22px}
  .featured-vehicle-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -565,8 +572,7 @@ nav a:nth-child(6){
 <section class="featured-vehicles" id="featured-vehicles" aria-labelledby="featured-vehicles-title">
   <div class="home-section-heading">
     <div>
-      <p class="home-section-kicker">A SELECTION FROM OUR INVENTORY</p>
-      <h2 id="featured-vehicles-title">FEATURED VEHICLES</h2>
+      <h2 id="featured-vehicles-title">HOT PRODUCTS</h2>
       <p class="home-section-intro">Explore selected used commercial vehicles available from China.</p>
     </div>
     <a class="home-section-link" href="#inventory">VIEW ALL VEHICLES <span aria-hidden="true">→</span></a>
