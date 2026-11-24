@@ -159,20 +159,23 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 .about-page *{box-sizing:border-box}
 .about-wrap{width:min(1200px,calc(100% - 56px));margin:0 auto}
 .about-kicker{margin:0 0 22px;color:var(--tf-gold);font-size:11px;letter-spacing:2.5px;font-weight:800;text-transform:uppercase}
-.about-hero{position:relative;isolation:isolate;min-height:610px;display:flex;align-items:center;background:var(--tf-navy);color:#fff;overflow:hidden}
-.about-hero:before{content:"";position:absolute;inset:0;z-index:-2;background:url("https://images.gotruckfinder.com/categories/CLW%20company%20overview.jpg") center/cover no-repeat}
-.about-hero:after{content:"";position:absolute;z-index:-1;left:0;bottom:0;width:100%;height:5px;background:var(--tf-gold)}
-.about-hero-inner{padding:100px 0 112px}
-.about-hero-copy{max-width:720px}
-.about-hero h1{margin:0 0 25px;color:#fff;font-size:clamp(46px,6.2vw,82px);line-height:1.02;letter-spacing:-3px;font-weight:800}
-.about-hero h1 em{font-style:normal;color:var(--tf-gold)}
-.about-lead{max-width:620px;margin:0 0 34px;color:#e0e5eb;font-size:18px;line-height:1.85}
+.about-hero{position:relative;min-height:0;display:block;background:#f2f7ff;color:var(--tf-ink);overflow:hidden}
+.about-hero:before{content:none}
+.about-hero:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:5px;background:var(--tf-gold)}
+.about-hero-inner{padding:68px 0 76px}
+.about-hero-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(300px,.92fr);gap:48px;align-items:center}
+.about-hero-copy{max-width:650px}
+.about-hero h1{margin:0 0 25px;color:var(--tf-navy);font-size:clamp(46px,6.2vw,82px);line-height:1.02;letter-spacing:-3px;font-weight:800}
+.about-hero h1 em{font-style:normal;color:var(--tf-blue)}
+.about-lead{max-width:620px;margin:0 0 34px;color:var(--tf-muted);font-size:18px;line-height:1.85}
+.about-hero-image{display:flex;align-items:center;justify-content:center;min-width:0;padding:18px;background:#fff;border:1px solid #e0eaf8;border-radius:14px;box-shadow:0 16px 40px rgba(9,43,120,.08)}
+.about-hero-image img{display:block;width:100%;max-width:500px;max-height:360px;object-fit:contain}
 .about-button{display:inline-flex;align-items:center;gap:30px;padding:16px 21px;background:var(--tf-gold);color:#092b78;font-size:11px;font-weight:900;letter-spacing:1.3px;text-decoration:none}
 .about-button b{font-size:18px}
-.about-hero-meta{display:flex;gap:36px;align-items:center;margin-top:58px;padding-top:24px;border-top:1px solid rgba(255,255,255,.25);max-width:630px}
+.about-hero-meta{display:flex;gap:36px;align-items:center;margin-top:42px;padding-top:24px;border-top:1px solid #cbdcf5;max-width:630px}
 .about-hero-meta div{display:flex;flex-direction:column;gap:5px}
-.about-hero-meta strong{font-size:27px;color:#fff}
-.about-hero-meta span{font-size:10px;letter-spacing:1.4px;color:#c7d0da;text-transform:uppercase}
+.about-hero-meta strong{font-size:27px;color:var(--tf-navy)}
+.about-hero-meta span{font-size:10px;letter-spacing:1.4px;color:#71809a;text-transform:uppercase}
 .about-intro{display:grid;grid-template-columns:.72fr 1.28fr;gap:90px;padding-top:112px;padding-bottom:112px}
 .about-label{color:var(--tf-gold);font-size:11px;letter-spacing:2px;font-weight:900}
 .about-intro h2,.about-partner h2,.about-work h2,.about-values h2{margin:0;color:var(--tf-navy);font-size:clamp(32px,4vw,49px);line-height:1.13;letter-spacing:-1.6px}
@@ -214,8 +217,10 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 .about-cta p{max-width:620px;margin:0 auto 28px;color:var(--tf-muted);font-size:15px;line-height:1.8}
 @media(max-width:760px){
  .about-wrap{width:min(100% - 36px,600px)}
- .about-hero{min-height:0}.about-hero-inner{padding:76px 0 80px}
- .about-hero:before{background:url("https://images.gotruckfinder.com/categories/CLW%20company%20overview.jpg") center/cover no-repeat}
+ .about-hero{min-height:0}.about-hero-inner{padding:48px 0 54px}
+ .about-hero-layout{grid-template-columns:1fr;gap:28px}
+ .about-hero-image{padding:12px}
+ .about-hero-image img{max-height:260px}
  .about-hero h1{font-size:47px;letter-spacing:-1.8px}
  .about-lead{font-size:16px}
  .about-hero-meta{gap:22px;flex-wrap:wrap;margin-top:42px}
@@ -269,6 +274,7 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 <main class="about-page">
 <section class="about-hero">
  <div class="about-wrap about-hero-inner">
+  <div class="about-hero-layout">
   <div class="about-hero-copy">
    <p class="about-kicker">GO TRUCK FINDER &nbsp; / &nbsp; ABOUT US</p>
    <h1>Built on strength.<br><em>Driven by trust.</em></h1>
@@ -279,6 +285,8 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
     <div><strong>500+</strong><span>Vehicles in stock</span></div>
     <div><strong>China</strong><span>On-the-ground sourcing</span></div>
    </div>
+  </div>
+  <div class="about-hero-image"><img src="https://images.gotruckfinder.com/categories/CLW%20company%20overview.jpg" alt="Company overview of Chengli Special Automobile and commercial vehicle operations"></div>
   </div>
  </div>
 </section>
