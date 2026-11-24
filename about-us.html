@@ -116,6 +116,38 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 /* Our Services page enhancements */
 .process-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.process-step{display:flex;gap:16px;align-items:flex-start;padding:20px;border:1px solid var(--line);border-radius:12px;background:#fff}.process-step>span{display:grid;place-items:center;flex:0 0 42px;height:42px;border-radius:50%;background:#eaf2ff;color:var(--blue);font-weight:900}.process-step h3{margin:0 0 7px;color:var(--deep);font-size:17px}.process-step p{margin:0;color:var(--muted);font-size:14px;line-height:1.65}.faq-list{max-width:900px;margin:0 auto}.faq-list details{padding:18px 20px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:11px}.faq-list summary{cursor:pointer;color:var(--deep);font-weight:800;line-height:1.5}.faq-list details p{margin:12px 0 0;color:var(--muted);font-size:15px;line-height:1.7}.stock-point{display:block}@media(max-width:700px){.process-grid{grid-template-columns:1fr}.hero-grid{gap:22px}.hero-image img{min-height:230px!important}.hero-copy{font-size:16px}}
 </style>
+<style id="about-type-hierarchy">
+
+/* Clear editorial type hierarchy for About Us */
+.about-page .about-hero h1{font-size:clamp(58px,7.2vw,92px);line-height:1.04;letter-spacing:-2.8px;font-weight:900;max-width:850px}
+.about-page .about-lead{font-size:20px;line-height:1.75;max-width:700px}
+.about-page .about-kicker{font-size:13px;letter-spacing:2.2px}
+.about-page .about-label{font-size:13px;letter-spacing:1.8px}
+.about-page .about-intro h2,.about-page .about-partner h2,.about-page .about-work h2,.about-page .about-values h2{font-size:clamp(38px,4.4vw,54px);line-height:1.14;letter-spacing:-1.5px;font-weight:800}
+.about-page .about-intro-copy p,.about-page .about-partner-copy p,.about-page .about-work-intro,.about-page .about-values-copy p{font-size:17px;line-height:1.9}
+.about-page .about-stat strong{font-size:54px;font-weight:900}
+.about-page .about-stat span{font-size:12px;letter-spacing:1.2px}
+.about-page .about-work-item h3{font-size:25px;font-weight:800}
+.about-page .about-work-item p{font-size:16px;line-height:1.85}
+.about-page .about-work-item small{font-size:12px}
+.about-page .about-values-list span{font-size:12px}
+.about-page .about-cta h2{font-size:clamp(40px,4.8vw,58px);font-weight:900;line-height:1.12}
+.about-page .about-cta p{font-size:17px;line-height:1.8}
+.about-page .about-button{font-size:13px}
+@media(max-width:760px){
+ .about-page .about-hero h1{font-size:clamp(46px,11vw,62px);line-height:1.08;letter-spacing:-1.5px}
+ .about-page .about-lead{font-size:17px;line-height:1.75}
+ .about-page .about-intro h2,.about-page .about-partner h2,.about-page .about-work h2,.about-page .about-values h2{font-size:clamp(34px,8vw,42px);line-height:1.18}
+ .about-page .about-intro-copy p,.about-page .about-partner-copy p,.about-page .about-work-intro,.about-page .about-values-copy p{font-size:16px;line-height:1.8}
+ .about-page .about-stat strong{font-size:42px}
+ .about-page .about-stat span{font-size:10px}
+ .about-page .about-work-item h3{font-size:22px}
+ .about-page .about-work-item p{font-size:15px}
+ .about-page .about-cta h2{font-size:clamp(34px,8vw,44px)}
+ .about-page .about-cta p{font-size:16px}
+}
+
+</style>
 <style id="about-page-styles">
 :root{--tf-navy:#0646ad;--tf-blue:#0755b4;--tf-gold:#ffbd00;--tf-paper:#f2f7ff;--tf-ink:#092b78;--tf-muted:#526581}
 .about-page{font-family:Arial,Helvetica,sans-serif;color:var(--tf-ink);background:#fff}
