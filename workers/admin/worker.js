@@ -1155,6 +1155,11 @@ document.getElementById("vehicles").innerHTML =
 
     "<button type=\\\"button\\\" onclick=\\\"editVehicle(" + Number(v.id) + ")\\\">Edit</button> " +
 
+    "<button type=\\\"button\\\" " +
+    (Number(v.is_featured) === 1 ? "style=\\\"background:#063B91;color:#fff\\\" " : "") +
+    "onclick=\\\"toggleFeatured(" + Number(v.id) + "," + (Number(v.is_featured) === 1 ? "true" : "false") + ")\\\">" +
+    (Number(v.is_featured) === 1 ? "Recommended" : "Recommend") + "</button> " +
+
     "<button type=\\\"button\\\" onclick=\\\"deleteVehicle(" + Number(v.id) + ")\\\">Delete</button>" +
 
     "</td></tr>"
@@ -1175,6 +1180,24 @@ const end = Math.min(currentPage * PAGE_SIZE, total);
 
   } catch (e) {
     message.textContent = e.message;
+  }
+}
+
+async function toggleFeatured(id, currentlyFeatured) {
+  try {
+    const response = await fetch("/api/vehicles/" + id, {
+      method: "PATCH",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ is_featured: !currentlyFeatured })
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "Unable to update homepage recommendation");
+    }
+    await loadVehicles();
+  } catch (error) {
+    alert("Recommendation update failed: " + error.message);
   }
 }
 
@@ -1711,8 +1734,11 @@ async function handle(request, env) {
     ).bind(...params).first();
 
     const result = await db.prepare(
-      "SELECT * FROM vehicles" + where +
-      " ORDER BY updated_at DESC LIMIT ? OFFSET ?"
+      "SELECT vehicles.*, f.sort_order AS featured_order, " +
+      "CASE WHEN f.vehicle_id IS NULL THEN 0 ELSE 1 END AS is_featured " +
+      "FROM vehicles LEFT JOIN homepage_featured_vehicles f ON f.vehicle_id = vehicles.id" +
+      where +
+      " ORDER BY vehicles.updated_at DESC LIMIT ? OFFSET ?"
     ).bind(...params, limit, offset).all();
 
     return json({
@@ -2097,9 +2123,15 @@ order++;
         (data.is_featured !== undefined
           ? data.is_featured === true
           : currentFeatured);
-      const featuredOrder = data.featured_order !== undefined
+      let featuredOrder = data.featured_order !== undefined
         ? data.featured_order
         : vehicle.featured_order;
+      if (isFeatured && !currentFeatured && data.featured_order === undefined) {
+        const nextOrder = await db.prepare(
+          "SELECT COALESCE(MAX(sort_order), 0) + 1 AS next_order FROM homepage_featured_vehicles"
+        ).first();
+        featuredOrder = Number(nextOrder?.next_order || 1);
+      }
 
       const featuredError = await validateFeaturedSelection(
         db, id, isFeatured, featuredOrder, finalStatus, finalPublished
