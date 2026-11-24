@@ -758,3 +758,16 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
   }
 }
 </style>
+
+
+<style id="about-work-remove-forced-desktop-break">
+/* Keep the Section 03 heading on one line on desktop; allow natural wrapping on mobile */
+.about-page .about-work-copy > h2 br{
+  display:none!important;
+}
+@media(max-width:760px){
+  .about-page .about-work-copy > h2 br{
+    display:initial!important;
+  }
+}
+</style>
