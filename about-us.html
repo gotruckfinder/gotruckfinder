@@ -403,6 +403,27 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 <style id="about-hero-white-background">
 /* Keep the About Us hero content on a clean white background */
 .about-page .about-hero{background:#fff!important}
+
+<style id="about-section-heading-spacing">
+/* Add a clear blank-line-sized gap between section labels 02/03/04 and their headings */
+.about-page .about-partner-copy > .about-label,
+.about-page .about-work > .about-wrap > .about-label,
+.about-page .about-values > div:first-child > .about-label{
+  margin:0 0 28px!important;
+}
+.about-page .about-partner-copy > h2,
+.about-page .about-work > .about-wrap > h2,
+.about-page .about-values > div:first-child > h2{
+  margin-top:0!important;
+}
+@media(max-width:760px){
+  .about-page .about-partner-copy > .about-label,
+  .about-page .about-work > .about-wrap > .about-label,
+  .about-page .about-values > div:first-child > .about-label{
+    margin-bottom:24px!important;
+  }
+}
+</style>
 </style>
 
 </head>
