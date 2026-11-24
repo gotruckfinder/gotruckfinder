@@ -614,7 +614,7 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 .about-page .about-work-copy .about-work-intro{margin:0!important;max-width:460px}
 .about-page .about-work-list{
   display:grid!important;
-  grid-template-columns:1fr!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
   gap:16px!important;
   margin:0!important;
   border:0!important;
@@ -631,7 +631,7 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 @media(max-width:760px){
   .about-page .about-work-layout{grid-template-columns:1fr!important;row-gap:30px!important}
   .about-page .about-work-copy > .about-label{margin-bottom:24px!important}
-  .about-page .about-work-list{gap:13px!important}
+  .about-page .about-work-list{grid-template-columns:1fr!important;gap:13px!important}
   .about-page .about-work-item,
   .about-page .about-work-item+.about-work-item{padding:21px 20px!important}
 }
