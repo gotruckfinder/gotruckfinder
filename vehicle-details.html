@@ -472,11 +472,14 @@ if(!vehicle){
 }else{
 
   document.title = vehicle.title + " | TRUCK FINDER";
-  const seoTitle = vehicle.seoTitle || (vehicle.title + " | TRUCK FINDER");
-  const seoDescription = vehicle.metaDescription || vehicle.description ||
-    "Explore this used commercial vehicle from China. Contact Truck Finder for details and an export quotation."; 
+  const serverSeoTitle = document.querySelector('meta[name="tf:seo-title"]')?.content || "";
+  const serverSeoDescription = document.querySelector('meta[name="tf:seo-description"]')?.content || "";
+  const serverSeoImageAlt = document.querySelector('meta[name="tf:seo-image-alt"]')?.content || "";
+  const seoTitle = vehicle.seoTitle || serverSeoTitle || (vehicle.title + " | TRUCK FINDER");
+  const seoDescription = vehicle.metaDescription || serverSeoDescription || vehicle.description ||
+    "Explore this used commercial vehicle from China. Contact Truck Finder for details and an export quotation.";
   const seoImage = vehicle.image || (Array.isArray(vehicle.images) ? vehicle.images[0] : "") || "";
-  const seoImageAlt = vehicle.imageAlt || vehicle.title || "Truck Finder vehicle";
+  const seoImageAlt = vehicle.imageAlt || serverSeoImageAlt || vehicle.title || "Truck Finder vehicle";
 
   document.title = seoTitle;
   if (typeof window.applyTruckFinderSEO === "function") {
