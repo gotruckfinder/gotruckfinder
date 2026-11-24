@@ -587,7 +587,12 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 
 <style id="about-section-02-label-single-line">
 /* Keep the full 02 section label on one line */
-.about-page .about-partner-copy > .about-label{white-space:nowrap!important}
+.about-page .about-partner-copy > .about-label{
+  display:block!important;
+  white-space:nowrap!important;
+  margin-bottom:32px!important;
+}
+.about-page .about-partner-copy > h2{margin-top:0!important}
 @media(max-width:760px){
   .about-page .about-partner-copy > .about-label{font-size:18px!important;letter-spacing:.6px!important}
 }
