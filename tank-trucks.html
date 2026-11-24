@@ -177,6 +177,13 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
     </div>
     <span class="nav-placeholder" aria-disabled="true">NEWS</span>
     <span class="nav-placeholder" aria-disabled="true">VIDEO</span>
+    <div class="nav-dropdown">
+      <button class="nav-products" type="button" aria-expanded="false">OUR SERVICE <span aria-hidden="true">⌄</span></button>
+      <div class="nav-dropdown-menu">
+        <a href="our-service.html">OUR SERVICE</a>
+        <a href="about-us.html">ABOUT US</a>
+      </div>
+    </div>
     <a class="nav-link" href="index.html#contact">CONTACT US</a>
   </nav>
   <a class="quote-button" href="index.html#contact" aria-label="GET A QUOTE" title="GET A QUOTE"><span class="quote-icon" aria-hidden="true">✉</span><span class="quote-label">GET A QUOTE</span></a>
@@ -363,26 +370,19 @@ inquiryForm.addEventListener("submit", async function(event) {
 <script>
 document.querySelectorAll(".site-header").forEach(function(header){
   var menuButton=header.querySelector(".nav-toggle");
-  var productsButton=header.querySelector(".nav-products");
-  var productsMenu=header.querySelector(".nav-dropdown");
-  if(menuButton){
-    menuButton.addEventListener("click",function(){
-      var opened=header.classList.toggle("nav-open");
-      menuButton.setAttribute("aria-expanded",String(opened));
+  var dropdownButtons=header.querySelectorAll(".nav-dropdown > button");
+  dropdownButtons.forEach(function(button){
+    button.addEventListener("click",function(){
+      var dropdown=button.closest(".nav-dropdown");
+      var opened=dropdown.classList.toggle("products-open");
+      button.setAttribute("aria-expanded",String(opened));
     });
-  }
-  if(productsButton&&productsMenu){
-    productsButton.addEventListener("click",function(){
-      var opened=productsMenu.classList.toggle("products-open");
-      productsButton.setAttribute("aria-expanded",String(opened));
-    });
-  }
+  });
   document.addEventListener("click",function(event){
     if(!header.contains(event.target)){
       header.classList.remove("nav-open");
       if(menuButton)menuButton.setAttribute("aria-expanded","false");
-      if(productsMenu)productsMenu.classList.remove("products-open");
-      if(productsButton)productsButton.setAttribute("aria-expanded","false");
+      header.querySelectorAll(".nav-dropdown").forEach(function(dropdown){dropdown.classList.remove("products-open");var button=dropdown.querySelector("button");if(button)button.setAttribute("aria-expanded","false");});
     }
   });
 });
