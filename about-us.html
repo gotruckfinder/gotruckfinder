@@ -664,12 +664,22 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 
 
 <style id="about-work-layout-more-room">
-/* Give section 03 more horizontal room and shift the composition slightly left */
+/* Keep section 03 fully inside the viewport while preserving room for the cards */
 .about-page .about-work-layout{
-  width:calc(100% + 80px)!important;
-  margin-left:-40px!important;
+  width:100%!important;
+  max-width:1280px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
   grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr)!important;
-  column-gap:48px!important;
+  column-gap:36px!important;
+}
+.about-page .about-work-copy,
+.about-page .about-work-list{min-width:0!important}
+@media(max-width:900px){
+  .about-page .about-work-layout{
+    grid-template-columns:1fr!important;
+    row-gap:30px!important;
+  }
 }
 @media(max-width:760px){
   .about-page .about-work-layout{
