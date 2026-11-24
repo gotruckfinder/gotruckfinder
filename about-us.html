@@ -118,6 +118,11 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 </style>
 <style id="about-type-hierarchy">
 
+
+/* Refine the hero headline scale */
+.about-page .about-hero h1{font-size:clamp(44px,5.2vw,66px);line-height:1.12;letter-spacing:-1.8px}
+@media(max-width:760px){.about-page .about-hero h1{font-size:clamp(38px,9vw,50px);line-height:1.14;letter-spacing:-1.1px}}
+
 /* Clear editorial type hierarchy for About Us */
 .about-page .about-hero h1{font-size:clamp(58px,7.2vw,92px);line-height:1.04;letter-spacing:-2.8px;font-weight:900;max-width:850px}
 .about-page .about-lead{font-size:20px;line-height:1.75;max-width:700px}
