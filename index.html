@@ -887,7 +887,10 @@ document.querySelectorAll(".site-header .nav-dropdown > button").forEach(functio
     return String(vehicle.price||"").trim()||"Price on Request";
   }
   function render(){
-    const available=inventory.filter(v=>String(v.status||"").toLowerCase()==="available").slice(0,8);
+    const available=inventory.filter(v=>
+      String(v.status||"").toLowerCase()==="available" &&
+      (v.isFeatured===true || v.is_featured===true)
+    ).sort((a,b)=>Number(a.featuredOrder||a.featured_order||0)-Number(b.featuredOrder||b.featured_order||0)).slice(0,8);
     if(!available.length){grid.innerHTML='<p class="featured-vehicle-empty">Please contact us for currently available vehicles.</p>';return;}
     grid.innerHTML=available.map(function(v){
       const title=v.title||v.id||"Available Vehicle";
