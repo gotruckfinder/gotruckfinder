@@ -636,3 +636,28 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
   .about-page .about-work-item+.about-work-item{padding:21px 20px!important}
 }
 </style>
+
+
+<style id="about-work-card-type-refinement">
+/* Match card typography to the lighter, smaller left-side copy */
+.about-page .about-work-item small{
+  font-size:13px!important;
+  font-weight:800!important;
+  letter-spacing:1.5px!important;
+}
+.about-page .about-work-item h3{
+  font-size:17px!important;
+  font-weight:400!important;
+  line-height:1.45!important;
+  margin:12px 0 9px!important;
+}
+.about-page .about-work-item p{
+  font-size:14px!important;
+  font-weight:400!important;
+  line-height:1.75!important;
+}
+@media(max-width:760px){
+  .about-page .about-work-item h3{font-size:17px!important}
+  .about-page .about-work-item p{font-size:14px!important}
+}
+</style>
