@@ -428,6 +428,63 @@ nav a:nth-child(6){
 .hero-dot{width:10px;height:10px;padding:0;border:1px solid #fff;border-radius:50%;background:rgba(255,255,255,.55);cursor:pointer}
 .hero-dot.is-active{background:#fff;transform:scale(1.2)}
 @media(max-width:600px){.hero-arrow{width:34px;height:34px;font-size:16px}.hero-prev{left:9px}.hero-next{right:9px}.hero-dots{bottom:8px}}
+
+
+/* Homepage featured vehicles and buying process */
+.featured-vehicles,.how-it-works{padding:54px clamp(18px,4.2vw,64px);background:#fff}
+.home-section-heading{max-width:1320px;margin:0 auto 26px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.home-section-kicker{margin:0 0 9px;color:#3972bd;font-size:12px;font-weight:800;letter-spacing:1.8px}
+.home-section-heading h2{margin:0;color:#063b91;font-size:clamp(25px,2.6vw,34px);font-weight:900;letter-spacing:.2px}
+.home-section-intro{margin:9px 0 0;color:#52647d;font-size:15px;line-height:1.6}
+.home-section-link{flex:0 0 auto;color:#0646ad;font-size:13px;font-weight:800;letter-spacing:.35px;padding-bottom:5px;border-bottom:2px solid #8bbcff}
+.home-section-link span{padding-left:7px;font-size:17px}
+.featured-vehicle-grid{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.featured-vehicle-card{min-width:0;overflow:hidden;background:#fff;border:1px solid #dfe8f4;border-radius:10px;box-shadow:0 3px 12px rgba(9,43,120,.07);transition:transform .18s ease,box-shadow .18s ease}
+.featured-vehicle-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(9,43,120,.12)}
+.featured-vehicle-card>a{display:flex;height:100%;flex-direction:column;color:inherit;text-decoration:none}
+.featured-vehicle-image{display:block;width:100%;height:190px;object-fit:cover;background:#edf2f8}
+.featured-vehicle-image-placeholder{height:190px;display:grid;place-items:center;background:#edf2f8;color:#71829b;font-size:13px}
+.featured-vehicle-body{display:flex;flex:1;flex-direction:column;padding:15px}
+.featured-vehicle-category{margin:0 0 7px;color:#3972bd;font-size:11px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+.featured-vehicle-card h3{margin:0 0 10px;color:#12356d;font-size:16px;line-height:1.4}
+.featured-vehicle-specs{margin:0;color:#61718a;font-size:13px;line-height:1.65}
+.featured-vehicle-price{margin:auto 0 12px;padding-top:14px;color:#0646ad;font-size:17px;font-weight:900}
+.featured-vehicle-details{display:flex;align-items:center;justify-content:space-between;padding-top:11px;border-top:1px solid #e6edf6;color:#0646ad;font-size:12px;font-weight:800;letter-spacing:.35px}
+.featured-vehicle-details span:last-child{font-size:17px}
+.featured-vehicle-loading,.featured-vehicle-empty{grid-column:1/-1;margin:0;padding:24px;text-align:center;background:#f5f8fd;border-radius:9px;color:#61718a;font-size:14px}
+.how-it-works{background:#f4f8ff;padding-top:50px;padding-bottom:56px}
+.how-heading{margin-bottom:30px}
+.how-steps{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.how-step{position:relative;padding:4px 25px 8px 22px;border-left:1px solid #cbdcf2}
+.how-step:first-child{border-left:0;padding-left:0}
+.how-step-number{display:block;margin-bottom:15px;color:#3972bd;font-size:30px;font-weight:900;letter-spacing:-.5px}
+.how-step h3{margin:0 0 9px;color:#12356d;font-size:15px;font-weight:900;letter-spacing:.35px}
+.how-step p{max-width:250px;margin:0;color:#61718a;font-size:14px;line-height:1.65}
+@media(max-width:1000px){.featured-vehicle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.featured-vehicle-image,.featured-vehicle-image-placeholder{height:180px}}
+@media(max-width:700px){
+ .featured-vehicles,.how-it-works{padding:35px 14px}
+ .home-section-heading{align-items:flex-start;margin-bottom:19px;gap:12px}
+ .home-section-heading h2{font-size:24px}
+ .home-section-intro{font-size:13px;line-height:1.5}
+ .home-section-link{font-size:10px;white-space:nowrap;margin-top:22px}
+ .featured-vehicle-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .featured-vehicle-image,.featured-vehicle-image-placeholder{height:125px}
+ .featured-vehicle-body{padding:10px}
+ .featured-vehicle-category{font-size:9px}
+ .featured-vehicle-card h3{font-size:12px;line-height:1.4}
+ .featured-vehicle-specs{font-size:10px;line-height:1.5}
+ .featured-vehicle-price{font-size:13px;padding-top:9px;margin-bottom:9px}
+ .featured-vehicle-details{font-size:10px;padding-top:8px}
+ .how-it-works{padding-top:34px;padding-bottom:38px}
+ .how-steps{grid-template-columns:1fr 1fr;row-gap:25px}
+ .how-step,.how-step:first-child{padding:0 12px;border-left:1px solid #cbdcf2}
+ .how-step:nth-child(odd){border-left:0;padding-left:0}
+ .how-step-number{font-size:25px;margin-bottom:9px}
+ .how-step h3{font-size:12px}
+ .how-step p{font-size:12px;line-height:1.55}
+}
+@media(max-width:380px){.home-section-heading{flex-direction:column}.home-section-link{margin-top:0}.featured-vehicle-grid{gap:8px}}
+
 </style>
 <script src="seo.js" defer></script>
 </head>
@@ -503,6 +560,52 @@ nav a:nth-child(6){
   <a class="category" href="tank-trucks.html"><img src="https://images.gotruckfinder.com/categories/tanker%20truck.png" alt="Used tank trucks"><div class="cat-label"><span class="cat-symbol">▰</span><span class="cat-name">Tank Trucks </span><span class="arrow">›</span></div></a>
   <a class="category" href="aerial-work-platforms.html"><img src="https://images.gotruckfinder.com/categories/aerial%20work%20platform-image.jpg" alt="Aerial work platforms"><div class="cat-label"><span class="cat-symbol">♜</span><span class="cat-name">Aerial Work Platforms </span><span class="arrow">›</span></div></a>
   <a class="category" href="sanitation-trucks.html"><img src="https://images.gotruckfinder.com/categories/sanitation-image.jpg" alt="Sanitation trucks"><div class="cat-label"><span class="cat-symbol">⚙</span><span class="cat-name">Sanitation Trucks </span><span class="arrow">›</span></div></a>
+</section>
+
+<section class="featured-vehicles" id="featured-vehicles" aria-labelledby="featured-vehicles-title">
+  <div class="home-section-heading">
+    <div>
+      <p class="home-section-kicker">A SELECTION FROM OUR INVENTORY</p>
+      <h2 id="featured-vehicles-title">FEATURED VEHICLES</h2>
+      <p class="home-section-intro">Explore selected used commercial vehicles available from China.</p>
+    </div>
+    <a class="home-section-link" href="#inventory">VIEW ALL VEHICLES <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="featured-vehicle-grid" id="featured-vehicle-grid" aria-live="polite">
+    <p class="featured-vehicle-loading">Loading available vehicles...</p>
+  </div>
+</section>
+
+<section class="how-it-works" id="how-it-works" aria-labelledby="how-it-works-title">
+  <div class="home-section-heading how-heading">
+    <div>
+      <p class="home-section-kicker">A CLEAR PROCESS</p>
+      <h2 id="how-it-works-title">HOW IT WORKS</h2>
+      <p class="home-section-intro">From your first inquiry to vehicle shipment, we help coordinate each step.</p>
+    </div>
+  </div>
+  <div class="how-steps">
+    <article class="how-step">
+      <span class="how-step-number">01</span>
+      <h3>INQUIRY</h3>
+      <p>Tell us your vehicle requirements and destination country.</p>
+    </article>
+    <article class="how-step">
+      <span class="how-step-number">02</span>
+      <h3>VEHICLE MATCHING</h3>
+      <p>Review suitable vehicle options, photos and available videos.</p>
+    </article>
+    <article class="how-step">
+      <span class="how-step-number">03</span>
+      <h3>INSPECTION &amp; QUOTE</h3>
+      <p>Review condition information and receive a clear quotation.</p>
+    </article>
+    <article class="how-step">
+      <span class="how-step-number">04</span>
+      <h3>CONTRACT &amp; SHIPPING</h3>
+      <p>Confirm the order and coordinate the export and shipping process.</p>
+    </article>
+  </div>
 </section>
 <section class="bottom" id="about">
   <a class="why why-service-card" href="our-service.html"><h2>Why Choose Truck Finder?</h2><p><span class="check">●</span>Reliable Quality – Carefully Inspected</p><p><span class="check">●</span>Competitive Prices – Great Value</p><p><span class="check">●</span>Global Shipping – Worldwide Support</p></a>
@@ -764,5 +867,40 @@ document.querySelectorAll(".site-header .nav-dropdown > button").forEach(functio
  });
 });
 </script>
+
+<script>
+(function(){
+  const grid=document.getElementById("featured-vehicle-grid");
+  if(!grid)return;
+  let inventory=Array.isArray(window.TRUCK_FINDER_VEHICLES)?window.TRUCK_FINDER_VEHICLES:[];
+  function esc(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function priceOf(vehicle){
+    const n=Number(vehicle.priceUSD);
+    if(vehicle.priceUSD!==null&&vehicle.priceUSD!==""&&Number.isFinite(n)&&n>0)return "$"+n.toLocaleString("en-US");
+    return String(vehicle.price||"").trim()||"Price on Request";
+  }
+  function render(){
+    const available=inventory.filter(v=>String(v.status||"").toLowerCase()==="available").slice(0,8);
+    if(!available.length){grid.innerHTML='<p class="featured-vehicle-empty">Please contact us for currently available vehicles.</p>';return;}
+    grid.innerHTML=available.map(function(v){
+      const title=v.title||v.id||"Available Vehicle";
+      const image=v.image||(Array.isArray(v.images)?v.images[0]:"");
+      const year=String(v.year||"").trim();
+      const brand=String(v.brand||v.chassis||"").trim();
+      const crane=[v.crane,v.ton].filter(Boolean).join(" · ");
+      const reach=v.boomLength?("Boom reach: "+v.boomLength):"";
+      const specs=[year,brand,crane,reach].filter(Boolean).map(esc).join(" &nbsp;|&nbsp; ");
+      return '<article class="featured-vehicle-card"><a href="vehicle-details.html?id='+encodeURIComponent(v.id||"")+'">'+
+        (image?'<img class="featured-vehicle-image" src="'+esc(image)+'" alt="'+esc(title)+'" loading="lazy">':'<div class="featured-vehicle-image-placeholder">Vehicle image unavailable</div>')+
+        '<div class="featured-vehicle-body"><p class="featured-vehicle-category">'+esc(v.category||"Commercial Vehicle")+'</p><h3>'+esc(title)+'</h3><p class="featured-vehicle-specs">'+(specs||"Specifications available on request")+'</p><p class="featured-vehicle-price">'+esc(priceOf(v))+'</p><div class="featured-vehicle-details"><span>VIEW DETAILS</span><span aria-hidden="true">→</span></div></div></a></article>';
+    }).join("");
+  }
+  render();
+  if(window.TRUCK_FINDER_VEHICLES_READY&&typeof window.TRUCK_FINDER_VEHICLES_READY.then==="function"){
+    window.TRUCK_FINDER_VEHICLES_READY.then(function(updated){inventory=Array.isArray(updated)?updated:[];render();});
+  }
+})();
+</script>
+
 </body>
 </html>
