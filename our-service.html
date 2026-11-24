@@ -134,7 +134,14 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
     </div>
     <span class="nav-placeholder" aria-disabled="true">NEWS</span>
     <span class="nav-placeholder" aria-disabled="true">VIDEO</span>
-    <a href="our-service.html" aria-current="page">OUR SERVICE</a>
+    <div class="nav-dropdown">
+      <button class="nav-products" type="button" aria-expanded="false">OUR SERVICE <span aria-hidden="true">⌄</span></button>
+      <div class="nav-dropdown-menu">
+        <a href="our-service.html">OUR SERVICE</a>
+        <a href="about-us.html">ABOUT US</a>
+      </div>
+    </div>
+    <a class="nav-link" href="index.html#contact">CONTACT US</a>
   </nav>
   <a class="quote-button" href="index.html#contact" aria-label="GET A QUOTE" title="GET A QUOTE">✉<span class="quote-label">GET A QUOTE</span></a>
 </header>
@@ -233,20 +240,13 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 (function(){
  const header=document.querySelector(".site-header");
  const toggle=document.querySelector(".nav-toggle");
- const dropdown=document.querySelector(".nav-dropdown");
- const products=document.querySelector(".nav-products");
- if(toggle&&header){
-  toggle.addEventListener("click",function(){
-   const open=header.classList.toggle("nav-open");
-   toggle.setAttribute("aria-expanded",String(open));
-  });
- }
- if(products&&dropdown){
-  products.addEventListener("click",function(){
+ document.querySelectorAll(".site-header .nav-dropdown > button").forEach(function(button){
+  button.addEventListener("click",function(){
+   const dropdown=button.closest(".nav-dropdown");
    const open=dropdown.classList.toggle("products-open");
-   products.setAttribute("aria-expanded",String(open));
+   button.setAttribute("aria-expanded",String(open));
   });
- }
+ });
 })();
 </script>
 </body>
