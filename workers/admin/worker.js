@@ -1291,6 +1291,49 @@ const VEHICLE_FIELDS = [
 
 const STATUSES = ["draft", "available", "reserved", "sold"];
 
+async function ensureFeaturedTable(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS homepage_featured_vehicles (
+      vehicle_id INTEGER PRIMARY KEY,
+      sort_order INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+}
+
+async function validateFeaturedSelection(db, id, enabled, sortOrder, status, isPublished) {
+  if (!enabled) return null;
+  if (status !== "available" || !isPublished) {
+    return "Only published vehicles with Available status can be recommended.";
+  }
+  const order = Number(sortOrder);
+  if (!Number.isSafeInteger(order) || order < 1 || order > 999) {
+    return "Featured order must be a whole number from 1 to 999.";
+  }
+  await ensureFeaturedTable(db);
+  const existing = id
+    ? await db.prepare("SELECT vehicle_id FROM homepage_featured_vehicles WHERE vehicle_id = ?").bind(id).first()
+    : null;
+  const count = await db.prepare("SELECT COUNT(*) AS total FROM homepage_featured_vehicles").first();
+  if (!existing && Number(count?.total || 0) >= 8) {
+    return "HOT PRODUCTS can include a maximum of 8 vehicles. Remove another recommendation first.";
+  }
+  return null;
+}
+
+async function saveFeaturedSelection(db, id, enabled, sortOrder) {
+  await ensureFeaturedTable(db);
+  if (!enabled) {
+    await db.prepare("DELETE FROM homepage_featured_vehicles WHERE vehicle_id = ?").bind(id).run();
+    return;
+  }
+  await db.prepare(`
+    INSERT INTO homepage_featured_vehicles (vehicle_id, sort_order)
+    VALUES (?, ?)
+    ON CONFLICT(vehicle_id) DO UPDATE SET sort_order = excluded.sort_order
+  `).bind(id, Number(sortOrder)).run();
+}
+
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
@@ -1470,15 +1513,19 @@ async function handle(request, env) {
       return json({ error: "Database unavailable" }, 503, corsHeaders);
     }
 
+    await ensureFeaturedTable(publicDb);
     const result = await publicDb.prepare(
-      `SELECT id, vehicle_code, title, category, sub_category, video_url,
-              brand, model, year, mileage, price, location, engine, horsepower,
-              crane_brand, crane_capacity, boom_type, boom_length,
-              specifications, description,
-              seo_title, meta_description, focus_keyword, related_keywords, image_alt
-       FROM vehicles
-       WHERE is_published = 1 AND status = 'available'
-       ORDER BY updated_at DESC, id DESC
+      `SELECT v.id, v.vehicle_code, v.title, v.category, v.sub_category, v.video_url,
+              v.brand, v.model, v.year, v.mileage, v.price, v.location, v.engine, v.horsepower,
+              v.crane_brand, v.crane_capacity, v.boom_type, v.boom_length,
+              v.specifications, v.description,
+              v.seo_title, v.meta_description, v.focus_keyword, v.related_keywords, v.image_alt,
+              CASE WHEN f.vehicle_id IS NULL THEN 0 ELSE 1 END AS is_featured,
+              COALESCE(f.sort_order, 0) AS featured_order
+       FROM vehicles v
+       LEFT JOIN homepage_featured_vehicles f ON f.vehicle_id = v.id
+       WHERE v.is_published = 1 AND v.status = 'available'
+       ORDER BY v.updated_at DESC, v.id DESC
        LIMIT 500`
     ).all();
 
@@ -1538,6 +1585,8 @@ async function handle(request, env) {
         relatedKeywords: vehicle.related_keywords || "",
         imageAlt: vehicle.image_alt || "",
         status: "Available",
+        isFeatured: Boolean(vehicle.is_featured),
+        featuredOrder: Number(vehicle.featured_order || 0),
         image: images[0]?.image_url || "",
         images: images.map(item => item.image_url)
       };
@@ -1604,6 +1653,7 @@ async function handle(request, env) {
 
   const db = DB;
   const bucket = env.BUCKET;
+  await ensureFeaturedTable(db);
 
   // Check login session
   if (path === "/api/me" && method === "GET") {
@@ -1675,6 +1725,14 @@ async function handle(request, env) {
       return json({ error: "Invalid vehicle status" }, 400);
     }
 
+    const isFeatured = data.is_featured === true;
+    const isPublished = Boolean(data.is_published);
+    const featuredOrder = data.featured_order === undefined ? 1 : data.featured_order;
+    const featuredError = await validateFeaturedSelection(
+      db, null, isFeatured, featuredOrder, status, isPublished
+    );
+    if (featuredError) return json({ error: featuredError }, 400);
+
     const fields = VEHICLE_FIELDS.filter(
       field => data[field] !== undefined
     );
@@ -1693,9 +1751,12 @@ async function handle(request, env) {
        VALUES (${fields.map(() => "?").join(", ")})`
     ).bind(...values).run();
 
+    const newId = result.meta.last_row_id;
+    await saveFeaturedSelection(db, newId, isFeatured, featuredOrder);
+
     return json({
       success: true,
-      id: result.meta.last_row_id,
+      id: newId,
       vehicle_code: data.vehicle_code
     }, 201);
   }
@@ -1723,6 +1784,11 @@ if (imageId !== null &&
     ).bind(id).first();
 
     if (!vehicle) return json({ error: "Vehicle not found" }, 404);
+    const featuredRecord = await db.prepare(
+      "SELECT sort_order FROM homepage_featured_vehicles WHERE vehicle_id = ?"
+    ).bind(id).first();
+    vehicle.is_featured = Boolean(featuredRecord);
+    vehicle.featured_order = Number(featuredRecord?.sort_order || 1);
 
     // Upload or replace a vehicle video in R2.
     if (isVideoRoute && method === "POST") {
@@ -2004,20 +2070,47 @@ order++;
         field => data[field] !== undefined
       );
 
-      if (!fields.length) {
-        return json({ error: "No editable fields supplied" }, 400);
+      const finalStatus = data.status !== undefined ? data.status : vehicle.status;
+      const finalPublished = data.is_published !== undefined
+        ? Boolean(data.is_published)
+        : Boolean(vehicle.is_published);
+      const currentFeatured = Boolean(vehicle.is_featured);
+      const isFeatured = data.is_featured !== undefined
+        ? data.is_featured === true
+        : currentFeatured && finalStatus === "available" && finalPublished;
+      const featuredOrder = data.featured_order !== undefined
+        ? data.featured_order
+        : vehicle.featured_order;
+
+      const featuredError = await validateFeaturedSelection(
+        db, id, isFeatured, featuredOrder, finalStatus, finalPublished
+      );
+      if (featuredError) return json({ error: featuredError }, 400);
+
+      if (fields.length) {
+        const assignments = fields.map(field => `${field} = ?`).join(", ");
+        const values = fields.map(field => {
+          if (field === "is_published") return data[field] ? 1 : 0;
+          return data[field];
+        });
+
+        await db.prepare(
+          `UPDATE vehicles SET ${assignments},
+           updated_at = CURRENT_TIMESTAMP WHERE id = ?`
+        ).bind(...values, id).run();
       }
 
-      const assignments = fields.map(field => `${field} = ?`).join(", ");
-      const values = fields.map(field => {
-        if (field === "is_published") return data[field] ? 1 : 0;
-        return data[field];
-      });
+      if (data.is_featured !== undefined ||
+          finalStatus !== "available" || !finalPublished) {
+        await saveFeaturedSelection(db, id, isFeatured, featuredOrder);
+      } else if (currentFeatured && data.featured_order !== undefined) {
+        await saveFeaturedSelection(db, id, true, featuredOrder);
+      }
 
-      await db.prepare(
-        `UPDATE vehicles SET ${assignments},
-         updated_at = CURRENT_TIMESTAMP WHERE id = ?`
-      ).bind(...values, id).run();
+      if (!fields.length && data.is_featured === undefined &&
+          data.featured_order === undefined) {
+        return json({ error: "No editable fields supplied" }, 400);
+      }
 
       return json({ success: true, id });
     }
@@ -2030,6 +2123,7 @@ order++;
 
       await db.batch([
         db.prepare("DELETE FROM vehicle_images WHERE vehicle_id = ?").bind(id),
+        db.prepare("DELETE FROM homepage_featured_vehicles WHERE vehicle_id = ?").bind(id),
         db.prepare("DELETE FROM vehicles WHERE id = ?").bind(id)
       ]);
 
