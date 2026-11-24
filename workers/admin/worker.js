@@ -1474,7 +1474,8 @@ async function handle(request, env) {
       `SELECT id, vehicle_code, title, category, sub_category, video_url,
               brand, model, year, mileage, price, location, engine, horsepower,
               crane_brand, crane_capacity, boom_type, boom_length,
-              specifications, description
+              specifications, description,
+              seo_title, meta_description, focus_keyword, related_keywords, image_alt
        FROM vehicles
        WHERE is_published = 1 AND status = 'available'
        ORDER BY updated_at DESC, id DESC
