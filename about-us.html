@@ -661,3 +661,21 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
   .about-page .about-work-item p{font-size:14px!important}
 }
 </style>
+
+
+<style id="about-work-layout-more-room">
+/* Give section 03 more horizontal room and shift the composition slightly left */
+.about-page .about-work-layout{
+  width:calc(100% + 80px)!important;
+  margin-left:-40px!important;
+  grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr)!important;
+  column-gap:48px!important;
+}
+@media(max-width:760px){
+  .about-page .about-work-layout{
+    width:100%!important;
+    margin-left:0!important;
+    grid-template-columns:1fr!important;
+  }
+}
+</style>
