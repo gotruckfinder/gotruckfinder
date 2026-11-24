@@ -446,7 +446,14 @@ nav a:nth-child(6){
     </div>
     <span class="nav-placeholder" aria-disabled="true">NEWS</span>
     <span class="nav-placeholder" aria-disabled="true">VIDEO</span>
-    <a class="nav-link" href="our-service.html">OUR SERVICE</a>
+    <div class="nav-dropdown">
+      <button class="nav-products" type="button" aria-expanded="false">OUR SERVICE <span aria-hidden="true">⌄</span></button>
+      <div class="nav-dropdown-menu">
+        <a href="our-service.html">OUR SERVICE</a>
+        <a href="about-us.html">ABOUT US</a>
+      </div>
+    </div>
+    <a class="nav-link" href="index.html#contact">CONTACT US</a>
   </nav>
   <a class="quote-button" href="#contact" aria-label="GET A QUOTE" title="GET A QUOTE"><span class="quote-icon" aria-hidden="true">✉</span><span class="quote-label">GET A QUOTE</span></a>
 </header>
@@ -748,6 +755,15 @@ document.querySelectorAll(".site-header").forEach(function(header){
   carousel.addEventListener("focusin",stop);carousel.addEventListener("focusout",start);
   document.addEventListener("visibilitychange",()=>document.hidden?stop():start());show(0);start();
 })();
+</script>
+<script>
+document.querySelectorAll(".site-header .nav-dropdown > button").forEach(function(button){
+ button.addEventListener("click",function(event){
+  var dropdown=button.closest(".nav-dropdown");
+  var opened=dropdown.classList.toggle("products-open");
+  button.setAttribute("aria-expanded",String(opened));
+ });
+});
 </script>
 </body>
 </html>
