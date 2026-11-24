@@ -689,3 +689,38 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
   }
 }
 </style>
+
+<style id="about-work-top-copy-bottom-cards">
+/* Section 03: place the full introduction above the three horizontal process cards */
+.about-page .about-work-layout{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  width:100%!important;
+  max-width:1200px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  row-gap:34px!important;
+}
+.about-page .about-work-copy{
+  width:100%!important;
+  max-width:780px!important;
+  min-width:0!important;
+}
+.about-page .about-work-copy > .about-label{margin:0 0 28px!important}
+.about-page .about-work-copy > h2{margin:0 0 22px!important}
+.about-page .about-work-copy .about-work-intro{
+  max-width:780px!important;
+  margin:0!important;
+}
+.about-page .about-work-list{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:18px!important;
+  width:100%!important;
+  margin:0!important;
+}
+@media(max-width:760px){
+  .about-page .about-work-layout{grid-template-columns:minmax(0,1fr)!important;row-gap:26px!important}
+  .about-page .about-work-list{grid-template-columns:1fr!important;gap:13px!important}
+}
+</style>
