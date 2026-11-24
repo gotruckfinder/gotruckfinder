@@ -304,6 +304,45 @@ footer{background:#062f78;color:#dbe8ff;padding:22px 3%;text-align:center;font-s
 .about-page .about-cta .about-button b{color:var(--tf-blue)}
 .about-page .about-cta .about-button:hover{background:#eaf2ff}
 </style>
+<style id="about-section-label-size-final">
+/* Section numbers and eyebrow titles must read larger than body copy */
+.about-page .about-label,
+.about-page .about-intro .about-label,
+.about-page .about-partner .about-label,
+.about-page .about-work .about-label,
+.about-page .about-values .about-label{
+  display:block!important;
+  font-size:22px!important;
+  line-height:1.35!important;
+  font-weight:800!important;
+  letter-spacing:1.4px!important;
+  text-transform:uppercase!important;
+}
+.about-page .about-intro-copy p:not(.about-label),
+.about-page .about-partner-copy p:not(.about-label),
+.about-page .about-work-intro,
+.about-page .about-values-copy p{
+  font-size:17px;
+  line-height:1.8;
+}
+@media(max-width:760px){
+ .about-page .about-label,
+ .about-page .about-intro .about-label,
+ .about-page .about-partner .about-label,
+ .about-page .about-work .about-label,
+ .about-page .about-values .about-label{
+   font-size:19px!important;
+   line-height:1.4!important;
+   letter-spacing:1px!important;
+ }
+ .about-page .about-intro-copy p:not(.about-label),
+ .about-page .about-partner-copy p:not(.about-label),
+ .about-page .about-work-intro,
+ .about-page .about-values-copy p{
+   font-size:15px;
+ }
+}
+</style>
 </head>
 <body>
 <header class="site-header">
