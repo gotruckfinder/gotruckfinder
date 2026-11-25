@@ -16,9 +16,19 @@ h1{font-size:26px}
 .panel{margin-top:24px}
 button{background:#182536;color:white;border:0;padding:11px 18px;border-radius:6px;cursor:pointer}
 input{padding:11px;border:1px solid #ddd;border-radius:6px;width:260px;max-width:100%}
-table{width:100%;border-collapse:collapse;margin-top:18px}
-th,td{text-align:left;padding:13px;border-bottom:1px solid #eee;font-size:14px}
+table{width:100%;border-collapse:collapse;margin-top:18px;table-layout:fixed}
+th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #eee;font-size:14px;vertical-align:middle}
 th{color:#777}
+th:nth-child(1),td:nth-child(1){width:16%}
+th:nth-child(2),td:nth-child(2){width:34%}
+th:nth-child(3),td:nth-child(3){width:14%}
+th:nth-child(4),td:nth-child(4){width:36%}
+.vehicle-code-cell,.vehicle-title-cell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.action-cell{white-space:nowrap}
+.action-controls{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+.action-controls select{max-width:108px;min-width:88px;padding:8px 5px}
+.action-controls button{padding:9px 12px;white-space:nowrap;font-size:13px;flex:0 0 auto}
+@media(max-width:900px){.panel{overflow-x:auto}table{min-width:900px}}
 #message{color:#777;margin-top:15px}
 @media(max-width:700px){
 .stats{grid-template-columns:repeat(2,1fr)}
@@ -348,7 +358,6 @@ th{color:#777}
 <th>Vehicle Code</th>
 <th>Vehicle</th>
 <th>Category</th>
-<th>Status</th>
 <th>Action</th>
 </tr>
 </thead>
@@ -1138,31 +1147,29 @@ async function loadVehicles() {
 
 document.getElementById("vehicles").innerHTML =
   (data.vehicles || []).map(v =>
-    "<tr><td>" + escapeHtml(v.vehicle_code) +
-    "</td><td>" + escapeHtml(v.title) +
+    "<tr><td class='vehicle-code-cell' title='" + escapeHtml(v.vehicle_code) + "'>" + escapeHtml(v.vehicle_code) +
+    "</td><td class='vehicle-title-cell' title='" + escapeHtml(v.title) + "'>" + escapeHtml(v.title) +
     "</td><td>" + escapeHtml(v.category) +
-    "</td><td>" + escapeHtml(v.status) +
-    "</td><td>" +
+    "</td><td class='action-cell'><div class='action-controls'>" +
 
     "<select id='status-" + Number(v.id) + "'>" +
     "<option value='draft' " + (v.status === "draft" ? "selected" : "") + ">Draft</option>" +
     "<option value='available' " + (v.status === "available" ? "selected" : "") + ">Available</option>" +
     "<option value='reserved' " + (v.status === "reserved" ? "selected" : "") + ">Reserved</option>" +
     "<option value='sold' " + (v.status === "sold" ? "selected" : "") + ">Sold</option>" +
-    "</select> " +
+    "</select>" +
 
-    "<button type=\\\"button\\\" onclick=\\\"updateVehicleStatus(" + Number(v.id) + ")\\\">Update</button> " +
-
-    "<button type=\\\"button\\\" onclick=\\\"editVehicle(" + Number(v.id) + ")\\\">Edit</button> " +
+    "<button type=\\\"button\\\" onclick=\\\"updateVehicleStatus(" + Number(v.id) + ")\\\">Update</button>" +
+    "<button type=\\\"button\\\" onclick=\\\"editVehicle(" + Number(v.id) + ")\\\">Edit</button>" +
 
     "<button type=\\\"button\\\" " +
     (Number(v.is_featured) === 1 ? "style=\\\"background:#063B91;color:#fff\\\" " : "") +
     "onclick=\\\"toggleFeatured(" + Number(v.id) + "," + (Number(v.is_featured) === 1 ? "true" : "false") + ")\\\">" +
-    (Number(v.is_featured) === 1 ? "Recommended" : "Recommend") + "</button> " +
+    (Number(v.is_featured) === 1 ? "Recommended" : "Recommend") + "</button>" +
 
     "<button type=\\\"button\\\" onclick=\\\"deleteVehicle(" + Number(v.id) + ")\\\">Delete</button>" +
 
-    "</td></tr>"
+    "</div></td></tr>"
   ).join("");
 
 
