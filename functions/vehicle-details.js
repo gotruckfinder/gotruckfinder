@@ -29,7 +29,9 @@ function isHttpUrl(value) {
 }
 
 function parseMileage(value) {
-  const match = String(value ?? "").match(/([\d,]+(?:\.\d+)?)\s*(km|kilometers?|mi|miles?)\b/i);
+  // Only publish an odometer value when the source is an exact measurement.
+  // Text such as "Over 20,000 km" must not be represented as exactly 20,000.
+  const match = String(value ?? "").trim().match(/^([\d,]+(?:\.\d+)?)\s*(km|kilometers?|mi|miles?)$/i);
   if (!match) return null;
   const amount = Number(match[1].replace(/,/g, ""));
   if (!Number.isFinite(amount) || amount < 0) return null;
@@ -40,10 +42,11 @@ function parseMileage(value) {
 function parseExactUsdOffer(value, canonicalUrl) {
   const raw = String(value ?? "").trim();
   if (!raw || !/(?:\bUSD\b|\$)/i.test(raw)) return null;
-  const amounts = raw.replace(/,/g, "").match(/\d+(?:\.\d+)?/g) || [];
-  // A displayed price range is not a single exact offer.
-  if (amounts.length !== 1) return null;
-  const price = Number(amounts[0]);
+  // Accept only a single, exact USD amount. Exclude ranges, "+" prices,
+  // "from" prices, and negotiable/approximate values.
+  const exactMatch = raw.match(/^(?:USD\s*)?\$?\s*([\d,]+(?:\.\d+)?)\s*(?:USD)?$/i);
+  if (!exactMatch) return null;
+  const price = Number(exactMatch[1].replace(/,/g, ""));
   if (!Number.isFinite(price) || price <= 0) return null;
   return {
     "@type": "Offer",
