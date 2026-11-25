@@ -67,7 +67,12 @@ th:nth-child(4),td:nth-child(4){width:36%}
 #vehicleFormPanel textarea {
   resize: vertical;
   margin-bottom: 12px;
+  min-height: 180px;
+  line-height: 1.5;
 }
+#vehicleFormPanel textarea[name="specifications"] { min-height: 240px; }
+#vehicleFormPanel textarea[name="description"] { min-height: 280px; }
+#vehicleFormPanel textarea[name="meta_description"] { min-height: 150px; }
 
 #vehicleFormPanel input[type="checkbox"] {
   width: auto;
@@ -206,12 +211,12 @@ th:nth-child(4),td:nth-child(4){width:36%}
 
       <div>
         <label>Price</label>
-        <input name="price" type="number" step="0.01">
+        <input name="price" type="text" placeholder="e.g. USD 20,000–25,000">
       </div>
 
       <div>
-        <label>Location</label>
-        <input name="location">
+        <label>Drive Type</label>
+        <input name="location" placeholder="e.g. 4x2, 6x4, 8x4">
       </div>
 
     </div>
@@ -241,12 +246,12 @@ th:nth-child(4),td:nth-child(4){width:36%}
 
 <div>
   <label>Category-specific Specifications</label>
-  <textarea name="specifications" rows="5" placeholder="Enter relevant professional specifications: tank capacity, working height, loading volume, cleaning width, suction capacity, water tank volume, or other category-specific parameters."></textarea>
+  <textarea name="specifications" rows="10" placeholder="Enter relevant professional specifications: tank capacity, working height, loading volume, cleaning width, suction capacity, water tank volume, or other category-specific parameters."></textarea>
 </div>
 
 <div>
   <label>Description</label>
-  <textarea name="description" rows="5"></textarea>
+  <textarea name="description" rows="12"></textarea>
 </div>
 
 <h3>SEO Settings</h3>
@@ -267,7 +272,7 @@ th:nth-child(4),td:nth-child(4){width:36%}
 </div>
 <div>
   <label>Meta Description</label>
-  <textarea name="meta_description" rows="3" maxlength="160" placeholder="Write a clear summary of this specific vehicle, ideally around 150–160 characters."></textarea>
+  <textarea name="meta_description" rows="6" maxlength="160" placeholder="Write a clear summary of this specific vehicle, ideally around 150–160 characters."></textarea>
 </div>
 <div>
   <label>Main Image ALT Text</label>
@@ -943,7 +948,6 @@ async function saveVehicle(event) {
     const numberFields = [
       "year",
       "mileage",
-      "price",
       "horsepower"
     ];
 
@@ -1619,9 +1623,18 @@ async function handle(request, env) {
         ton: vehicle.crane_capacity,
         boomLength: vehicle.boom_length,
         price: vehicle.price,
-        priceUSD: vehicle.price === null || vehicle.price === undefined || vehicle.price === ""
-          ? null
-          : (Number.isFinite(Number(vehicle.price)) ? Number(vehicle.price) : null),
+        priceUSD: (() => {
+          const matches = String(vehicle.price ?? "").match(/[\\d,]+(?:\\.\\d+)?/g);
+          if (!matches || !matches.length) return null;
+          const value = Number(matches[0].replace(/,/g, ""));
+          return Number.isFinite(value) ? value : null;
+        })(),
+        priceMaxUSD: (() => {
+          const matches = String(vehicle.price ?? "").match(/[\\d,]+(?:\\.\\d+)?/g);
+          if (!matches || matches.length < 2) return null;
+          const value = Number(matches[1].replace(/,/g, ""));
+          return Number.isFinite(value) ? value : null;
+        })(),
         location: vehicle.location,
         engine: vehicle.engine,
         horsepower: vehicle.horsepower,
