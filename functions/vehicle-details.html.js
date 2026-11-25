@@ -41,7 +41,7 @@ function parseMileage(value) {
 
 function parseExactUsdOffer(value, canonicalUrl) {
   const raw = String(value ?? "").trim();
-  if (!raw || !/(?:\\bUSD\\b|\\$)/i.test(raw)) return null;
+  if (!raw || !/(?:\bUSD\b|\$)/i.test(raw)) return null;
 
   const common = {
     availability: "https://schema.org/InStock",
@@ -51,7 +51,7 @@ function parseExactUsdOffer(value, canonicalUrl) {
   };
 
   // Preserve a displayed price range as AggregateOffer; never invent a single price.
-  const rangeMatch = raw.match(/^(?:USD\\s*)?\\$?\\s*([\\d,]+(?:\\.\\d+)?)\\s*(?:USD)?\\s*[-–—]\\s*(?:USD\\s*)?\\$?\\s*([\\d,]+(?:\\.\\d+)?)\\s*(?:USD)?$/i);
+  const rangeMatch = raw.match(/^(?:USD\s*)?\$?\s*([\d,]+(?:\.\d+)?)\s*(?:USD)?\s*[-–—]\s*(?:USD\s*)?\$?\s*([\d,]+(?:\.\d+)?)\s*(?:USD)?$/i);
   if (rangeMatch) {
     const lowPrice = Number(rangeMatch[1].replace(/,/g, ""));
     const highPrice = Number(rangeMatch[2].replace(/,/g, ""));
@@ -61,7 +61,7 @@ function parseExactUsdOffer(value, canonicalUrl) {
   }
 
   // Only a single exact USD amount can be represented as Offer.
-  const exactMatch = raw.match(/^(?:USD\\s*)?\\$?\\s*([\\d,]+(?:\\.\\d+)?)\\s*(?:USD)?$/i);
+  const exactMatch = raw.match(/^(?:USD\s*)?\$?\s*([\d,]+(?:\.\d+)?)\s*(?:USD)?$/i);
   if (!exactMatch) return null;
   const price = Number(exactMatch[1].replace(/,/g, ""));
   if (!Number.isFinite(price) || price <= 0) return null;
