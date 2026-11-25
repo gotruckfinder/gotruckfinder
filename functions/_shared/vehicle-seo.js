@@ -98,11 +98,11 @@ function renderSeoTags(html, seo) {
   let head = html.match(/<head\b[^>]*>[\s\S]*?<\/head>/i)?.[0];
   if (!head) return html;
   if (/<title\b[^>]*>[\s\S]*?<\/title>/i.test(head)) {
-    head = head.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, \`<title>\${escapedTitle}</title>\`);
+    head = head.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${escapedTitle}</title>`);
   } else {
-    head = head.replace(/<\/head>/i, \`<title>\${escapedTitle}</title>\n</head>\`);
+    head = head.replace(/<\/head>/i, `<title>${escapedTitle}</title>\n</head>`);
   }
-  const descriptionTag = \`<meta name="description" content="\${escapedDescription}">\`;
+  const descriptionTag = `<meta name="description" content="${escapedDescription}">`;
   if (/<meta\s+[^>]*name=["']description["'][^>]*>/i.test(head)) {
     head = head.replace(/<meta\s+[^>]*name=["']description["'][^>]*>/i, descriptionTag);
   } else {
@@ -116,26 +116,26 @@ function renderSeoTags(html, seo) {
     .replace(/<meta\s+[^>]*name=["']twitter:[^"']+["'][^>]*>/gi, "")
     .replace(/<meta\s+[^>]*name=["']tf:seo-[^"']+["'][^>]*>/gi, "");
   const tags = [
-    \`<link rel="canonical" href="\${escapedCanonical}">\`,
+    `<link rel="canonical" href="${escapedCanonical}">`,
     '<meta property="og:type" content="product">',
     '<meta property="og:site_name" content="Truck Finder">',
-    \`<meta property="og:title" content="\${escapedTitle}">\`,
-    \`<meta property="og:description" content="\${escapedDescription}">\`,
-    \`<meta property="og:url" content="\${escapedCanonical}">\`,
+    `<meta property="og:title" content="${escapedTitle}">`,
+    `<meta property="og:description" content="${escapedDescription}">`,
+    `<meta property="og:url" content="${escapedCanonical}">`,
     '<meta name="twitter:card" content="summary_large_image">',
-    \`<meta name="twitter:title" content="\${escapedTitle}">\`,
-    \`<meta name="twitter:description" content="\${escapedDescription}">\`,
-    \`<meta name="tf:seo-title" content="\${escapedTitle}">\`,
-    \`<meta name="tf:seo-description" content="\${escapedDescription}">\`,
-    \`<meta name="tf:seo-image-alt" content="\${escapedImageAlt}">\`
+    `<meta name="twitter:title" content="${escapedTitle}">`,
+    `<meta name="twitter:description" content="${escapedDescription}">`,
+    `<meta name="tf:seo-title" content="${escapedTitle}">`,
+    `<meta name="tf:seo-description" content="${escapedDescription}">`,
+    `<meta name="tf:seo-image-alt" content="${escapedImageAlt}">`
   ];
   if (escapedImage) {
-    tags.push(\`<meta property="og:image" content="\${escapedImage}">\`);
-    tags.push(\`<meta name="twitter:image" content="\${escapedImage}">\`);
+    tags.push(`<meta property="og:image" content="${escapedImage}">`);
+    tags.push(`<meta name="twitter:image" content="${escapedImage}">`);
   }
   if (escapedImageAlt) {
-    tags.push(\`<meta property="og:image:alt" content="\${escapedImageAlt}">\`);
-    tags.push(\`<meta name="twitter:image:alt" content="\${escapedImageAlt}">\`);
+    tags.push(`<meta property="og:image:alt" content="${escapedImageAlt}">`);
+    tags.push(`<meta name="twitter:image:alt" content="${escapedImageAlt}">`);
   }
   if (schemaJson) tags.push('<script type="application/ld+json" id="tf-vehicle-schema">' + schemaJson + '</script>');
   head = head.replace(/<\/head>/i, tags.join("\n") + "\n</head>");
@@ -151,21 +151,21 @@ export async function handleVehicleDetailsRequest(context) {
   let mainImage = "";
   try {
     vehicle = await context.env.DB.prepare(
-      \`SELECT vehicle_code, title, description, seo_title, meta_description,
+      `SELECT vehicle_code, title, description, seo_title, meta_description,
               image_alt, brand, model, category, mileage, price, year
        FROM vehicles
        WHERE vehicle_code = ? AND is_published = 1 AND status = 'available'
-       LIMIT 1\`
+       LIMIT 1`
     ).bind(vehicleCode).first();
     if (vehicle) {
       const image = await context.env.DB.prepare(
-        \`SELECT image_url
+        `SELECT image_url
          FROM vehicle_images
          WHERE vehicle_id = (
            SELECT id FROM vehicles WHERE vehicle_code = ? LIMIT 1
          )
          ORDER BY is_main DESC, sort_order ASC, id ASC
-         LIMIT 1\`
+         LIMIT 1`
       ).bind(vehicleCode).first();
       if (image && isHttpUrl(image.image_url)) mainImage = image.image_url;
     }
