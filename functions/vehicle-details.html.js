@@ -41,27 +41,42 @@ function parseMileage(value) {
 
 function parseExactUsdOffer(value, canonicalUrl) {
   const raw = String(value ?? "").trim();
-  if (!raw || !/(?:\bUSD\b|\$)/i.test(raw)) return null;
-  // Accept only a single, exact USD amount. Exclude ranges, "+" prices,
-  // "from" prices, and negotiable/approximate values.
-  const exactMatch = raw.match(/^(?:USD\s*)?\$?\s*([\d,]+(?:\.\d+)?)\s*(?:USD)?$/i);
+  if (!raw || !/(?:\\bUSD\\b|\\$)/i.test(raw)) return null;
+
+  const common = {
+    availability: "https://schema.org/InStock",
+    itemCondition: "https://schema.org/UsedCondition",
+    url: canonicalUrl,
+    priceCurrency: "USD"
+  };
+
+  // Preserve a displayed price range as AggregateOffer; never invent a single price.
+  const rangeMatch = raw.match(/^(?:USD\\s*)?\\$?\\s*([\\d,]+(?:\\.\\d+)?)\\s*(?:USD)?\\s*[-–—]\\s*(?:USD\\s*)?\\$?\\s*([\\d,]+(?:\\.\\d+)?)\\s*(?:USD)?$/i);
+  if (rangeMatch) {
+    const lowPrice = Number(rangeMatch[1].replace(/,/g, ""));
+    const highPrice = Number(rangeMatch[2].replace(/,/g, ""));
+    if (!Number.isFinite(lowPrice) || !Number.isFinite(highPrice) ||
+        lowPrice <= 0 || highPrice < lowPrice) return null;
+    return { "@type": "AggregateOffer", ...common, lowPrice, highPrice };
+  }
+
+  // Only a single exact USD amount can be represented as Offer.
+  const exactMatch = raw.match(/^(?:USD\\s*)?\\$?\\s*([\\d,]+(?:\\.\\d+)?)\\s*(?:USD)?$/i);
   if (!exactMatch) return null;
   const price = Number(exactMatch[1].replace(/,/g, ""));
   if (!Number.isFinite(price) || price <= 0) return null;
-  return {
-    "@type": "Offer",
-    price,
-    priceCurrency: "USD",
-    availability: "https://schema.org/InStock",
-    itemCondition: "https://schema.org/UsedCondition",
-    url: canonicalUrl
-  };
+  return { "@type": "Offer", ...common, price };
 }
 
 function buildVehicleProductSchema(vehicle, canonicalUrl, mainImage) {
   const name = cleanText(vehicle.title, 180);
   if (!name) return null;
   const description = cleanText(vehicle.meta_description || vehicle.description, 1000);
+  // Google Product rich results require a genuine Offer, Review, or AggregateRating.
+  // Do not publish an invalid Product item for contact-only or unparseable prices.
+  const offer = parseExactUsdOffer(vehicle.price, canonicalUrl);
+  if (!offer) return null;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": ["Product", "Vehicle"],
@@ -69,7 +84,8 @@ function buildVehicleProductSchema(vehicle, canonicalUrl, mainImage) {
     name,
     url: canonicalUrl,
     mainEntityOfPage: canonicalUrl,
-    itemCondition: "https://schema.org/UsedCondition"
+    itemCondition: "https://schema.org/UsedCondition",
+    offers: offer
   };
   if (description) schema.description = description;
   if (mainImage) schema.image = [mainImage];
@@ -79,8 +95,6 @@ function buildVehicleProductSchema(vehicle, canonicalUrl, mainImage) {
   if (vehicle.category) schema.category = cleanText(vehicle.category, 120);
   const mileage = parseMileage(vehicle.mileage);
   if (mileage) schema.mileageFromOdometer = mileage;
-  const offer = parseExactUsdOffer(vehicle.price, canonicalUrl);
-  if (offer) schema.offers = offer;
   return schema;
 }
 
