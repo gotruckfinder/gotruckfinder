@@ -1624,13 +1624,13 @@ async function handle(request, env) {
         boomLength: vehicle.boom_length,
         price: vehicle.price,
         priceUSD: (() => {
-          const matches = String(vehicle.price ?? "").match(/[\\d,]+(?:\\.\\d+)?/g);
+          const matches = String(vehicle.price ?? "").match(/[\d,]+(?:\.\d+)?/g);
           if (!matches || !matches.length) return null;
           const value = Number(matches[0].replace(/,/g, ""));
           return Number.isFinite(value) ? value : null;
         })(),
         priceMaxUSD: (() => {
-          const matches = String(vehicle.price ?? "").match(/[\\d,]+(?:\\.\\d+)?/g);
+          const matches = String(vehicle.price ?? "").match(/[\d,]+(?:\.\d+)?/g);
           if (!matches || matches.length < 2) return null;
           const value = Number(matches[1].replace(/,/g, ""));
           return Number.isFinite(value) ? value : null;
