@@ -30,30 +30,21 @@ export async function onRequest(context) {
 
   let vehicles;
   try {
-    const inventoryUrl = new URL("/api/public/vehicles", context.request.url);
-    const inventoryResponse = await fetch(inventoryUrl.toString(), {
-      method: "GET",
-      headers: { "Accept": "application/json" }
-    });
-
-    if (!inventoryResponse.ok) {
-      return new Response("Vehicle inventory is temporarily unavailable.", {
-        status: 503,
-        headers: {
-          "Content-Type": "text/plain; charset=UTF-8",
-          "Cache-Control": "no-store",
-          "Retry-After": "300"
-        }
-      });
+    if (!context.env?.DB) {
+      throw new Error("Pages D1 binding DB is unavailable");
     }
 
-    const payload = await inventoryResponse.json();
-    if (!payload || !Array.isArray(payload.vehicles)) {
-      throw new Error("Invalid public vehicle inventory response");
-    }
-    vehicles = payload.vehicles;
+    const result = await context.env.DB.prepare(
+      `SELECT vehicle_code
+       FROM vehicles
+       WHERE is_published = 1 AND status = 'available'
+       ORDER BY updated_at DESC, id DESC
+       LIMIT 500`
+    ).all();
+
+    vehicles = result.results || [];
   } catch (error) {
-    console.error("Sitemap inventory lookup failed:", error);
+    console.error("Sitemap D1 inventory lookup failed:", error);
     return new Response("Unable to generate sitemap at this time.", {
       status: 503,
       headers: {
@@ -68,7 +59,7 @@ export async function onRequest(context) {
   const seen = new Set(urls);
 
   for (const vehicle of vehicles) {
-    const code = String(vehicle?.id || "").trim();
+    const code = String(vehicle?.vehicle_code || "").trim();
     if (!/^[A-Za-z0-9._-]{1,100}$/.test(code)) continue;
     const url = SITE_ORIGIN + "/vehicle-details?id=" + encodeURIComponent(code);
     if (!seen.has(url)) {
