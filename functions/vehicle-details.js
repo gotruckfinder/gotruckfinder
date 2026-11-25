@@ -28,12 +28,69 @@ function isHttpUrl(value) {
   }
 }
 
+function parseMileage(value) {
+  const match = String(value ?? "").match(/([\d,]+(?:\.\d+)?)\s*(km|kilometers?|mi|miles?)\b/i);
+  if (!match) return null;
+  const amount = Number(match[1].replace(/,/g, ""));
+  if (!Number.isFinite(amount) || amount < 0) return null;
+  const isMiles = /^mi|miles?/i.test(match[2]);
+  return { "@type": "QuantitativeValue", value: amount, unitCode: isMiles ? "SMI" : "KMT" };
+}
+
+function parseExactUsdOffer(value, canonicalUrl) {
+  const raw = String(value ?? "").trim();
+  if (!raw || !/(?:\bUSD\b|\$)/i.test(raw)) return null;
+  const amounts = raw.replace(/,/g, "").match(/\d+(?:\.\d+)?/g) || [];
+  // A displayed price range is not a single exact offer.
+  if (amounts.length !== 1) return null;
+  const price = Number(amounts[0]);
+  if (!Number.isFinite(price) || price <= 0) return null;
+  return {
+    "@type": "Offer",
+    price,
+    priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
+    itemCondition: "https://schema.org/UsedCondition",
+    url: canonicalUrl
+  };
+}
+
+function buildVehicleProductSchema(vehicle, canonicalUrl, mainImage) {
+  const name = cleanText(vehicle.title, 180);
+  if (!name) return null;
+  const description = cleanText(vehicle.meta_description || vehicle.description, 1000);
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": ["Product", "Vehicle"],
+    "@id": canonicalUrl + "#product",
+    name,
+    url: canonicalUrl,
+    mainEntityOfPage: canonicalUrl,
+    itemCondition: "https://schema.org/UsedCondition"
+  };
+  if (description) schema.description = description;
+  if (mainImage) schema.image = [mainImage];
+  if (vehicle.vehicle_code) schema.sku = cleanText(vehicle.vehicle_code, 100);
+  if (vehicle.brand) schema.brand = { "@type": "Brand", name: cleanText(vehicle.brand, 120) };
+  if (vehicle.model) schema.model = cleanText(vehicle.model, 120);
+  if (vehicle.category) schema.category = cleanText(vehicle.category, 120);
+  const mileage = parseMileage(vehicle.mileage);
+  if (mileage) schema.mileageFromOdometer = mileage;
+  const offer = parseExactUsdOffer(vehicle.price, canonicalUrl);
+  if (offer) schema.offers = offer;
+  return schema;
+}
+
 function renderSeoTags(html, seo) {
   const escapedTitle = escapeHtml(seo.title);
   const escapedDescription = escapeHtml(seo.description);
   const escapedCanonical = escapeHtml(seo.canonical);
   const escapedImage = seo.image ? escapeHtml(seo.image) : "";
   const escapedImageAlt = escapeHtml(seo.imageAlt);
+
+  const schemaJson = seo.schema
+    ? JSON.stringify(seo.schema).replace(/</g, "\\u003c")
+    : "";
 
   let head = html.match(/<head\b[^>]*>[\s\S]*?<\/head>/i)?.[0];
   if (!head) return html;
@@ -80,6 +137,10 @@ function renderSeoTags(html, seo) {
     tags.push(`<meta name="twitter:image:alt" content="${escapedImageAlt}">`);
   }
 
+  if (schemaJson) {
+    tags.push('<script type="application/ld+json" id="tf-product-schema">' + schemaJson + '</script>');
+  }
+
   head = head.replace(/<\/head>/i, tags.join("\n") + "\n</head>");
   return html.replace(/<head\b[^>]*>[\s\S]*?<\/head>/i, head);
 }
@@ -101,7 +162,8 @@ export async function onRequest(context) {
   let mainImage = "";
   try {
     vehicle = await context.env.DB.prepare(
-      `SELECT vehicle_code, title, description, seo_title, meta_description, image_alt
+      `SELECT vehicle_code, title, description, seo_title, meta_description,
+              image_alt, brand, model, category, mileage, price
        FROM vehicles
        WHERE vehicle_code = ? AND is_published = 1 AND status = 'available'
        LIMIT 1`
@@ -143,12 +205,14 @@ export async function onRequest(context) {
   if (!contentType.toLowerCase().includes("text/html")) return assetResponse;
 
   const html = await assetResponse.text();
+  const schema = buildVehicleProductSchema(vehicle, canonicalUrl.href, mainImage);
   const rendered = renderSeoTags(html, {
     title,
     description,
     image: mainImage,
     imageAlt,
-    canonical: canonicalUrl.href
+    canonical: canonicalUrl.href,
+    schema
   });
 
   const headers = new Headers(assetResponse.headers);
