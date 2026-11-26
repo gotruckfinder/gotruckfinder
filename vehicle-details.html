@@ -8,6 +8,8 @@
 <title>Vehicle Details | TRUCK FINDER</title>
 
 <style>
+.description img{max-width:100%;height:auto;border-radius:6px}.description p{margin:0 0 12px}
+
 :root{
   --blue:#0646ad;
   --deep:#063b91;
@@ -635,9 +637,8 @@ if(!vehicle){
   const descTitle = document.createElement("h3");
   descTitle.textContent = "Vehicle Description";
 
-  const descText = document.createElement("p");
-  descText.textContent =
-    vehicle.description || "Please contact us for more vehicle information.";
+  const descText = document.createElement("div");
+  descText.innerHTML = vehicle.description ? renderRichContent(vehicle.description) : "Please contact us for more vehicle information.";
 
   description.append(descTitle,descText);
   right.appendChild(description);
