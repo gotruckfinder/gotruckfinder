@@ -130,7 +130,9 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
 .category-inventory-count{color:#64748b;margin:12px 0 18px}
 .category-vehicle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:22px}
 .category-vehicle-card{border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 3px 12px rgba(15,23,42,.06)}
-.category-vehicle-link{display:block;color:inherit;text-decoration:none;height:100%}
+.category-vehicle-card{display:flex;flex-direction:column}
+.category-vehicle-link{display:block;flex:1 0 auto;color:inherit;text-decoration:none;height:auto}
+.vehicle-buttons{position:relative;z-index:1;flex:0 0 auto}
 .category-vehicle-link img{display:block;width:100%;height:205px;object-fit:cover;background:#f1f5f9}
 .category-vehicle-body{padding:17px}
 .category-vehicle-body h3{font-size:18px;line-height:1.4;margin:0 0 12px;color:#172b4d}
