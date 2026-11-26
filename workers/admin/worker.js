@@ -249,9 +249,15 @@ th:nth-child(4),td:nth-child(4){width:36%}
   <textarea name="specifications" rows="10" placeholder="Enter relevant professional specifications: tank capacity, working height, loading volume, cleaning width, suction capacity, water tank volume, or other category-specific parameters."></textarea>
 </div>
 
-<div>
-  <label>Description</label>
-  <textarea name="description" rows="12"></textarea>
+<div class="wide">
+  <label>Description</label><textarea name="description" id="vehicleDescriptionValue" hidden></textarea>
+  <div class="rich-editor-wrap"><div class="rich-editor-toolbar">
+    <button type="button" onclick="formatRichText('vehicleDescriptionEditor','bold')"><b>B</b></button>
+    <button type="button" onclick="formatRichText('vehicleDescriptionEditor','italic')"><i>I</i></button>
+    <button type="button" onclick="formatRichText('vehicleDescriptionEditor','insertUnorderedList')">• List</button>
+    <button type="button" onclick="document.getElementById('vehicleDescriptionImage').click()">Insert Image</button>
+    <input id="vehicleDescriptionImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadRichImage(this,'vehicleDescriptionEditor')">
+  </div><div id="vehicleDescriptionEditor" class="rich-editor" contenteditable="true" data-placeholder="Write vehicle description and insert images..."></div></div>
 </div>
 
 <h3>SEO Settings</h3>
@@ -460,6 +466,23 @@ function escapeHtml(value) {
     "'": "&#39;"
   })[ch]);
 }
+function formatRichText(editorId, command) {
+  const editor=document.getElementById(editorId);if(!editor)return;editor.focus();document.execCommand(command,false,null);
+}
+async function uploadRichImage(input, editorId) {
+  const file=input.files&&input.files[0];if(!file)return;const editor=document.getElementById(editorId);
+  const button=input.parentElement.querySelector("button:last-of-type");
+  if(file.size>12*1024*1024){alert("Image must be 12 MB or smaller.");input.value="";return;}
+  try{if(button){button.disabled=true;button.textContent="Uploading...";}const fd=new FormData();fd.append("file",file);
+    const response=await fetch("/api/admin/description-images",{method:"POST",credentials:"same-origin",body:fd});
+    const result=await response.json();if(!response.ok)throw new Error(result.error||"Image upload failed");
+    editor.focus();document.execCommand("insertImage",false,result.url);input.value="";
+  }catch(error){alert("Image upload failed: "+error.message);}
+  finally{if(button){button.disabled=false;button.textContent="Insert Image";}}
+}
+function setRichEditor(editorId,value){const editor=document.getElementById(editorId);if(editor)editor.innerHTML=String(value||"");}
+function syncRichEditor(editorId,fieldId){const editor=document.getElementById(editorId),field=document.getElementById(fieldId);if(editor&&field)field.value=editor.innerHTML;}
+
 function showVehicleForm() {
   const panel = document.getElementById("vehicleFormPanel");
 
@@ -481,6 +504,7 @@ function showVehicleForm() {
   const form = document.getElementById("vehicleForm");
 
   form.reset();
+  setRichEditor("vehicleDescriptionEditor","");
   clearVehicleMediaState();
   toggleCategoryFields();
 
@@ -532,6 +556,7 @@ async function editVehicle(id) {
       }
     });
 
+    setRichEditor("vehicleDescriptionEditor", vehicle.description || "");
     const generalSubtype = document.getElementById("generalSubtype");
     if (generalSubtype) generalSubtype.value = vehicle.sub_category || "";
     toggleCategoryFields();
@@ -1046,6 +1071,7 @@ async function saveVehicle(event) {
   submitButton.textContent = "Saving...";
 
   try {
+    syncRichEditor("vehicleDescriptionEditor","vehicleDescriptionValue");
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
@@ -1161,6 +1187,7 @@ async function saveVehicle(event) {
 
     // Reset form fields and all media previews after a successful save.
     form.reset();
+    setRichEditor("vehicleDescriptionEditor","");
     clearVehicleMediaState();
     toggleCategoryFields();
 
@@ -1433,7 +1460,15 @@ const CONTENT_ADMIN_HTML = `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NEWS & VIDEO | Truck Finder Admin</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}header{background:#182536;color:#fff;padding:18px 26px;font-size:19px;font-weight:bold}main{max-width:1180px;margin:28px auto;padding:0 18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tabs{display:flex;gap:8px;margin:18px 0}.tabs button,.primary{background:#182536;color:#fff;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}.tabs button.active{background:#1677d2}.panel{background:#fff;padding:20px;border-radius:10px;margin:16px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-weight:600;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font:inherit}.field textarea{min-height:130px;resize:vertical}.wide{grid-column:1/-1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.danger{background:#a82424!important}.muted{color:#777;font-size:13px}.item{border-bottom:1px solid #eee;padding:14px 0;display:flex;gap:14px;align-items:center}.item img{width:110px;height:76px;object-fit:cover;border-radius:6px;background:#eee}.item-main{flex:1;min-width:0}.item-main strong{display:block;margin-bottom:6px}.item-actions{display:flex;gap:6px;flex-wrap:wrap}.item-actions button{padding:8px 10px}.hidden{display:none}@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.item{align-items:flex-start;flex-wrap:wrap}.item-actions{width:100%}}
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}header{background:#182536;color:#fff;padding:18px 26px;font-size:19px;font-weight:bold}main{max-width:1180px;margin:28px auto;padding:0 18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tabs{display:flex;gap:8px;margin:18px 0}.tabs button,.primary{background:#182536;color:#fff;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}.tabs button.active{background:#1677d2}.panel{background:#fff;padding:20px;border-radius:10px;margin:16px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-weight:600;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font:inherit}.field textarea{min-height:130px;resize:vertical}
+.rich-editor-wrap{border:1px solid #cbd2dc;border-radius:7px;overflow:hidden;background:#fff;margin-bottom:12px}
+.rich-editor-toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:8px;background:#f3f5f8;border-bottom:1px solid #d9dee7}
+.rich-editor-toolbar button{padding:7px 11px;font-size:13px;background:#fff;color:#253247;border:1px solid #cbd2dc;border-radius:5px}
+.rich-editor{min-height:180px;padding:12px;outline:none;line-height:1.65;overflow-wrap:anywhere}
+.rich-editor:empty:before{content:attr(data-placeholder);color:#9299a4}
+.rich-editor img{max-width:100%;height:auto;border-radius:5px}
+.rich-editor p{margin:0 0 10px}
+.wide{grid-column:1/-1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.danger{background:#a82424!important}.muted{color:#777;font-size:13px}.item{border-bottom:1px solid #eee;padding:14px 0;display:flex;gap:14px;align-items:center}.item img{width:110px;height:76px;object-fit:cover;border-radius:6px;background:#eee}.item-main{flex:1;min-width:0}.item-main strong{display:block;margin-bottom:6px}.item-actions{display:flex;gap:6px;flex-wrap:wrap}.item-actions button{padding:8px 10px}.hidden{display:none}@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.item{align-items:flex-start;flex-wrap:wrap}.item-actions{width:100%}}
 </style></head><body>
 <header>TRUCK FINDER / CONTENT MANAGEMENT</header><main>
 <div class="top"><div><h1 style="margin:0 0 6px">NEWS & VIDEO</h1><div class="muted">Manage website news articles and promotional videos.</div></div><a href="/admin" style="color:#1677d2">← Back to Vehicle Dashboard</a></div>
@@ -1444,8 +1479,8 @@ const CONTENT_ADMIN_HTML = `<!DOCTYPE html>
 <div class="grid">
 <div class="field"><label for="contentTitle">Title *</label><input id="contentTitle" required maxlength="200"></div>
 <div class="field"><label for="contentSlug">URL Slug *</label><input id="contentSlug" required maxlength="180" placeholder="example-news-title"><div class="muted">Lowercase letters, numbers and hyphens only.</div></div>
-<div class="field wide"><label for="contentSummary">Summary / Introduction</label><textarea id="contentSummary" style="min-height:75px"></textarea></div>
-<div class="field wide" id="bodyField"><label for="contentBody">Article Content</label><textarea id="contentBody" placeholder="Write the full news article here..."></textarea></div>
+<div class="field wide"><label for="contentSummary">Summary / Introduction</label><textarea id="contentSummary" hidden></textarea><div class="rich-editor-wrap"><div class="rich-editor-toolbar"><button type="button" onclick="formatContent('contentSummaryEditor','bold')"><b>B</b></button><button type="button" onclick="formatContent('contentSummaryEditor','italic')"><i>I</i></button><button type="button" onclick="formatContent('contentSummaryEditor','insertUnorderedList')">• List</button><button type="button" onclick="document.getElementById('contentSummaryImage').click()">Insert Image</button><input id="contentSummaryImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadContentImage(this,'contentSummaryEditor')"></div><div id="contentSummaryEditor" class="rich-editor" contenteditable="true" data-placeholder="Write introduction and insert images..." style="min-height:110px"></div></div></div>
+<div class="field wide" id="bodyField"><label for="contentBody">Article Content</label><textarea id="contentBody" hidden></textarea><div class="rich-editor-wrap"><div class="rich-editor-toolbar"><button type="button" onclick="formatContent('contentBodyEditor','bold')"><b>B</b></button><button type="button" onclick="formatContent('contentBodyEditor','italic')"><i>I</i></button><button type="button" onclick="formatContent('contentBodyEditor','insertUnorderedList')">• List</button><button type="button" onclick="document.getElementById('contentBodyImage').click()">Insert Image</button><input id="contentBodyImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadContentImage(this,'contentBodyEditor')"></div><div id="contentBodyEditor" class="rich-editor" contenteditable="true" data-placeholder="Write the full article and insert images..."></div></div></div>
 <div class="field wide" id="videoUrlField"><label for="contentVideoUrl">Video URL (optional)</label><input id="contentVideoUrl" type="url" placeholder="https://..."></div>
 <div class="field"><label for="contentCover">Cover Image (JPEG, PNG, WebP, AVIF; max 12 MB)</label><input id="contentCover" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></div>
 <div class="field" id="videoFileField"><label for="contentVideoFile">Upload Video (MP4, WebM, MOV; max 100 MB)</label><input id="contentVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime"></div>
@@ -1456,16 +1491,21 @@ const CONTENT_ADMIN_HTML = `<!DOCTYPE html>
 </form></section></main>
 <script>
 let currentType="news", editingId=null, currentItems=[];
+function formatContent(id,command){const e=$(id);if(e){e.focus();document.execCommand(command,false,null);}}
+async function uploadContentImage(input,editorId){const file=input.files&&input.files[0];if(!file)return;if(file.size>12*1024*1024){alert("Image must be 12 MB or smaller.");input.value="";return;}const editor=$(editorId),button=input.parentElement.querySelector("button:last-of-type");try{button.disabled=true;button.textContent="Uploading...";const fd=new FormData();fd.append("file",file);const result=await api("/api/admin/description-images",{method:"POST",body:fd});editor.focus();document.execCommand("insertImage",false,result.url);input.value="";}catch(e){alert("Image upload failed: "+e.message);}finally{button.disabled=false;button.textContent="Insert Image";}}
+function setContentEditor(id,value){$(id).innerHTML=String(value||"");}
+function syncContentEditor(id){$("content"+id).value=$( "content"+id+"Editor").innerHTML;}
+
 const $=id=>document.getElementById(id);
 function esc(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function switchType(type){currentType=type;$("newsTab").classList.toggle("active",type==="news");$("videoTab").classList.toggle("active",type==="video");$("listTitle").textContent=type==="news"?"News Articles":"Videos";$("bodyField").classList.toggle("hidden",type!=="news");$("videoUrlField").classList.toggle("hidden",type!=="video");$("videoFileField").classList.toggle("hidden",type!=="video");closeEditor();loadItems();}
 async function api(url,options){const r=await fetch(url,Object.assign({credentials:"same-origin"},options||{}));const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||"Request failed ("+r.status+")");return data;}
 async function loadItems(){ $("items").innerHTML='<p class="muted">Loading...</p>';try{const d=await api("/api/admin/content?type="+currentType);currentItems=d.items||[];if(!currentItems.length){$("items").innerHTML='<p class="muted">No '+(currentType==="news"?"news articles":"videos")+' yet.</p>';return;}$("items").innerHTML=currentItems.map(x=>'<div class="item">'+(x.cover_url?'<img src="'+esc(x.cover_url)+'" alt="">':'<div style="width:110px;height:76px;background:#eee;border-radius:6px"></div>')+'<div class="item-main"><strong>'+esc(x.title)+'</strong><div class="muted">'+esc(x.slug)+' · '+esc(x.status)+' · Updated '+esc(x.updated_at)+'</div></div><div class="item-actions"><button type="button" onclick="editItem('+x.id+')">Edit</button><button class="danger" type="button" onclick="deleteItem('+x.id+')">Delete</button></div></div>').join("");}catch(e){$("items").innerHTML='<p style="color:#b22">'+esc(e.message)+'</p>';}}
-function newItem(){$("contentForm").reset();editingId=null;$("editorTitle").textContent=currentType==="news"?"Add News Article":"Add Video";$("saveButton").textContent="Save Content";$("formMessage").textContent="";$("editor").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"});}
-function closeEditor(){$("editor").classList.add("hidden");$("contentForm").reset();editingId=null;}
-async function editItem(id){try{const d=await api("/api/admin/content/"+id);const x=d.item;editingId=id;$("contentTitle").value=x.title||"";$("contentSlug").value=x.slug||"";$("contentSummary").value=x.summary||"";$("contentBody").value=x.body||"";$("contentVideoUrl").value=x.video_url||"";$("contentStatus").value=x.status||"draft";$("contentSeoTitle").value=x.seo_title||"";$("contentMeta").value=x.meta_description||"";$("contentCover").value="";$("contentVideoFile").value="";$("editorTitle").textContent="Edit "+(currentType==="news"?"News Article":"Video");$("saveButton").textContent="Update Content";$("formMessage").textContent="Existing cover: "+(x.cover_url||"none")+(x.video_url?" · Video: "+x.video_url:"");$("editor").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"});}catch(e){alert(e.message);}}
+function newItem(){$("contentForm").reset();setContentEditor("contentSummaryEditor","");setContentEditor("contentBodyEditor","");editingId=null;$("editorTitle").textContent=currentType==="news"?"Add News Article":"Add Video";$("saveButton").textContent="Save Content";$("formMessage").textContent="";$("editor").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"});}
+function closeEditor(){$("editor").classList.add("hidden");$("contentForm").reset();setContentEditor("contentSummaryEditor","");setContentEditor("contentBodyEditor","");editingId=null;}
+async function editItem(id){try{const d=await api("/api/admin/content/"+id);const x=d.item;editingId=id;$("contentTitle").value=x.title||"";$("contentSlug").value=x.slug||"";$("contentSummary").value=x.summary||"";$("contentBody").value=x.body||"";setContentEditor("contentSummaryEditor",x.summary||"");setContentEditor("contentBodyEditor",x.body||"");$("contentVideoUrl").value=x.video_url||"";$("contentStatus").value=x.status||"draft";$("contentSeoTitle").value=x.seo_title||"";$("contentMeta").value=x.meta_description||"";$("contentCover").value="";$("contentVideoFile").value="";$("editorTitle").textContent="Edit "+(currentType==="news"?"News Article":"Video");$("saveButton").textContent="Update Content";$("formMessage").textContent="Existing cover: "+(x.cover_url||"none")+(x.video_url?" · Video: "+x.video_url:"");$("editor").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"});}catch(e){alert(e.message);}}
 async function deleteItem(id){const x=currentItems.find(v=>v.id===id);if(!x||!confirm("Delete '"+x.title+"'? This also deletes its uploaded content media."))return;try{await api("/api/admin/content/"+id,{method:"DELETE"});if(editingId===id)closeEditor();await loadItems();}catch(e){alert("Delete failed: "+e.message);}}
-$("contentForm").addEventListener("submit",async e=>{e.preventDefault();const button=$("saveButton");button.disabled=true;button.textContent="Saving...";$("formMessage").textContent="";try{const data={content_type:currentType,title:$("contentTitle").value.trim(),slug:$("contentSlug").value.trim().toLowerCase(),summary:$("contentSummary").value,body:$("contentBody").value,video_url:$("contentVideoUrl").value.trim(),status:$("contentStatus").value,seo_title:$("contentSeoTitle").value,meta_description:$("contentMeta").value};let id=editingId;if(id){await api("/api/admin/content/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});}else{const created=await api("/api/admin/content",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});id=created.id;editingId=id;}
+$("contentForm").addEventListener("submit",async e=>{e.preventDefault();const button=$("saveButton");button.disabled=true;button.textContent="Saving...";$("formMessage").textContent="";try{syncContentEditor("Summary");syncContentEditor("Body");const data={content_type:currentType,title:$("contentTitle").value.trim(),slug:$("contentSlug").value.trim().toLowerCase(),summary:$("contentSummary").value,body:$("contentBody").value,video_url:$("contentVideoUrl").value.trim(),status:$("contentStatus").value,seo_title:$("contentSeoTitle").value,meta_description:$("contentMeta").value};let id=editingId;if(id){await api("/api/admin/content/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});}else{const created=await api("/api/admin/content",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});id=created.id;editingId=id;}
 const cover=$("contentCover").files[0];if(cover){const fd=new FormData();fd.append("file",cover);await api("/api/admin/content/"+id+"/cover",{method:"POST",body:fd});}
 const video=$("contentVideoFile").files[0];if(video){const fd=new FormData();fd.append("file",video);await api("/api/admin/content/"+id+"/video-file",{method:"POST",body:fd});}
 $("formMessage").textContent="Saved successfully.";closeEditor();await loadItems();}catch(err){$("formMessage").textContent=err.message;alert("Save failed: "+err.message);}finally{button.disabled=false;button.textContent=editingId?"Update Content":"Save Content";}});
@@ -1941,6 +1981,18 @@ async function handle(request, env) {
   const bucket = env.BUCKET;
   await ensureFeaturedTable(db);
   await ensureContentTable(db);
+
+  // Upload images used inside rich-text descriptions (authenticated).
+  if (path === "/api/admin/description-images" && method === "POST") {
+    const form = await request.formData();
+    const file = form.get("file");
+    if (!file || typeof file.arrayBuffer !== "function" || !IMAGE_TYPES[file.type] || file.size <= 0 || file.size > MAX_IMAGE_SIZE) {
+      return json({ error: "Upload a JPEG, PNG, WebP or AVIF image up to 12 MB" }, 400);
+    }
+    const key = `${IMAGE_PREFIX}content/descriptions/${crypto.randomUUID()}.${IMAGE_TYPES[file.type]}`;
+    await bucket.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: file.type } });
+    return json({ success: true, url: makeImageUrl(key, IMAGE_BASE) }, 201);
+  }
 
   // NEWS and VIDEO content management API (authenticated).
   if (path === "/api/admin/content" && method === "GET") {
