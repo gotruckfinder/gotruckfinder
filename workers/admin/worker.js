@@ -2732,4 +2732,5 @@ export default {
   }
 };
 
+// Rich-text description editor: authenticated image upload endpoint.
 // GitHub-to-Cloudflare auto-deploy verification: 2026-11-18.
