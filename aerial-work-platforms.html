@@ -149,12 +149,12 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
 .inquiry-btn:hover{background:#159b3c}
 </style>
 <style>
-.filter-box{background:var(--light);border:1px solid #dce9ff;padding:20px;border-radius:13px;margin:16px 0 28px}
-.filter-box h3{margin:0 0 15px;color:#092b78;font-size:16px}
-.filter-box .filters{display:grid;grid-template-columns:1fr;gap:14px}
+.filter-box{display:flex;align-items:center;gap:20px;background:var(--light);border:1px solid #dce9ff;padding:20px;border-radius:13px;margin:16px 0 28px}
+.filter-box h3{flex:0 0 auto;margin:0;color:#092b78;font-size:16px}
+.filter-box .filters{flex:1;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 .filter-box input{width:100%;min-width:0;padding:13px 15px;border:1px solid #cbdaf1;border-radius:8px;background:#fff;color:#24364b;font-size:14px;font-family:Arial,Helvetica,sans-serif;box-sizing:border-box}
 .filter-box input:focus{outline:none;border-color:#0646ad;box-shadow:0 0 0 3px rgba(6,70,173,.12)}
-@media(max-width:600px){.filter-box{padding:12px;margin:16px 0 20px}.filter-box h3{font-size:15px;margin:0 0 9px}.filter-box input{padding:12px;font-size:14px}}
+@media(max-width:600px){.filter-box{gap:10px;padding:12px;margin:16px 0 20px}.filter-box h3{font-size:15px}.filter-box input{padding:12px;font-size:14px}}
 </style>
 </head>
 
