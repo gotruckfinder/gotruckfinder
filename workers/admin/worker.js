@@ -566,7 +566,7 @@ async function editVehicle(id) {
           deleteButton.disabled = true;
           deleteButton.textContent = "Deleting...";
           try {
-            const r = await fetch("/api/vehicles/" + id + "/video", {
+            const r = await fetch("/api/vehicles/" + editingVehicleId + "/video", {
               method: "DELETE",
               credentials: "same-origin"
             });
