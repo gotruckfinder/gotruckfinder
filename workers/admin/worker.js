@@ -1461,10 +1461,10 @@ const CONTENT_ADMIN_HTML = `<!DOCTYPE html>
 <title>NEWS & VIDEO | Truck Finder Admin</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}header{background:#182536;color:#fff;padding:18px 26px;font-size:19px;font-weight:bold}main{max-width:1180px;margin:28px auto;padding:0 18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tabs{display:flex;gap:8px;margin:18px 0}.tabs button,.primary{background:#182536;color:#fff;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}.tabs button.active{background:#1677d2}.panel{background:#fff;padding:20px;border-radius:10px;margin:16px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-weight:600;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font:inherit}.field textarea{min-height:130px;resize:vertical}
-.rich-editor-wrap{border:1px solid #cbd2dc;border-radius:7px;overflow:hidden;background:#fff;margin-bottom:12px}
-.rich-editor-toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:8px;background:#f3f5f8;border-bottom:1px solid #d9dee7}
+.rich-editor-wrap{border:1px solid #aeb9c8;border-radius:8px;overflow:hidden;background:#fff;margin-bottom:12px;box-shadow:0 1px 3px rgba(15,35,60,.08)}
+.rich-editor-toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:8px;background:#f3f5f8;border-bottom:1px solid #cbd2dc}
 .rich-editor-toolbar button{padding:7px 11px;font-size:13px;background:#fff;color:#253247;border:1px solid #cbd2dc;border-radius:5px}
-.rich-editor{min-height:180px;padding:12px;outline:none;line-height:1.65;overflow-wrap:anywhere}
+.rich-editor{display:block;box-sizing:border-box;width:100%;min-height:180px;padding:12px;outline:none;line-height:1.65;overflow-wrap:anywhere;border:0;background:#fff}
 .rich-editor:empty:before{content:attr(data-placeholder);color:#9299a4}
 .rich-editor img{max-width:100%;height:auto;border-radius:5px}
 .rich-editor p{margin:0 0 10px}
