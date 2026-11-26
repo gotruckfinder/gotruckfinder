@@ -63,6 +63,18 @@
       body.appendChild(hint);
       link.appendChild(body);
       card.appendChild(link);
+
+      const actions = document.createElement("div");
+      actions.className = "category-vehicle-actions";
+      const inquiry = document.createElement("button");
+      inquiry.type = "button";
+      inquiry.className = "category-vehicle-inquiry";
+      inquiry.textContent = "Inquire Now";
+      inquiry.addEventListener("click", function () {
+        if (typeof window.openInquiry === "function") window.openInquiry();
+      });
+      actions.appendChild(inquiry);
+      card.appendChild(actions);
       grid.appendChild(card);
     });
   }
