@@ -140,6 +140,11 @@ footer{background:#062f78;color:#dbe8ff;padding:20px 3%;text-align:center;font-s
 .category-vehicle-hint{display:inline-block;margin-top:10px;color:#1769aa;font-weight:700}
 .category-inventory-empty{padding:25px;background:#f6f8fb;border-radius:10px}
 .category-inventory-empty[hidden]{display:none}
+.details-hint{display:block;margin-top:13px;padding:12px;background:#edf4ff;color:#0646ad;text-align:center;border-radius:7px;font-size:14px;font-weight:700}
+.vehicle-buttons{padding:0 18px 18px}
+.vehicle-buttons button{display:block;width:100%;text-align:center;padding:12px 8px;border:0;border-radius:7px;font-size:13px;font-weight:bold;cursor:pointer}
+.inquiry-btn{background:#20b84c;color:white}
+.inquiry-btn:hover{background:#159b3c}
 </style>
 </head>
 
@@ -265,7 +270,8 @@ function closeInquiry() {
   modal.classList.remove("show");
 }
 
-openBtn.addEventListener("click", openInquiry);
+if (openBtn) openBtn.addEventListener("click", openInquiry);
+window.openInquiry = openInquiry;
 closeBtn.addEventListener("click", closeInquiry);
 
 modal.addEventListener("click", function(event) {
@@ -361,7 +367,7 @@ document.querySelectorAll(".site-header").forEach(function(header){
 </script>
 <script src="vehicles.js"></script>
 <script src="public-vehicles.js"></script>
-<script src="category-vehicles.js"></script>
+<script src="category-vehicles.js?v=20261126-2"></script>
 </body>
 </html>
 
