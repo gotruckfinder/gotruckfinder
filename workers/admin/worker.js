@@ -257,8 +257,9 @@ th:nth-child(4),td:nth-child(4){width:36%}
     <button type="button" onmousedown="event.preventDefault()" onclick="formatRichText('vehicleDescriptionEditor','insertUnorderedList')">• List</button>
     <button type="button" onmousedown="event.preventDefault()" onclick="insertRichTable('vehicleDescriptionEditor')">Insert Table</button>
     <button type="button" onclick="document.getElementById('vehicleDescriptionImage').click()">Insert Image</button>
+    <button type="button" onmousedown="event.preventDefault()" onclick="removeSelectedRichImage('vehicleDescriptionEditor')">Remove Image</button>
     <input id="vehicleDescriptionImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadRichImage(this,'vehicleDescriptionEditor')">
-  </div><div id="vehicleDescriptionEditor" class="rich-editor" contenteditable="true" data-placeholder="Write vehicle description and insert images..."></div></div>
+  </div><div id="vehicleDescriptionEditor" class="rich-editor" contenteditable="true" data-placeholder="Write vehicle description and insert images..." onclick="selectRichImage(event,'vehicleDescriptionEditor')" onkeydown="handleRichImageDelete(event,'vehicleDescriptionEditor')"></div></div>
 </div>
 
 <h3>SEO Settings</h3>
@@ -466,6 +467,33 @@ function escapeHtml(value) {
     '"': "&quot;",
     "'": "&#39;"
   })[ch]);
+}
+let selectedRichImage = null;
+function selectRichImage(event, editorId) {
+  const editor = document.getElementById(editorId);
+  if (selectedRichImage && selectedRichImage.parentNode) selectedRichImage.style.outline = "";
+  selectedRichImage = event.target && event.target.tagName === "IMG" && editor.contains(event.target) ? event.target : null;
+  if (selectedRichImage) selectedRichImage.style.outline = "2px solid #2563eb";
+}
+function removeSelectedRichImage(editorId) {
+  const editor = document.getElementById(editorId);
+  if (!editor || !selectedRichImage || !editor.contains(selectedRichImage)) {
+    alert("Please click the image you want to remove first.");
+    return;
+  }
+  selectedRichImage.remove();
+  selectedRichImage = null;
+  editor.focus();
+}
+function handleRichImageDelete(event, editorId) {
+  if ((event.key === "Delete" || event.key === "Backspace") && selectedRichImage) {
+    const editor = document.getElementById(editorId);
+    if (editor && editor.contains(selectedRichImage)) {
+      event.preventDefault();
+      selectedRichImage.remove();
+      selectedRichImage = null;
+    }
+  }
 }
 function insertRichTable(editorId) {
   const editor = document.getElementById(editorId);
