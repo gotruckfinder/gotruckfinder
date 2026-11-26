@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   // Dedicated production configuration for the admin Worker.
+// Production rebuild trigger: NEWS and VIDEO CMS release.
   "name": "gotruckfinder",
   "main": "workers/admin/worker.js",
   "compatibility_date": "2026-11-10",
