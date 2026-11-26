@@ -20,11 +20,22 @@
   }
 
   function render(allVehicles) {
-    const vehicles = (Array.isArray(allVehicles) ? allVehicles : []).filter(vehicle =>
-      String(vehicle.category || "").trim() === category &&
-      String(vehicle.status || "").toLowerCase() === "available" &&
-      (!searchTerm || [vehicle.title,vehicle.brand,vehicle.model,vehicle.year,vehicle.sub_category,vehicle.subCategory,vehicle.specifications,vehicle.mileage,vehicle.price,vehicle.capacity,vehicle.ton,vehicle.location].some(value => String(value || "").toLowerCase().includes(searchTerm)))
-    );
+    const vehicles = (Array.isArray(allVehicles) ? allVehicles : []).filter(vehicle => {
+      if (String(vehicle.category || "").trim() !== category ||
+          String(vehicle.status || "").toLowerCase() !== "available") return false;
+      if (!searchTerm) return true;
+      let searchableFields = [];
+      if (category === "Aerial Work Platforms") {
+        searchableFields = [vehicle.boom_length, vehicle.boomLength];
+      } else if (category === "Sanitation Trucks") {
+        searchableFields = [vehicle.title, vehicle.specifications, vehicle.mileage];
+      } else if (category === "Tank Trucks") {
+        searchableFields = [vehicle.mileage];
+      } else {
+        searchableFields = [vehicle.title, vehicle.brand, vehicle.model, vehicle.year];
+      }
+      return searchableFields.some(value => String(value || "").toLowerCase().includes(searchTerm));
+    });
     grid.replaceChildren();
     count.textContent = vehicles.length + " matching vehicle(s)";
     empty.hidden = vehicles.length > 0;
