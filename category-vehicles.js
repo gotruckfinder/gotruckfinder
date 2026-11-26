@@ -48,7 +48,7 @@
       addLine(body, "Model", vehicle.model);
       addLine(body, "Year", vehicle.year);
       if (category === "Tank Trucks") {
-        addLine(body, "Tanker Volume", vehicle.specifications);
+        addLine(body, "Tanker Volume", vehicle.mileage ? String(vehicle.mileage) + " CBM" : "");
       } else {
         addLine(body, "Type", vehicle.sub_category || vehicle.subCategory);
         addLine(body, "Specifications", vehicle.specifications);
