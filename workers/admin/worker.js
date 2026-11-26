@@ -974,7 +974,7 @@ function previewSelectedImages() {
 
   selectedArea.replaceChildren();
 
-  Array.from(input.files || []).forEach(file => {
+  Array.from(input.files || []).forEach((file, index) => {
     if (!file.type.startsWith("image/")) return;
 
     const url = URL.createObjectURL(file);
@@ -995,8 +995,23 @@ function previewSelectedImages() {
     name.style.cssText =
       "font-size:12px;color:#555;margin-top:6px;word-break:break-all;";
 
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.textContent = "Remove";
+    removeButton.style.cssText =
+      "margin-top:8px;padding:5px 10px;border:1px solid #d33;border-radius:5px;background:#fff;color:#c22;cursor:pointer;";
+    removeButton.addEventListener("click", () => {
+      const transfer = new DataTransfer();
+      Array.from(input.files || []).forEach((selectedFile, fileIndex) => {
+        if (fileIndex !== index) transfer.items.add(selectedFile);
+      });
+      input.files = transfer.files;
+      previewSelectedImages();
+    });
+
     item.appendChild(img);
     item.appendChild(name);
+    item.appendChild(removeButton);
     selectedArea.appendChild(item);
   });
 }
