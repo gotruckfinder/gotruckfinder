@@ -6,6 +6,8 @@
 <meta name="description" content="Latest commercial vehicle industry news, truck updates and GoTruckFinder company announcements.">
 <link rel="canonical" href="https://gotruckfinder.com/news.html">
 <style>
+.article-body img,.summary img{max-width:100%;height:auto;border-radius:6px}.article-body p,.summary p{margin:0 0 12px}
+
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#202936;background:#f7f8fa}a{color:inherit}.site-header{height:76px;background:#182536;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 5%;position:sticky;top:0;z-index:5}.site-nav{display:flex;align-items:center;gap:34px}.site-nav a{text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.04em}.site-nav a:hover{color:#9fc9f2}.hero{background:#182536;color:#fff;padding:68px 6%;text-align:center}.hero h1{font-size:42px;margin:0 0 12px}.hero p{color:#cbd5e1;margin:0;font-size:17px}.container{max-width:1180px;margin:42px auto;padding:0 22px}.news-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}.news-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 5px 24px #15223512}.news-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#e8ebef}.news-content{padding:22px}.news-content time{font-size:13px;color:#758195}.news-content h2{font-size:22px;line-height:1.35;margin:10px 0}.summary{color:#5b6675;line-height:1.65}.article-body{white-space:pre-wrap;line-height:1.75;color:#344052;margin-top:16px}.empty,.error{background:#fff;padding:34px;border-radius:10px;text-align:center;color:#697586}.footer{padding:30px;text-align:center;color:#7b8796;font-size:13px}@media(max-width:650px){.site-nav{gap:13px;flex-wrap:wrap;justify-content:center}.site-nav a{font-size:11px}.site-header{height:auto;min-height:64px;padding:15px}.hero h1{font-size:32px}}
 </style>
 </head>
@@ -22,7 +24,7 @@ const target=document.getElementById("newsList");
 function esc(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 fetch("https://gotruckfinder.com/api/public/news",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Unable to load news.");return r.json();}).then(data=>{
 const items=data.items||[];if(!items.length){target.innerHTML='<div class="empty">No news articles have been published yet.</div>';return;}
-target.innerHTML=items.map(item=>'<article class="news-card">'+(item.cover_url?'<img src="'+esc(item.cover_url)+'" alt="'+esc(item.title)+'">':'')+'<div class="news-content"><time>'+esc(item.published_at||"")+'</time><h2>'+esc(item.title)+'</h2>'+(item.summary?'<p class="summary">'+esc(item.summary)+'</p>':'')+(item.body?'<div class="article-body">'+esc(item.body)+'</div>':'')+'</div></article>').join("");
+target.innerHTML=items.map(item=>'<article class="news-card">'+(item.cover_url?'<img src="'+esc(item.cover_url)+'" alt="'+esc(item.title)+'">':'')+'<div class="news-content"><time>'+esc(item.published_at||"")+'</time><h2>'+esc(item.title)+'</h2>'+(item.summary?'<div class="summary">'+renderRichContent(item.summary)+'</div>':'')+(item.body?'<div class="article-body">'+renderRichContent(item.body)+'</div>':'')+'</div></article>').join("");
 }).catch(error=>{target.innerHTML='<div class="error">'+esc(error.message)+'</div>';});
 })();
 </script>
