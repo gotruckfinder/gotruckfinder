@@ -349,9 +349,9 @@ footer{
 
 <main>
 
-<div class="crumb">
+<div class="crumb" id="vehicleBreadcrumb">
   <a href="index.html">Home</a> &rsaquo;
-  <a href="truck-cranes.html">Vehicles</a> &rsaquo; Details
+  <a id="vehicleCategoryBreadcrumb" href="truck-cranes.html">Vehicles</a> &rsaquo; Details
 </div>
 
 <div id="vehicleContent"></div>
@@ -418,6 +418,27 @@ TRUCK FINDER 路 Find Your Right Truck.
 const params = new URLSearchParams(window.location.search);
 const vehicleId = params.get("id");
 
+const categoryListingPages = {
+  "Truck Cranes": "truck-cranes.html",
+  "Aerial Work Platforms": "aerial-work-platforms.html",
+  "Sanitation Trucks": "sanitation-trucks.html",
+  "Tank Trucks": "tank-trucks.html"
+};
+
+function updateVehicleBreadcrumb(category) {
+  const link = document.getElementById("vehicleCategoryBreadcrumb");
+  if (!link) return;
+  const page = categoryListingPages[String(category || "").trim()];
+  if (page) {
+    link.href = page;
+    link.textContent = category;
+    link.hidden = false;
+  } else {
+    link.href = "index.html";
+    link.textContent = category || "Vehicles";
+  }
+}
+
 // Vehicle inventory
 const allVehicles = window.TRUCK_FINDER_VEHICLES || [];
 
@@ -471,6 +492,7 @@ if(!vehicle){
 
 }else{
 
+  updateVehicleBreadcrumb(vehicle.category);
   document.title = vehicle.title + " | TRUCK FINDER";
   const serverSeoTitle = document.querySelector('meta[name="tf:seo-title"]')?.content || "";
   const serverSeoDescription = document.querySelector('meta[name="tf:seo-description"]')?.content || "";
@@ -656,11 +678,7 @@ if(!vehicle){
   // Back to listings
   const back = document.createElement("a");
   back.className = "back";
-  const categoryListingPages = {
-    "Truck Cranes": "truck-cranes.html",
-    "Aerial Work Platforms": "aerial-work-platforms.html"
-  };
-  back.href = categoryListingPages[vehicle.category] || "index.html";
+  back.href = categoryListingPages[String(vehicle.category || "").trim()] || "index.html";
   back.textContent = "Back to Listings";
 
   buttons.append(inquiry, email, back);
