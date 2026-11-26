@@ -245,7 +245,7 @@ th:nth-child(4),td:nth-child(4){width:36%}
 <h3>Vehicle Details</h3>
 
 <div>
-  <label>Category-specific Specifications</label>
+  <label id="specificationsFieldLabel">Category-specific Specifications</label>
   <textarea name="specifications" rows="10" placeholder="Enter relevant professional specifications: tank capacity, working height, loading volume, cleaning width, suction capacity, water tank volume, or other category-specific parameters."></textarea>
 </div>
 
@@ -397,6 +397,8 @@ function toggleCategoryFields() {
   const videoField = document.getElementById("vehicleVideoField");
   const craneField = document.getElementById("craneSpecificationsField");
   const specificationsField = form.elements.specifications;
+  const specificationsFieldLabel = document.getElementById("specificationsFieldLabel");
+  const isTankTruck = category === "Tank Trucks";
   const subtypeValue = isSanitation
     ? (sanitationSubtype ? sanitationSubtype.value : "")
     : (generalSubtype ? generalSubtype.value : "");
@@ -411,10 +413,15 @@ function toggleCategoryFields() {
     },
     "Tank Trucks": "Tank capacity, tank material, number of compartments, transported medium, pump type, working pressure and loading/discharge system."
   };
+  if (specificationsFieldLabel) {
+    specificationsFieldLabel.textContent = isTankTruck ? "Tanker Volume" : "Category-specific Specifications";
+  }
   if (specificationsField) {
-    const prompt = isSanitation
-      ? (specificationPrompts["Sanitation Trucks"][subtypeValue] || "Select the sanitation truck type, then enter its professional specifications.")
-      : (specificationPrompts[category] || "Enter the vehicle's professional specifications.");
+    const prompt = isTankTruck
+      ? "Enter tank volume, for example: 28.5 CBM."
+      : (isSanitation
+        ? (specificationPrompts["Sanitation Trucks"][subtypeValue] || "Select the sanitation truck type, then enter its professional specifications.")
+        : (specificationPrompts[category] || "Enter the vehicle's professional specifications."));
     specificationsField.placeholder = prompt;
   }
   if (sanitationField) sanitationField.style.display = isSanitation ? "block" : "none";
