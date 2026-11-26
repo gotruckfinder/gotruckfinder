@@ -21,6 +21,22 @@
 <script>
 (function(){
 const target=document.getElementById("newsList");
+function renderRichContent(value){
+  const raw=String(value||"");if(!raw)return "";
+  const doc=new DOMParser().parseFromString(raw,"text/html");
+  const allowed=new Set(["P","BR","STRONG","B","EM","I","U","UL","OL","LI","H2","H3","BLOCKQUOTE","DIV","SPAN","IMG","A"]);
+  const clean=node=>{Array.from(node.childNodes).forEach(child=>{
+    if(child.nodeType===Node.ELEMENT_NODE){
+      if(!allowed.has(child.tagName)){child.replaceWith(document.createTextNode(child.textContent||""));return;}
+      Array.from(child.attributes).forEach(a=>{if(child.tagName==="IMG"&&["src","alt","title"].includes(a.name))return;if(child.tagName==="A"&&["href","title"].includes(a.name))return;child.removeAttribute(a.name);});
+      if(child.tagName==="IMG"){try{const u=new URL(child.getAttribute("src")||"",location.href);if(u.protocol!=="https:"){child.remove();return;}}catch{child.remove();return;}child.setAttribute("loading","lazy");}
+      if(child.tagName==="A"){try{const u=new URL(child.getAttribute("href")||"",location.href);if(u.protocol!=="https:")child.removeAttribute("href");else{child.setAttribute("rel","noopener noreferrer");child.setAttribute("target","_blank");}}catch{child.removeAttribute("href");}}
+      clean(child);
+    }else if(child.nodeType!==Node.TEXT_NODE){child.remove();}
+  });};
+  clean(doc.body);return doc.body.innerHTML;
+}
+
 function esc(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 fetch("https://gotruckfinder.com/api/public/news",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Unable to load news.");return r.json();}).then(data=>{
 const items=data.items||[];if(!items.length){target.innerHTML='<div class="empty">No news articles have been published yet.</div>';return;}
