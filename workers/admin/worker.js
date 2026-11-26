@@ -1961,6 +1961,11 @@ async function handle(request, env) {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
       return json({ error: "Slug may contain lowercase letters, numbers and hyphens only" }, 400);
     }
+    const videoUrl = String(data.video_url || "").trim();
+    if (videoUrl) {
+      try { if (new URL(videoUrl).protocol !== "https:") throw new Error(); }
+      catch { return json({ error: "Video URL must be a valid HTTPS URL" }, 400); }
+    }
     const status = data.status === "published" ? "published" : "draft";
     const result = await db.prepare(
       `INSERT INTO site_content
@@ -1988,6 +1993,10 @@ async function handle(request, env) {
       if (data.status !== undefined) {
         if (!["draft","published"].includes(data.status)) return json({ error:"Invalid content status" },400);
         fields.push("status");
+      }
+      if (data.video_url !== undefined && String(data.video_url || "").trim()) {
+        try { if (new URL(String(data.video_url)).protocol !== "https:") throw new Error(); }
+        catch { return json({ error: "Video URL must be a valid HTTPS URL" }, 400); }
       }
       if (data.slug !== undefined && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(data.slug))) {
         return json({ error:"Invalid slug" },400);
@@ -2653,7 +2662,8 @@ export default {
       const message = String(error?.message || "");
 
       if (message.includes("UNIQUE constraint failed")) {
-        return json({ error: "Vehicle code already exists" }, 409);
+        const contentSlugConflict = message.includes("site_content.content_type") || message.includes("site_content.slug");
+        return json({ error: contentSlugConflict ? "This content URL slug is already in use" : "Vehicle code already exists" }, 409);
       }
 
       if (message.includes("Request body too large")) {
