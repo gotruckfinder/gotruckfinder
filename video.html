@@ -25,12 +25,152 @@
 .page-intro p{color:#cbd5e1;margin:0;font-size:17px;line-height:1.5}
 @media(max-width:600px){.hero-arrow{width:34px;height:34px;font-size:16px}.hero-prev{left:9px}.hero-next{right:9px}.hero-dots{bottom:8px}.page-intro{padding:26px 5%}.page-intro h1{font-size:30px}}
 
+.site-header{
+  width:100%;min-height:88px;display:grid;grid-template-columns:auto minmax(0,1fr) 48px;
+  align-items:center;gap:clamp(14px,2vw,30px);padding:12px clamp(18px,3vw,48px);
+  position:relative;z-index:1000;background:#0646ad;
+  border-bottom:0;box-sizing:border-box;
+}
+/* Homepage desktop navigation: use the full header width */
+.site-header.home-header{
+  display:flex;justify-content:stretch;align-items:center;width:100%;min-height:96px;
+  padding:14px clamp(24px,4vw,64px);gap:24px;
+}
+.site-header.home-header .site-nav{
+  display:flex!important;flex:1 1 auto;width:100%;min-width:0;
+  justify-content:space-between;align-items:center;gap:12px;
+}
+.site-header.home-header .site-nav>a,
+.site-header.home-header .nav-placeholder,
+.site-header.home-header .nav-dropdown{
+  flex:1 1 0;min-width:0;
+}
+.site-header.home-header .site-nav>a,
+.site-header.home-header .nav-placeholder,
+.site-header.home-header .nav-products{
+  font-size:22px;font-weight:900;letter-spacing:.35px;
+}
+.site-header.home-header .nav-dropdown{display:flex;justify-content:center}
+.site-header.home-header .nav-products{width:100%}
+.site-header.home-header .nav-toggle{display:none!important}
+.site-header.home-header .quote-button{flex:0 0 48px;width:48px;height:48px}
+.site-header .brand{display:block;white-space:nowrap;font-size:29px;font-weight:900;letter-spacing:.4px;color:#0646ad}
+.site-header .brand span{color:#ffbd00}
+.site-header .site-nav{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-around;gap:clamp(8px,1.3vw,22px);flex-wrap:nowrap;background:transparent;padding:0;margin:0;font-size:18px;font-weight:800;white-space:nowrap}
+.site-header .site-nav>a,.site-header .nav-placeholder,.site-header .nav-products{
+  display:flex;align-items:center;justify-content:center;flex:1 1 auto;min-width:0;
+  padding:14px 4px;color:#fff;text-decoration:none;font:inherit;font-size:18px;font-weight:800;
+  text-align:center;border:0;border-bottom:3px solid transparent;background:transparent;cursor:pointer;
+}
+.site-header .site-nav>a:hover,.site-header .nav-products:hover,.site-header .site-nav>a:focus-visible,.site-header .nav-products:focus-visible{
+  color:#fff;border-bottom-color:#ffcf33;outline-offset:3px;
+}
+.site-header .nav-dropdown{position:relative;display:flex;flex:1 1 auto;justify-content:center;min-width:0}
+.site-header .nav-products{width:100%;gap:7px}
+.site-header .nav-dropdown-menu{
+  display:none;position:absolute;left:0;top:100%;min-width:245px;padding:8px 0;background:#fff;
+  border:1px solid #dce9ff;border-radius:0 0 10px 10px;box-shadow:0 10px 24px rgba(9,43,120,.16);z-index:1100;
+}
+.site-header .nav-dropdown-menu a{display:block;padding:12px 18px;color:#092b78;font-size:15px;font-weight:700;white-space:nowrap;text-decoration:none}
+.site-header .nav-dropdown-menu a:hover{background:#f0f6ff;color:#0064d8}
+.site-header .nav-dropdown:hover .nav-dropdown-menu,.site-header .nav-dropdown:focus-within .nav-dropdown-menu,.site-header .nav-dropdown.products-open .nav-dropdown-menu{display:block}
+.site-header .quote-button{
+  position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  background:#fff;color:#0646ad;border-radius:8px;text-decoration:none;flex:0 0 48px;
+  box-shadow:0 2px 7px rgba(0,0,0,.18);
+}
+.site-header .quote-button:hover{background:#eaf2ff}
+.site-header .quote-icon{font-size:24px;line-height:1}
+.site-header .quote-label{
+  position:absolute;right:0;top:calc(100% + 8px);padding:7px 10px;border-radius:5px;
+  background:#092b78;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s;
+}
+.site-header .quote-button:hover .quote-label,.site-header .quote-button:focus-visible .quote-label{opacity:1;visibility:visible}
+.site-header .nav-toggle{display:none}
+@media(max-width:900px){
+ .site-header{grid-template-columns:minmax(0,1fr) 44px 48px;gap:10px;min-height:72px;padding:10px 16px}
+ .site-header.home-header{
+   display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:6px;
+   align-items:center;min-height:58px;padding:6px 8px;
+ }
+ .site-header.home-header .nav-toggle{display:none!important}
+ .site-header.home-header .site-nav{
+   grid-column:1;grid-row:1;order:0;
+   position:static!important;display:flex!important;flex-direction:row!important;
+   flex-wrap:nowrap!important;align-items:center;justify-content:space-between;
+   width:100%;min-width:0;padding:0!important;margin:0;gap:1px;
+   background:transparent;box-shadow:none;white-space:nowrap;overflow:visible;
+ }
+ .site-header.home-header .site-nav>a,
+ .site-header.home-header .nav-placeholder,
+ .site-header.home-header .nav-dropdown,
+ .site-header.home-header .nav-products{
+   display:flex;flex:1 1 0;min-width:0;width:auto;min-height:0;
+   align-items:center;justify-content:center;padding:7px 0;
+   font-size:clamp(8px,2.35vw,14px);font-weight:800;letter-spacing:0;
+   line-height:1.1;text-align:center;white-space:nowrap;
+ }
+ .site-header.home-header .nav-dropdown{position:relative}
+ .site-header.home-header .nav-products{gap:2px}
+ .site-header.home-header .nav-dropdown-menu{
+   position:absolute;top:100%;left:0;min-width:190px;padding:6px 0;
+   background:#0646ad;border:1px solid rgba(255,255,255,.2);
+   border-radius:0 0 8px 8px;box-shadow:0 8px 18px rgba(0,0,0,.18);z-index:1100;
+ }
+ .site-header.home-header .nav-dropdown-menu a{
+   display:block;padding:10px 14px;color:#fff;font-size:13px;white-space:nowrap;
+ }
+ .site-header.home-header .nav-dropdown:hover .nav-dropdown-menu,
+ .site-header.home-header .nav-dropdown:focus-within .nav-dropdown-menu,
+ .site-header.home-header .nav-dropdown.products-open .nav-dropdown-menu{display:block}
+ .site-header.home-header .quote-button{
+   grid-column:2;grid-row:1;order:0;
+   width:34px;height:34px;flex:0 0 34px;border-radius:6px;
+ }
+ .site-header.home-header .quote-label{display:none}
+}
+@media(max-width:360px){
+ .site-header.home-header{padding-left:5px;padding-right:5px;gap:4px}
+ .site-header.home-header .site-nav>a,
+ .site-header.home-header .nav-placeholder,
+ .site-header.home-header .nav-dropdown,
+ .site-header.home-header .nav-products{font-size:8px}
+ .site-header.home-header .quote-button{width:30px;height:30px;flex-basis:30px}
+}
+
+/* Match homepage blue for the page title strip */
+.page-intro{background:#0646ad;color:#fff;padding:34px 6%;text-align:center}
+.page-intro h1{font-size:36px;margin:0 0 10px}
+.page-intro p{color:#e6efff;margin:0;font-size:17px;line-height:1.5}
 </style>
 </head>
 <body>
-<header class="site-header"><nav class="site-nav" aria-label="Main navigation">
-<a href="/">HOME</a><a href="/truck-cranes.html">PRODUCTS</a><a href="/news.html">NEWS</a><a href="/video.html">VIDEO</a><a href="/about-us.html">CONTACT US</a>
-</nav></header>
+<header class="topbar site-header home-header">
+  <button class="nav-toggle" type="button" aria-label="OPEN MENU" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+  <nav class="site-nav" aria-label="MAIN NAVIGATION">
+    <a class="nav-link" href="/">HOME</a>
+    <div class="nav-dropdown">
+      <button class="nav-products" type="button" aria-expanded="false">PRODUCTS <span aria-hidden="true">⌄</span></button>
+      <div class="nav-dropdown-menu">
+        <a href="truck-cranes.html">TRUCK CRANES</a>
+        <a href="aerial-work-platforms.html">AERIAL WORK PLATFORMS</a>
+        <a href="sanitation-trucks.html">SANITATION TRUCKS</a>
+        <a href="tank-trucks.html">TANK TRUCKS</a>
+      </div>
+    </div>
+    <a class="nav-link" href="news.html">NEWS</a>
+    <a class="nav-link" href="video.html">VIDEO</a>
+    <div class="nav-dropdown">
+      <button class="nav-products" type="button" aria-expanded="false">OUR SERVICE <span aria-hidden="true">⌄</span></button>
+      <div class="nav-dropdown-menu">
+        <a href="our-service.html">OUR SERVICE</a>
+        <a href="about-us.html">ABOUT US</a>
+      </div>
+    </div>
+  </nav>
+  <a class="quote-button" href="/#contact" aria-label="GET A QUOTE" title="GET A QUOTE"><span class="quote-icon" aria-hidden="true">✉</span><span class="quote-label">GET A QUOTE</span></a>
+</header>
 <section class="hero" aria-label="Featured truck banners">
   <div class="hero-carousel" id="page-hero-carousel">
     <div class="hero-slide is-active"><img src="https://images.gotruckfinder.com/banners/four%20trucks%20banner.jpg" alt="Truck Finder selection of four trucks" fetchpriority="high"></div>
@@ -97,5 +237,8 @@ return '<article class="video-card">'+text+media+'</article>';
 }).join("");
 }).catch(error=>{target.innerHTML='<div class="error">'+esc(error.message)+'</div>';});
 })();
+</script>
+<script>
+document.querySelectorAll('.site-header .nav-dropdown > button').forEach(function(button){button.addEventListener('click',function(){var dropdown=button.closest('.nav-dropdown');var opened=dropdown.classList.toggle('products-open');button.setAttribute('aria-expanded',String(opened));});});
 </script>
 </body></html>
