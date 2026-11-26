@@ -87,7 +87,7 @@ th:nth-child(4),td:nth-child(4){width:36%}
 </style>
 </head>
 <body>
-<header>TRUCK FINDER　 /　 ADMIN</header>
+<header style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">TRUCK FINDER　 /　 ADMIN <a href="/admin/content" style="color:#fff;font-size:14px;text-decoration:underline;">Manage NEWS & VIDEO</a></header>
 <main>
 <h1>Dashboard</h1>
 <div class="stats">
@@ -1424,6 +1424,50 @@ document.getElementById("loginForm").addEventListener("submit",async function(e)
 </script>
 </body>
 </html>`;
+const CONTENT_ADMIN_HTML = \`<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEWS & VIDEO | Truck Finder Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}header{background:#182536;color:#fff;padding:18px 26px;font-size:19px;font-weight:bold}main{max-width:1180px;margin:28px auto;padding:0 18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tabs{display:flex;gap:8px;margin:18px 0}.tabs button,.primary{background:#182536;color:#fff;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}.tabs button.active{background:#1677d2}.panel{background:#fff;padding:20px;border-radius:10px;margin:16px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-weight:600;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font:inherit}.field textarea{min-height:130px;resize:vertical}.wide{grid-column:1/-1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.danger{background:#a82424!important}.muted{color:#777;font-size:13px}.item{border-bottom:1px solid #eee;padding:14px 0;display:flex;gap:14px;align-items:center}.item img{width:110px;height:76px;object-fit:cover;border-radius:6px;background:#eee}.item-main{flex:1;min-width:0}.item-main strong{display:block;margin-bottom:6px}.item-actions{display:flex;gap:6px;flex-wrap:wrap}.item-actions button{padding:8px 10px}.hidden{display:none}@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.item{align-items:flex-start;flex-wrap:wrap}.item-actions{width:100%}}
+</style></head><body>
+<header>TRUCK FINDER / CONTENT MANAGEMENT</header><main>
+<div class="top"><div><h1 style="margin:0 0 6px">NEWS & VIDEO</h1><div class="muted">Manage website news articles and promotional videos.</div></div><a href="/admin" style="color:#1677d2">← Back to Vehicle Dashboard</a></div>
+<div class="tabs"><button id="newsTab" class="active" type="button" onclick="switchType('news')">NEWS</button><button id="videoTab" type="button" onclick="switchType('video')">VIDEO</button></div>
+<section class="panel"><div class="top"><h2 id="listTitle" style="margin:0">News Articles</h2><button class="primary" type="button" onclick="newItem()">+ Add New</button></div><div id="items"><p class="muted">Loading...</p></div></section>
+<section class="panel hidden" id="editor"><h2 id="editorTitle">Add Content</h2>
+<form id="contentForm">
+<div class="grid">
+<div class="field"><label for="contentTitle">Title *</label><input id="contentTitle" required maxlength="200"></div>
+<div class="field"><label for="contentSlug">URL Slug *</label><input id="contentSlug" required maxlength="180" placeholder="example-news-title"><div class="muted">Lowercase letters, numbers and hyphens only.</div></div>
+<div class="field wide"><label for="contentSummary">Summary / Introduction</label><textarea id="contentSummary" style="min-height:75px"></textarea></div>
+<div class="field wide" id="bodyField"><label for="contentBody">Article Content</label><textarea id="contentBody" placeholder="Write the full news article here..."></textarea></div>
+<div class="field wide" id="videoUrlField"><label for="contentVideoUrl">Video URL (optional)</label><input id="contentVideoUrl" type="url" placeholder="https://..."></div>
+<div class="field"><label for="contentCover">Cover Image (JPEG, PNG, WebP, AVIF; max 12 MB)</label><input id="contentCover" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></div>
+<div class="field" id="videoFileField"><label for="contentVideoFile">Upload Video (MP4, WebM, MOV; max 100 MB)</label><input id="contentVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime"></div>
+<div class="field"><label for="contentStatus">Publication Status</label><select id="contentStatus"><option value="draft">Draft</option><option value="published">Published</option></select></div>
+<div class="field"><label for="contentSeoTitle">SEO Title</label><input id="contentSeoTitle" maxlength="255"></div>
+<div class="field wide"><label for="contentMeta">Meta Description</label><textarea id="contentMeta" style="min-height:75px" maxlength="320"></textarea></div>
+</div><div class="actions"><button class="primary" type="submit" id="saveButton">Save Content</button><button type="button" onclick="closeEditor()">Cancel</button></div><p class="muted" id="formMessage"></p>
+</form></section></main>
+<script>
+let currentType="news", editingId=null, currentItems=[];
+const $=id=>document.getElementById(id);
+function esc(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function switchType(type){currentType=type;$("newsTab").classList.toggle("active",type==="news");$("videoTab").classList.toggle("active",type==="video");$("listTitle").textContent=type==="news"?"News Articles":"Videos";$("bodyField").classList.toggle("hidden",type!=="news");$("videoUrlField").classList.toggle("hidden",type!=="video");$("videoFileField").classList.toggle("hidden",type!=="video");closeEditor();loadItems();}
+async function api(url,options){const r=await fetch(url,Object.assign({credentials:"same-origin"},options||{}));const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||"Request failed ("+r.status+")");return data;}
+async function loadItems(){ $("items").innerHTML='<p class="muted">Loading...</p>';try{const d=await api("/api/admin/content?type="+currentType);currentItems=d.items||[];if(!currentItems.length){$("items").innerHTML='<p class="muted">No '+(currentType==="news"?"news articles":"videos")+' yet.</p>';return;}$("items").innerHTML=currentItems.map(x=>'<div class="item">'+(x.cover_url?'<img src="'+esc(x.cover_url)+'" alt="">':'<div style="width:110px;height:76px;background:#eee;border-radius:6px"></div>')+'<div class="item-main"><strong>'+esc(x.title)+'</strong><div class="muted">'+esc(x.slug)+' · '+esc(x.status)+' · Updated '+esc(x.updated_at)+'</div></div><div class="item-actions"><button type="button" onclick="editItem('+x.id+')">Edit</button><button class="danger" type="button" onclick="deleteItem('+x.id+')">Delete</button></div></div>').join("");}catch(e){$("items").innerHTML='<p style="color:#b22">'+esc(e.message)+'</p>';}}
+function newItem(){$("contentForm").reset();editingId=null;$("editorTitle").textContent=currentType==="news"?"Add News Article":"Add Video";$("saveButton").textContent="Save Content";$("formMessage").textContent="";$("editor").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"});}
+function closeEditor(){$("editor").classList.add("hidden");$("contentForm").reset();editingId=null;}
+async function editItem(id){try{const d=await api("/api/admin/content/"+id);const x=d.item;editingId=id;$("contentTitle").value=x.title||"";$("contentSlug").value=x.slug||"";$("contentSummary").value=x.summary||"";$("contentBody").value=x.body||"";$("contentVideoUrl").value=x.video_url||"";$("contentStatus").value=x.status||"draft";$("contentSeoTitle").value=x.seo_title||"";$("contentMeta").value=x.meta_description||"";$("contentCover").value="";$("contentVideoFile").value="";$("editorTitle").textContent="Edit "+(currentType==="news"?"News Article":"Video");$("saveButton").textContent="Update Content";$("formMessage").textContent="Existing cover: "+(x.cover_url||"none")+(x.video_url?" · Video: "+x.video_url:"");$("editor").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"});}catch(e){alert(e.message);}}
+async function deleteItem(id){const x=currentItems.find(v=>v.id===id);if(!x||!confirm("Delete '"+x.title+"'? This also deletes its uploaded content media."))return;try{await api("/api/admin/content/"+id,{method:"DELETE"});if(editingId===id)closeEditor();await loadItems();}catch(e){alert("Delete failed: "+e.message);}}
+$("contentForm").addEventListener("submit",async e=>{e.preventDefault();const button=$("saveButton");button.disabled=true;button.textContent="Saving...";$("formMessage").textContent="";try{const data={content_type:currentType,title:$("contentTitle").value.trim(),slug:$("contentSlug").value.trim().toLowerCase(),summary:$("contentSummary").value,body:$("contentBody").value,video_url:$("contentVideoUrl").value.trim(),status:$("contentStatus").value,seo_title:$("contentSeoTitle").value,meta_description:$("contentMeta").value};let id=editingId;if(id){await api("/api/admin/content/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});}else{const created=await api("/api/admin/content",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});id=created.id;editingId=id;}
+const cover=$("contentCover").files[0];if(cover){const fd=new FormData();fd.append("file",cover);await api("/api/admin/content/"+id+"/cover",{method:"POST",body:fd});}
+const video=$("contentVideoFile").files[0];if(video){const fd=new FormData();fd.append("file",video);await api("/api/admin/content/"+id+"/video-file",{method:"POST",body:fd});}
+$("formMessage").textContent="Saved successfully.";closeEditor();await loadItems();}catch(err){$("formMessage").textContent=err.message;alert("Save failed: "+err.message);}finally{button.disabled=false;button.textContent=editingId?"Update Content":"Save Content";}});
+$("contentTitle").addEventListener("input",()=>{if(!editingId){$("contentSlug").value=$("contentTitle").value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}});
+loadItems();
+</script></body></html>\`;
+
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
 const VIDEO_TYPES = {
@@ -1645,6 +1689,12 @@ async function handle(request, env) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "") || "/";
   const method = request.method.toUpperCase();
+  if ((path === "/admin/content" || path === "/admin/content/") && method === "GET") {
+    if (!(await verifySession(request, env.ADMIN_TOKEN))) {
+      return new Response(ADMIN_HTML, { headers: { "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store" } });
+    }
+    return new Response(CONTENT_ADMIN_HTML, { headers: { "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store" } });
+  }
   if (path === "/admin" && method === "GET") {
   const authenticated = await verifySession(request, env.ADMIN_TOKEN);
   const page = authenticated ? DASHBOARD_HTML : ADMIN_HTML;
@@ -1955,7 +2005,7 @@ async function handle(request, env) {
     }
 
     if (method === "DELETE") {
-      const prefix = current.content_type === "news" ? "content/news-covers/" : "content/videos/";
+      const prefix = IMAGE_PREFIX + (current.content_type === "news" ? "content/news-covers/" : "content/videos/");
       for (const mediaUrl of [current.cover_url,current.video_url]) {
         const key = imageKeyFromUrl(String(mediaUrl||""), IMAGE_BASE, IMAGE_PREFIX);
         if (key && key.startsWith(prefix)) await bucket.delete(key);
