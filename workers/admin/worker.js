@@ -286,6 +286,7 @@ th:nth-child(4),td:nth-child(4){width:36%}
   <input type="file" id="vehicleVideoInput" accept="video/mp4,video/webm,video/quicktime">
   <p style="font-size:13px;color:#777;">MP4, WebM or MOV. Maximum 100 MB. An uploaded video replaces the URL above.</p>
 </div>
+<div id="vehicleVideoPreview" style="margin-top:12px;"></div>
 
 <h3>Vehicle Images</h3>
 
@@ -538,9 +539,63 @@ async function editVehicle(id) {
 
     showVehicleForm();
 
+    // Render current vehicle video and provide a confirmation-protected delete action.
+    const videoPreview = document.getElementById("vehicleVideoPreview");
+    if (videoPreview) {
+      videoPreview.replaceChildren();
+      const videoUrl = String(vehicle.video_url || "").trim();
+      if (videoUrl) {
+        const heading = document.createElement("div");
+        heading.textContent = "Current Vehicle Video";
+        heading.style.cssText = "font-weight:600;margin-bottom:8px;";
+        videoPreview.appendChild(heading);
 
+        const player = document.createElement("video");
+        player.controls = true;
+        player.preload = "metadata";
+        player.src = videoUrl;
+        player.style.cssText = "display:block;width:100%;max-width:480px;max-height:270px;background:#111;border-radius:6px;";
+        videoPreview.appendChild(player);
 
-    
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete Video";
+        deleteButton.style.cssText = "margin-top:10px;padding:7px 12px;background:#dc3545;color:white;border:0;border-radius:5px;cursor:pointer;";
+        deleteButton.addEventListener("click", async () => {
+          if (!confirm("Delete this vehicle video? This cannot be undone.")) return;
+          deleteButton.disabled = true;
+          deleteButton.textContent = "Deleting...";
+          try {
+            const r = await fetch("/api/vehicles/" + id + "/video", {
+              method: "DELETE",
+              credentials: "same-origin"
+            });
+            const data = await r.json();
+            if (!r.ok) throw new Error(data.error || "Unable to delete video");
+            const field = form.elements.namedItem("video_url");
+            if (field) field.value = "";
+            player.pause();
+            videoPreview.replaceChildren();
+            const empty = document.createElement("p");
+            empty.textContent = "No video uploaded.";
+            empty.style.color = "#888";
+            videoPreview.appendChild(empty);
+            alert("Vehicle video deleted successfully.");
+          } catch (error) {
+            alert("Video deletion failed: " + error.message);
+            deleteButton.disabled = false;
+            deleteButton.textContent = "Delete Video";
+          }
+        });
+        videoPreview.appendChild(deleteButton);
+      } else {
+        const empty = document.createElement("p");
+        empty.textContent = "No video uploaded.";
+        empty.style.color = "#888";
+        videoPreview.appendChild(empty);
+      }
+    }
+
     // Display existing vehicle images
     const preview = document.getElementById("vehicleImagePreview");
 
@@ -1881,6 +1936,30 @@ if (imageId !== null &&
       }
 
       return json({ success: true, video_url: videoUrl }, 201);
+    }
+
+    if (isVideoRoute && method === "DELETE") {
+      const currentVideoUrl = String(vehicle.video_url || "").trim();
+      if (!currentVideoUrl) {
+        return json({ success: true, deleted: false, message: "No vehicle video was set" });
+      }
+
+      // Delete only an R2 object inside this vehicle's own video directory.
+      // External URLs are left untouched; only the database reference is cleared.
+      const videoKey = imageKeyFromUrl(currentVideoUrl, IMAGE_BASE, IMAGE_PREFIX);
+      if (videoKey) {
+        const expectedPrefix = `${IMAGE_PREFIX}${vehicle.vehicle_code}/videos/`;
+        if (!videoKey.startsWith(expectedPrefix)) {
+          return json({ error: "Video is outside the expected vehicle folder" }, 400);
+        }
+        await bucket.delete(videoKey);
+      }
+
+      await db.prepare(
+        "UPDATE vehicles SET video_url = '', updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+      ).bind(id).run();
+
+      return json({ success: true, deleted: true });
     }
 
     if (isVideoRoute) {
