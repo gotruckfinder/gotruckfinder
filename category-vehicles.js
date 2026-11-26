@@ -58,20 +58,20 @@
       price.textContent = vehicle.price || "Contact for Price";
       body.appendChild(price);
       const hint = document.createElement("span");
-      hint.className = "category-vehicle-hint";
+      hint.className = "details-hint";
       hint.textContent = "View Details →";
       body.appendChild(hint);
       link.appendChild(body);
       card.appendChild(link);
 
       const actions = document.createElement("div");
-      actions.className = "category-vehicle-actions";
+      actions.className = "vehicle-buttons";
       const inquiry = document.createElement("button");
       inquiry.type = "button";
-      inquiry.className = "category-vehicle-inquiry";
+      inquiry.className = "inquiry-btn";
       inquiry.textContent = "Inquire Now";
       inquiry.addEventListener("click", function () {
-        if (typeof window.openInquiry === "function") window.openInquiry();
+        if (typeof window.openInquiry === "function") window.openInquiry(vehicle);
       });
       actions.appendChild(inquiry);
       card.appendChild(actions);
