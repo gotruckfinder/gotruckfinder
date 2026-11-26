@@ -171,40 +171,9 @@
   </nav>
   <a class="quote-button" href="/#contact" aria-label="GET A QUOTE" title="GET A QUOTE"><span class="quote-icon" aria-hidden="true">✉</span><span class="quote-label">GET A QUOTE</span></a>
 </header>
-<section class="hero" aria-label="Featured truck banners">
-  <div class="hero-carousel" id="page-hero-carousel">
-    <div class="hero-slide is-active"><img src="https://images.gotruckfinder.com/banners/four%20trucks%20banner.jpg" alt="Truck Finder selection of four trucks" fetchpriority="high"></div>
-    <div class="hero-slide"><img src="https://images.gotruckfinder.com/banners/gotruckfinder-banner1.png" alt="Used commercial vehicles from China" loading="lazy"></div>
-    <button class="hero-arrow hero-prev" type="button" aria-label="Previous banner">&#10094;</button>
-    <button class="hero-arrow hero-next" type="button" aria-label="Next banner">&#10095;</button>
-    <div class="hero-dots" aria-label="Choose banner">
-      <button class="hero-dot is-active" type="button" aria-label="Show banner 1" aria-current="true"></button>
-      <button class="hero-dot" type="button" aria-label="Show banner 2" aria-current="false"></button>
-    </div>
-  </div>
-</section>
 <section class="page-intro"><h1>VIDEO GALLERY</h1><p>Explore vehicle walkarounds, equipment demonstrations and company videos.</p></section>
 <main class="container"><div id="videoList" class="video-grid"><div class="empty">Loading videos...</div></div></main>
 <footer class="footer">© GoTruckFinder. All rights reserved.</footer>
-<script>
-(function(){
-  const carousel=document.getElementById("page-hero-carousel");if(!carousel)return;
-  const slides=Array.from(carousel.querySelectorAll(".hero-slide"));
-  const dots=Array.from(carousel.querySelectorAll(".hero-dot"));
-  const prev=carousel.querySelector(".hero-prev"),next=carousel.querySelector(".hero-next");
-  let current=0,timer=null,startX=0;
-  function show(index){current=(index+slides.length)%slides.length;slides.forEach((el,i)=>el.classList.toggle("is-active",i===current));dots.forEach((el,i)=>{const active=i===current;el.classList.toggle("is-active",active);el.setAttribute("aria-current",String(active));});}
-  function stop(){if(timer){clearInterval(timer);timer=null;}}
-  function start(){stop();if(!document.hidden)timer=setInterval(()=>show(current+1),5000);}
-  prev.addEventListener("click",()=>{show(current-1);start();});next.addEventListener("click",()=>{show(current+1);start();});
-  dots.forEach((dot,i)=>dot.addEventListener("click",()=>{show(i);start();}));
-  carousel.addEventListener("pointerdown",e=>{startX=e.clientX;});
-  carousel.addEventListener("pointerup",e=>{const d=e.clientX-startX;if(Math.abs(d)>45){show(current+(d<0?1:-1));start();}});
-  carousel.addEventListener("mouseenter",stop);carousel.addEventListener("mouseleave",start);
-  carousel.addEventListener("focusin",stop);carousel.addEventListener("focusout",start);
-  document.addEventListener("visibilitychange",()=>document.hidden?stop():start());show(0);start();
-})();
-</script>
 <script>
 (function(){
 const target=document.getElementById("videoList");
