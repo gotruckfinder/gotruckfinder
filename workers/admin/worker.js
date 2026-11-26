@@ -1424,7 +1424,7 @@ document.getElementById("loginForm").addEventListener("submit",async function(e)
 </script>
 </body>
 </html>`;
-const CONTENT_ADMIN_HTML = \`<!DOCTYPE html>
+const CONTENT_ADMIN_HTML = `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NEWS & VIDEO | Truck Finder Admin</title>
 <style>
@@ -1466,7 +1466,7 @@ const video=$("contentVideoFile").files[0];if(video){const fd=new FormData();fd.
 $("formMessage").textContent="Saved successfully.";closeEditor();await loadItems();}catch(err){$("formMessage").textContent=err.message;alert("Save failed: "+err.message);}finally{button.disabled=false;button.textContent=editingId?"Update Content":"Save Content";}});
 $("contentTitle").addEventListener("input",()=>{if(!editingId){$("contentSlug").value=$("contentTitle").value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}});
 loadItems();
-</script></body></html>\`;
+</script></body></html>`;
 
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
