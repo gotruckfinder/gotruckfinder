@@ -476,6 +476,7 @@ function showVehicleForm() {
   const form = document.getElementById("vehicleForm");
 
   form.reset();
+  clearVehicleMediaState();
   toggleCategoryFields();
 
   editingVehicleId = null;
@@ -901,8 +902,46 @@ async function deleteVehicle(id) {
   }
 }
  
-// Preview newly selected vehicle images
+// Temporary object URLs used by newly selected image previews.
 let selectedPreviewUrls = [];
+
+// Clear all media state when switching from editing a vehicle to creating
+// a new one, and after a successful save. This only clears the form UI;
+// it does not delete any stored R2 objects or database records.
+function clearVehicleMediaState() {
+  selectedPreviewUrls.forEach(url => URL.revokeObjectURL(url));
+  selectedPreviewUrls = [];
+
+  const imageInput = document.getElementById("vehicleImageInput");
+  if (imageInput) imageInput.value = "";
+
+  const videoInput = document.getElementById("vehicleVideoInput");
+  if (videoInput) videoInput.value = "";
+
+  const imagePreview = document.getElementById("vehicleImagePreview");
+  if (imagePreview) {
+    imagePreview.replaceChildren();
+    const empty = document.createElement("p");
+    empty.textContent = "No images loaded.";
+    empty.style.color = "#888";
+    imagePreview.appendChild(empty);
+  }
+
+  const videoPreview = document.getElementById("vehicleVideoPreview");
+  if (videoPreview) {
+    const player = videoPreview.querySelector("video");
+    if (player) {
+      player.pause();
+      player.removeAttribute("src");
+      player.load();
+    }
+    videoPreview.replaceChildren();
+    const empty = document.createElement("p");
+    empty.textContent = "No video uploaded.";
+    empty.style.color = "#888";
+    videoPreview.appendChild(empty);
+  }
+}
 
 function previewSelectedImages() {
   const input = document.getElementById("vehicleImageInput");
@@ -1100,8 +1139,9 @@ async function saveVehicle(event) {
       }
     }
 
-    // Reset only after vehicle, images and video are saved successfully
+    // Reset form fields and all media previews after a successful save.
     form.reset();
+    clearVehicleMediaState();
     toggleCategoryFields();
 
     editingVehicleId = null;
