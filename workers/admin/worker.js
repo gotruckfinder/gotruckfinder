@@ -2005,10 +2005,10 @@ async function handle(request, env) {
     }
 
     if (method === "DELETE") {
-      const prefix = IMAGE_PREFIX + (current.content_type === "news" ? "content/news-covers/" : "content/videos/");
+      const allowedPrefixes = [IMAGE_PREFIX + "content/covers/", IMAGE_PREFIX + "content/videos/"];
       for (const mediaUrl of [current.cover_url,current.video_url]) {
         const key = imageKeyFromUrl(String(mediaUrl||""), IMAGE_BASE, IMAGE_PREFIX);
-        if (key && key.startsWith(prefix)) await bucket.delete(key);
+        if (key && allowedPrefixes.some(prefix => key.startsWith(prefix))) await bucket.delete(key);
       }
       await db.prepare("DELETE FROM site_content WHERE id = ?").bind(contentId).run();
       return json({ success:true, deleted_id:contentId });
@@ -2029,7 +2029,7 @@ async function handle(request, env) {
     if (!file || typeof file.arrayBuffer !== "function" || !allowedTypes[file.type] || file.size <= 0 || file.size > maxSize) {
       return json({ error: mediaType === "cover" ? "Upload a JPEG, PNG, WebP or AVIF image up to 12 MB" : "Upload an MP4, WebM or MOV video up to 100 MB" },400);
     }
-    const folder = mediaType === "cover" ? "content/news-covers/" : "content/videos/";
+    const folder = mediaType === "cover" ? "content/covers/" : "content/videos/";
     const key = `${IMAGE_PREFIX}${folder}${crypto.randomUUID()}.${allowedTypes[file.type]}`;
     await bucket.put(key,await file.arrayBuffer(),{httpMetadata:{contentType:file.type}});
     const mediaUrl = makeImageUrl(key,IMAGE_BASE);
