@@ -47,8 +47,12 @@
       addLine(body, "Brand", vehicle.brand);
       addLine(body, "Model", vehicle.model);
       addLine(body, "Year", vehicle.year);
-      addLine(body, "Type", vehicle.sub_category || vehicle.subCategory);
-      addLine(body, "Specifications", vehicle.specifications);
+      if (category === "Tank Trucks") {
+        addLine(body, "Tanker Volume", vehicle.specifications);
+      } else {
+        addLine(body, "Type", vehicle.sub_category || vehicle.subCategory);
+        addLine(body, "Specifications", vehicle.specifications);
+      }
       const price = document.createElement("p");
       price.className = "category-vehicle-price";
       price.textContent = vehicle.price || "Contact for Price";
