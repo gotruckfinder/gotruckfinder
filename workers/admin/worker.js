@@ -255,6 +255,7 @@ th:nth-child(4),td:nth-child(4){width:36%}
     <button type="button" onmousedown="event.preventDefault()" onclick="formatRichText('vehicleDescriptionEditor','bold')"><b>B</b></button>
     <button type="button" onmousedown="event.preventDefault()" onclick="formatRichText('vehicleDescriptionEditor','italic')"><i>I</i></button>
     <button type="button" onmousedown="event.preventDefault()" onclick="formatRichText('vehicleDescriptionEditor','insertUnorderedList')">• List</button>
+    <button type="button" onmousedown="event.preventDefault()" onclick="insertRichTable('vehicleDescriptionEditor')">Insert Table</button>
     <button type="button" onclick="document.getElementById('vehicleDescriptionImage').click()">Insert Image</button>
     <input id="vehicleDescriptionImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadRichImage(this,'vehicleDescriptionEditor')">
   </div><div id="vehicleDescriptionEditor" class="rich-editor" contenteditable="true" data-placeholder="Write vehicle description and insert images..."></div></div>
@@ -466,6 +467,19 @@ function escapeHtml(value) {
     "'": "&#39;"
   })[ch]);
 }
+function insertRichTable(editorId) {
+  const editor = document.getElementById(editorId);
+  if (!editor) return;
+  editor.focus();
+  const cellStyle = "border:1px solid #9aa7b8;padding:8px;min-width:90px;text-align:left;";
+  const headerStyle = cellStyle + "background:#eef2f7;font-weight:600;";
+  const html = '<table style="width:100%;border-collapse:collapse;margin:12px 0;" border="1"><tbody>' +
+    '<tr><th style="' + headerStyle + '">Header 1</th><th style="' + headerStyle + '">Header 2</th><th style="' + headerStyle + '">Header 3</th></tr>' +
+    '<tr><td style="' + cellStyle + '"> </td><td style="' + cellStyle + '"> </td><td style="' + cellStyle + '"> </td></tr>' +
+    '<tr><td style="' + cellStyle + '"> </td><td style="' + cellStyle + '"> </td><td style="' + cellStyle + '"> </td></tr>' +
+    '</tbody></table><p><br></p>';
+  document.execCommand("insertHTML", false, html);
+}
 function formatRichText(editorId, command) {
   const editor=document.getElementById(editorId);if(!editor)return;editor.focus();document.execCommand(command,false,null);
 }
@@ -504,6 +518,8 @@ function showVehicleForm() {
   const form = document.getElementById("vehicleForm");
 
   form.reset();
+  const videoUrlField = form.elements.namedItem("video_url");
+  if (videoUrlField) videoUrlField.value = "";
   setRichEditor("vehicleDescriptionEditor","");
   clearVehicleMediaState();
   toggleCategoryFields();
