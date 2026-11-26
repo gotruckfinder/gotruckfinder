@@ -205,8 +205,8 @@ th:nth-child(4),td:nth-child(4){width:36%}
       </div>
 
       <div>
-        <label>Mileage</label>
-        <input name="mileage" type="number">
+        <label id="mileageFieldLabel">Mileage</label>
+        <input name="mileage" type="number" step="any" placeholder="Enter mileage in km">
       </div>
 
       <div>
@@ -397,8 +397,11 @@ function toggleCategoryFields() {
   const videoField = document.getElementById("vehicleVideoField");
   const craneField = document.getElementById("craneSpecificationsField");
   const specificationsField = form.elements.specifications;
-  const specificationsFieldLabel = document.getElementById("specificationsFieldLabel");
+  const mileageFieldLabel = document.getElementById("mileageFieldLabel");
+  const mileageField = form.elements.mileage;
   const isTankTruck = category === "Tank Trucks";
+  if (mileageFieldLabel) mileageFieldLabel.textContent = isTankTruck ? "Tanker Volume (CBM)" : "Mileage";
+  if (mileageField) mileageField.placeholder = isTankTruck ? "Enter tank volume, e.g. 28.5" : "Enter mileage in km";
   const subtypeValue = isSanitation
     ? (sanitationSubtype ? sanitationSubtype.value : "")
     : (generalSubtype ? generalSubtype.value : "");
@@ -413,15 +416,10 @@ function toggleCategoryFields() {
     },
     "Tank Trucks": "Tank capacity, tank material, number of compartments, transported medium, pump type, working pressure and loading/discharge system."
   };
-  if (specificationsFieldLabel) {
-    specificationsFieldLabel.textContent = isTankTruck ? "Tanker Volume" : "Category-specific Specifications";
-  }
   if (specificationsField) {
-    const prompt = isTankTruck
-      ? "Enter tank volume, for example: 28.5 CBM."
-      : (isSanitation
-        ? (specificationPrompts["Sanitation Trucks"][subtypeValue] || "Select the sanitation truck type, then enter its professional specifications.")
-        : (specificationPrompts[category] || "Enter the vehicle's professional specifications."));
+    const prompt = isSanitation
+      ? (specificationPrompts["Sanitation Trucks"][subtypeValue] || "Select the sanitation truck type, then enter its professional specifications.")
+      : (specificationPrompts[category] || "Enter the vehicle's professional specifications.");
     specificationsField.placeholder = prompt;
   }
   if (sanitationField) sanitationField.style.display = isSanitation ? "block" : "none";
