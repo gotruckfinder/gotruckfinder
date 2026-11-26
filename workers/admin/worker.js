@@ -1510,7 +1510,7 @@ const CONTENT_ADMIN_HTML = `<!DOCTYPE html>
 .rich-editor-toolbar button{padding:7px 11px;font-size:13px;background:#fff;color:#253247;border:1px solid #cbd2dc;border-radius:5px}
 .rich-editor{display:block;box-sizing:border-box;width:100%;min-height:180px;padding:12px;outline:none;line-height:1.65;overflow-wrap:anywhere;border:0;background:#fff}
 .rich-editor:empty:before{content:attr(data-placeholder);color:#9299a4}
-.rich-editor img{max-width:100%;height:auto;border-radius:5px}
+.rich-editor{min-width:0;max-width:100%;overflow-x:hidden;overflow-wrap:anywhere}.rich-editor img{display:block;max-width:100% !important;width:auto !important;height:auto !important;object-fit:contain;border-radius:5px}
 .rich-editor p{margin:0 0 10px}
 .wide{grid-column:1/-1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.danger{background:#a82424!important}.muted{color:#777;font-size:13px}.item{border-bottom:1px solid #eee;padding:14px 0;display:flex;gap:14px;align-items:center}.item img{width:110px;height:76px;object-fit:cover;border-radius:6px;background:#eee}.item-main{flex:1;min-width:0}.item-main strong{display:block;margin-bottom:6px}.item-actions{display:flex;gap:6px;flex-wrap:wrap}.item-actions button{padding:8px 10px}.hidden{display:none}@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.item{align-items:flex-start;flex-wrap:wrap}.item-actions{width:100%}}
 </style></head><body>
