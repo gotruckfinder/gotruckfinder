@@ -1463,6 +1463,28 @@ async function ensureFeaturedTable(db) {
   `).run();
 }
 
+async function ensureContentTable(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS site_content (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      content_type TEXT NOT NULL CHECK(content_type IN ('news','video')),
+      title TEXT NOT NULL,
+      slug TEXT NOT NULL,
+      summary TEXT NOT NULL DEFAULT '',
+      body TEXT NOT NULL DEFAULT '',
+      cover_url TEXT NOT NULL DEFAULT '',
+      video_url TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','published')),
+      seo_title TEXT NOT NULL DEFAULT '',
+      meta_description TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      published_at TEXT,
+      UNIQUE(content_type, slug)
+    )
+  `).run();
+}
+
 async function validateFeaturedSelection(db, id, enabled, sortOrder, status, isPublished) {
   if (!enabled) return null;
   if (status !== "available" || !isPublished) {
@@ -1634,6 +1656,44 @@ async function handle(request, env) {
     }
   });
 }
+  // Public, read-only NEWS and VIDEO feeds.
+  if (path === "/api/public/news" || path === "/api/public/videos") {
+    const origin = request.headers.get("Origin") || "";
+    const allowedOrigins = new Set([
+      "https://gotruckfinder.com",
+      "https://www.gotruckfinder.com"
+    ]);
+    const isPagesPreviewOrigin =
+      /^https:\/\/[a-z0-9-]+\.gotruckfinder\.pages\.dev$/i.test(origin);
+    if (origin && !allowedOrigins.has(origin) && !isPagesPreviewOrigin) {
+      return json({ error: "Origin not allowed" }, 403);
+    }
+    const corsHeaders = origin
+      ? { "Access-Control-Allow-Origin": origin, "Vary": "Origin" }
+      : {};
+    if (method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: {
+        ...corsHeaders,
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400"
+      }});
+    }
+    if (method !== "GET") return json({ error: "Method not allowed" }, 405, corsHeaders);
+    if (!env.DB) return json({ error: "Database unavailable" }, 503, corsHeaders);
+    await ensureContentTable(env.DB);
+    const contentType = path.endsWith("/news") ? "news" : "video";
+    const result = await env.DB.prepare(
+      `SELECT id, content_type, title, slug, summary, body, cover_url,
+              video_url, seo_title, meta_description, published_at
+       FROM site_content
+       WHERE content_type = ? AND status = 'published'
+       ORDER BY COALESCE(published_at, created_at) DESC, id DESC
+       LIMIT 100`
+    ).bind(contentType).all();
+    return json({ items: result.results || [] }, 200, corsHeaders);
+  }
+
   // Public, read-only inventory feed for the production website.
   // Keep this route before admin authentication; it exposes only published,
   // available vehicles and never exposes private/admin fields.
@@ -1825,6 +1885,111 @@ async function handle(request, env) {
   const db = DB;
   const bucket = env.BUCKET;
   await ensureFeaturedTable(db);
+  await ensureContentTable(db);
+
+  // NEWS and VIDEO content management API (authenticated).
+  if (path === "/api/admin/content" && method === "GET") {
+    const type = url.searchParams.get("type");
+    const status = url.searchParams.get("status");
+    let query = "SELECT * FROM site_content WHERE 1=1";
+    const params = [];
+    if (type === "news" || type === "video") { query += " AND content_type = ?"; params.push(type); }
+    if (status === "draft" || status === "published") { query += " AND status = ?"; params.push(status); }
+    query += " ORDER BY updated_at DESC, id DESC LIMIT 200";
+    const result = await db.prepare(query).bind(...params).all();
+    return json({ items: result.results || [] });
+  }
+
+  if (path === "/api/admin/content" && method === "POST") {
+    const data = await readJson(request);
+    const type = data.content_type;
+    const title = String(data.title || "").trim();
+    const slug = String(data.slug || "").trim().toLowerCase();
+    if (!["news", "video"].includes(type) || !title || !slug) {
+      return json({ error: "Content type, title and slug are required" }, 400);
+    }
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+      return json({ error: "Slug may contain lowercase letters, numbers and hyphens only" }, 400);
+    }
+    const status = data.status === "published" ? "published" : "draft";
+    const result = await db.prepare(
+      `INSERT INTO site_content
+       (content_type,title,slug,summary,body,cover_url,video_url,status,seo_title,meta_description,published_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,CASE WHEN ? = 'published' THEN CURRENT_TIMESTAMP ELSE NULL END)`
+    ).bind(type,title,slug,String(data.summary||""),String(data.body||""),
+      String(data.cover_url||""),String(data.video_url||""),status,
+      String(data.seo_title||""),String(data.meta_description||""),status).run();
+    return json({ success:true, id:result.meta.last_row_id }, 201);
+  }
+
+  const contentMatch = path.match(/^\/api\/admin\/content\/(\d+)$/);
+  if (contentMatch) {
+    const contentId = validId(contentMatch[1]);
+    if (!contentId) return json({ error: "Invalid content ID" }, 400);
+    const current = await db.prepare("SELECT * FROM site_content WHERE id = ?").bind(contentId).first();
+    if (!current) return json({ error: "Content not found" }, 404);
+
+    if (method === "GET") return json({ item: current });
+
+    if (method === "PATCH") {
+      const data = await readJson(request);
+      const allowed = ["title","slug","summary","body","cover_url","video_url","seo_title","meta_description"];
+      const fields = allowed.filter(key => data[key] !== undefined);
+      if (data.status !== undefined) {
+        if (!["draft","published"].includes(data.status)) return json({ error:"Invalid content status" },400);
+        fields.push("status");
+      }
+      if (data.slug !== undefined && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(data.slug))) {
+        return json({ error:"Invalid slug" },400);
+      }
+      if (!fields.length) return json({ error:"No content changes supplied" },400);
+      const assignments = fields.map(key => key + " = ?").join(", ");
+      const values = fields.map(key => String(data[key] ?? ""));
+      const publishSql = data.status === "published"
+        ? ", published_at = COALESCE(published_at, CURRENT_TIMESTAMP)"
+        : data.status === "draft" ? ", published_at = NULL" : "";
+      await db.prepare(
+        `UPDATE site_content SET ${assignments}, updated_at = CURRENT_TIMESTAMP${publishSql} WHERE id = ?`
+      ).bind(...values,contentId).run();
+      return json({ success:true, id:contentId });
+    }
+
+    if (method === "DELETE") {
+      const prefix = current.content_type === "news" ? "content/news-covers/" : "content/videos/";
+      for (const mediaUrl of [current.cover_url,current.video_url]) {
+        const key = imageKeyFromUrl(String(mediaUrl||""), IMAGE_BASE, IMAGE_PREFIX);
+        if (key && key.startsWith(prefix)) await bucket.delete(key);
+      }
+      await db.prepare("DELETE FROM site_content WHERE id = ?").bind(contentId).run();
+      return json({ success:true, deleted_id:contentId });
+    }
+    return json({ error:"Method not allowed" },405);
+  }
+
+  const contentMediaMatch = path.match(/^\/api\/admin\/content\/(\d+)\/(cover|video-file)$/);
+  if (contentMediaMatch && method === "POST") {
+    const contentId = validId(contentMediaMatch[1]);
+    const mediaType = contentMediaMatch[2];
+    const current = await db.prepare("SELECT * FROM site_content WHERE id = ?").bind(contentId).first();
+    if (!current) return json({ error:"Content not found" },404);
+    const form = await request.formData();
+    const file = form.get("file");
+    const allowedTypes = mediaType === "cover" ? IMAGE_TYPES : VIDEO_TYPES;
+    const maxSize = mediaType === "cover" ? MAX_IMAGE_SIZE : MAX_VIDEO_SIZE;
+    if (!file || typeof file.arrayBuffer !== "function" || !allowedTypes[file.type] || file.size <= 0 || file.size > maxSize) {
+      return json({ error: mediaType === "cover" ? "Upload a JPEG, PNG, WebP or AVIF image up to 12 MB" : "Upload an MP4, WebM or MOV video up to 100 MB" },400);
+    }
+    const folder = mediaType === "cover" ? "content/news-covers/" : "content/videos/";
+    const key = `${IMAGE_PREFIX}${folder}${crypto.randomUUID()}.${allowedTypes[file.type]}`;
+    await bucket.put(key,await file.arrayBuffer(),{httpMetadata:{contentType:file.type}});
+    const mediaUrl = makeImageUrl(key,IMAGE_BASE);
+    const column = mediaType === "cover" ? "cover_url" : "video_url";
+    const previousUrl = current[column];
+    await db.prepare(`UPDATE site_content SET ${column} = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).bind(mediaUrl,contentId).run();
+    const previousKey = imageKeyFromUrl(String(previousUrl||""),IMAGE_BASE,IMAGE_PREFIX);
+    if (previousKey && previousKey.startsWith(`${IMAGE_PREFIX}${folder}`) && previousKey !== key) await bucket.delete(previousKey);
+    return json({ success:true, url:mediaUrl },201);
+  }
 
   // Check login session
   if (path === "/api/me" && method === "GET") {
