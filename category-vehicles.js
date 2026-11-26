@@ -6,6 +6,8 @@
   const grid = document.getElementById("categoryVehicleGrid");
   const count = document.getElementById("categoryVehicleCount");
   const empty = document.getElementById("categoryVehicleEmpty");
+  const searchInput = document.getElementById("categoryVehicleSearch");
+  let searchTerm = "";
   if (!grid || !count || !empty) return;
 
   function addLine(parent, label, value) {
@@ -20,10 +22,11 @@
   function render(allVehicles) {
     const vehicles = (Array.isArray(allVehicles) ? allVehicles : []).filter(vehicle =>
       String(vehicle.category || "").trim() === category &&
-      String(vehicle.status || "").toLowerCase() === "available"
+      String(vehicle.status || "").toLowerCase() === "available" &&
+      (!searchTerm || [vehicle.title,vehicle.brand,vehicle.model,vehicle.year,vehicle.sub_category,vehicle.subCategory,vehicle.specifications,vehicle.mileage,vehicle.price,vehicle.capacity,vehicle.ton,vehicle.location].some(value => String(value || "").toLowerCase().includes(searchTerm)))
     );
     grid.replaceChildren();
-    count.textContent = vehicles.length + " available vehicle(s)";
+    count.textContent = vehicles.length + " matching vehicle(s)";
     empty.hidden = vehicles.length > 0;
     vehicles.forEach(vehicle => {
       const card = document.createElement("article");
@@ -78,6 +81,8 @@
       grid.appendChild(card);
     });
   }
+
+  if (searchInput) searchInput.addEventListener("input", function () { searchTerm = searchInput.value.trim().toLowerCase(); render(window.TRUCK_FINDER_VEHICLES || []); });
 
   render(window.TRUCK_FINDER_VEHICLES || []);
   if (window.TRUCK_FINDER_VEHICLES_READY &&
