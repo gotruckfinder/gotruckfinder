@@ -1526,7 +1526,7 @@ const CONTENT_ADMIN_HTML = `<!DOCTYPE html>
 <div class="field wide"><label for="contentSummary">Summary / Introduction</label><textarea id="contentSummary" hidden></textarea><div class="rich-editor-wrap"><div class="rich-editor-toolbar"><button type="button" onmousedown="event.preventDefault()" onclick="formatContent('contentSummaryEditor','bold')"><b>B</b></button><button type="button" onmousedown="event.preventDefault()" onclick="formatContent('contentSummaryEditor','italic')"><i>I</i></button><button type="button" onmousedown="event.preventDefault()" onclick="formatContent('contentSummaryEditor','insertUnorderedList')">• List</button><button type="button" onclick="document.getElementById('contentSummaryImage').click()">Insert Image</button><input id="contentSummaryImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadContentImage(this,'contentSummaryEditor')"></div><div id="contentSummaryEditor" class="rich-editor" contenteditable="true" data-placeholder="Write introduction and insert images..." style="min-height:110px"></div></div></div>
 <div class="field wide" id="bodyField"><label for="contentBody">Article Content</label><textarea id="contentBody" hidden></textarea><div class="rich-editor-wrap"><div class="rich-editor-toolbar"><button type="button" onmousedown="event.preventDefault()" onclick="formatContent('contentBodyEditor','bold')"><b>B</b></button><button type="button" onmousedown="event.preventDefault()" onclick="formatContent('contentBodyEditor','italic')"><i>I</i></button><button type="button" onmousedown="event.preventDefault()" onclick="formatContent('contentBodyEditor','insertUnorderedList')">• List</button><button type="button" onclick="document.getElementById('contentBodyImage').click()">Insert Image</button><input id="contentBodyImage" type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onchange="uploadContentImage(this,'contentBodyEditor')"></div><div id="contentBodyEditor" class="rich-editor" contenteditable="true" data-placeholder="Write the full article and insert images..."></div></div></div>
 <div class="field wide" id="videoUrlField"><label for="contentVideoUrl">Video URL (optional)</label><input id="contentVideoUrl" type="url" placeholder="https://..."></div>
-<div class="field"><label for="contentCover">Cover Image (JPEG, PNG, WebP, AVIF; max 12 MB)</label><input id="contentCover" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></div>
+<div class="field"><label for="contentCover">Cover Image (JPEG, PNG, WebP, AVIF; max 12 MB)</label><input id="contentCover" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><small id="autoCoverStatus" style="display:block;margin-top:6px;color:#64748b;">For uploaded videos, a 16:9 cover will be generated automatically. You can still choose your own cover image.</small><div id="autoCoverPreview" style="margin-top:10px;"></div></div>
 <div class="field" id="videoFileField"><label for="contentVideoFile">Upload Video (MP4, WebM, MOV; max 100 MB)</label><input id="contentVideoFile" type="file" accept="video/mp4,video/webm,video/quicktime"></div>
 <div class="field"><label for="contentStatus">Publication Status</label><select id="contentStatus"><option value="draft">Draft</option><option value="published">Published</option></select></div>
 <div class="field"><label for="contentSeoTitle">SEO Title</label><input id="contentSeoTitle" maxlength="255"></div>
@@ -1549,6 +1549,64 @@ function newItem(){$("contentForm").reset();setContentEditor("contentSummaryEdit
 function closeEditor(){$("editor").classList.add("hidden");$("contentForm").reset();setContentEditor("contentSummaryEditor","");setContentEditor("contentBodyEditor","");editingId=null;}
 async function editItem(id){try{const d=await api("/api/admin/content/"+id);const x=d.item;editingId=id;$("contentTitle").value=x.title||"";$("contentSlug").value=x.slug||"";$("contentSummary").value=x.summary||"";$("contentBody").value=x.body||"";setContentEditor("contentSummaryEditor",x.summary||"");setContentEditor("contentBodyEditor",x.body||"");$("contentVideoUrl").value=x.video_url||"";$("contentStatus").value=x.status||"draft";$("contentSeoTitle").value=x.seo_title||"";$("contentMeta").value=x.meta_description||"";$("contentCover").value="";$("contentVideoFile").value="";$("editorTitle").textContent="Edit "+(currentType==="news"?"News Article":"Video");$("saveButton").textContent="Update Content";$("formMessage").textContent="Existing cover: "+(x.cover_url||"none")+(x.video_url?" · Video: "+x.video_url:"");$("editor").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"});}catch(e){alert(e.message);}}
 async function deleteItem(id){const x=currentItems.find(v=>v.id===id);if(!x||!confirm("Delete '"+x.title+"'? This also deletes its uploaded content media."))return;try{await api("/api/admin/content/"+id,{method:"DELETE"});if(editingId===id)closeEditor();await loadItems();}catch(e){alert("Delete failed: "+e.message);}}
+// Automatically create a 16:9 JPEG cover from an uploaded video file.
+let autoCoverObjectUrl = null;
+function clearAutoCoverPreview(){
+ if(autoCoverObjectUrl){URL.revokeObjectURL(autoCoverObjectUrl);autoCoverObjectUrl=null;}
+ const preview=$("autoCoverPreview");if(preview)preview.replaceChildren();
+}
+$("contentVideoFile").addEventListener("change",async()=>{
+ clearAutoCoverPreview();
+ if(currentType!=="video")return;
+ const videoFile=$("contentVideoFile").files&&$("contentVideoFile").files[0];
+ if(!videoFile)return;
+ const status=$("autoCoverStatus");
+ const manualCover=$("contentCover").files&&$("contentCover").files.length>0;
+ status.textContent=manualCover?"Your selected cover image will be used instead of an automatic cover.":"Generating a cover from the video...";
+ const objectUrl=URL.createObjectURL(videoFile);autoCoverObjectUrl=objectUrl;
+ const probe=document.createElement("video");
+ probe.muted=true;probe.playsInline=true;probe.preload="metadata";probe.src=objectUrl;
+ try{
+  await new Promise((resolve,reject)=>{
+   probe.onloadedmetadata=resolve;probe.onerror=()=>reject(new Error("This video could not be read by the browser."));
+  });
+  if(!Number.isFinite(probe.duration)||probe.duration<=0)throw new Error("Video duration is unavailable.");
+  const seekTime=Math.min(2,Math.max(0,probe.duration*0.1));
+  await new Promise((resolve,reject)=>{
+   probe.onseeked=resolve;probe.onerror=()=>reject(new Error("Could not capture a frame from this video."));
+   probe.currentTime=seekTime;
+  });
+  const width=1280,height=720,canvas=document.createElement("canvas");
+  canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Canvas is unavailable in this browser.");
+  const scale=Math.max(width/probe.videoWidth,height/probe.videoHeight);
+  const drawWidth=probe.videoWidth*scale,drawHeight=probe.videoHeight*scale;
+  ctx.drawImage(probe,(width-drawWidth)/2,(height-drawHeight)/2,drawWidth,drawHeight);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",0.84));
+  if(!blob)throw new Error("Could not generate the cover image.");
+  if(!manualCover){
+   const generated=new File([blob],"video-auto-cover.jpg",{type:"image/jpeg",lastModified:Date.now()});
+   const transfer=new DataTransfer();transfer.items.add(generated);$("contentCover").files=transfer.files;
+   const img=document.createElement("img");img.src=URL.createObjectURL(blob);img.alt="Automatically generated video cover";
+   img.style.cssText="display:block;width:240px;max-width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid #dce3ec;border-radius:6px;";
+   $("autoCoverPreview").appendChild(img);
+   status.textContent="Automatic 16:9 cover generated. It will be uploaded with the video.";
+  }else{
+   status.textContent="Your manually selected cover image will be used.";
+  }
+ }catch(error){
+  status.textContent="Automatic cover generation failed: "+error.message+" Please upload a cover image manually.";
+  $("contentCover").value=manualCover? $("contentCover").value : "";
+ }finally{
+  probe.pause();probe.removeAttribute("src");probe.load();
+ }
+});
+$("contentCover").addEventListener("change",()=>{
+ if($("contentCover").files&&$("contentCover").files.length){
+  $("autoCoverStatus").textContent="Your manually selected cover image will be used.";
+  clearAutoCoverPreview();
+ }
+});
 $("contentForm").addEventListener("submit",async e=>{e.preventDefault();const button=$("saveButton");button.disabled=true;button.textContent="Saving...";$("formMessage").textContent="";try{syncContentEditor("Summary");syncContentEditor("Body");const data={content_type:currentType,title:$("contentTitle").value.trim(),slug:$("contentSlug").value.trim().toLowerCase(),summary:$("contentSummary").value,body:$("contentBody").value,video_url:$("contentVideoUrl").value.trim(),status:$("contentStatus").value,seo_title:$("contentSeoTitle").value,meta_description:$("contentMeta").value};let id=editingId;if(id){await api("/api/admin/content/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});}else{const created=await api("/api/admin/content",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});id=created.id;editingId=id;}
 const cover=$("contentCover").files[0];if(cover){const fd=new FormData();fd.append("file",cover);await api("/api/admin/content/"+id+"/cover",{method:"POST",body:fd});}
 const video=$("contentVideoFile").files[0];if(video){const fd=new FormData();fd.append("file",video);await api("/api/admin/content/"+id+"/video-file",{method:"POST",body:fd});}
