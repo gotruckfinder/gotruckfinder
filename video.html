@@ -8,7 +8,7 @@
 <style>
 .video-content img{max-width:100%;height:auto;border-radius:6px}.video-content p{margin:0 0 12px}
 
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#202936;background:#f7f8fa}a{color:inherit}.site-header{height:76px;background:#182536;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 5%;position:sticky;top:0;z-index:5}.site-nav{display:flex;align-items:center;gap:34px}.site-nav a{text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.04em}.site-nav a:hover{color:#9fc9f2}.hero{background:#182536;color:#fff;padding:68px 6%;text-align:center}.hero h1{font-size:42px;margin:0 0 12px}.hero p{color:#cbd5e1;margin:0;font-size:19px}.container{max-width:1180px;margin:42px auto;padding:0 22px}.video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px}.video-card{display:flex;flex-direction:column;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 5px 24px #15223512}.video-content{order:1;padding:22px}.video-content h2{font-size:22px;line-height:1.35;margin:10px 0}.video-summary{color:#5b6675;line-height:1.65}.video-summary p{margin:0 0 12px}.video-media{order:2;width:100%;background:#111}.video-media video{display:block;width:100%;aspect-ratio:16/9;background:#111;object-fit:contain}.video-media img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#e8ebef}.video-placeholder{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#182536,#38516d);color:#fff;font-size:20px;font-weight:700}.video-placeholder span{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border:2px solid #fff;border-radius:50%;font-size:26px}.external-link{display:inline-block;margin-top:16px;padding:12px 18px;background:#182536;color:#fff;text-decoration:none;border-radius:6px;font-size:16px;font-weight:700}.empty,.error{background:#fff;padding:34px;border-radius:10px;text-align:center;color:#697586}.footer{padding:30px;text-align:center;color:#7b8796;font-size:13px}@media(max-width:650px){.site-nav{gap:13px;flex-wrap:wrap;justify-content:center}.site-nav a{font-size:11px}.site-header{height:auto;min-height:64px;padding:15px}.hero h1{font-size:32px}}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#202936;background:#f7f8fa}a{color:inherit}.site-header{height:76px;background:#182536;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 5%;position:sticky;top:0;z-index:5}.site-nav{display:flex;align-items:center;gap:34px}.site-nav a{text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.04em}.site-nav a:hover{color:#9fc9f2}.hero{background:#182536;color:#fff;padding:68px 6%;text-align:center}.hero h1{font-size:42px;margin:0 0 12px}.hero p{color:#cbd5e1;margin:0;font-size:19px}.container{max-width:1600px;margin:30px auto;padding:0 3%}.video-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}.video-card{display:flex;flex-direction:column;background:#f2f2f2;border-radius:0;overflow:hidden;box-shadow:none;transition:transform .18s,box-shadow .18s}.video-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px #15223518}.video-content{order:2;padding:20px 16px;text-align:center;min-height:112px;display:flex;align-items:center;justify-content:center}.video-content h2{font-size:22px;line-height:1.4;margin:0;color:#171717}.video-summary{display:none}.video-media{order:1;position:relative;width:100%;aspect-ratio:16/9;background:#e8ebef;overflow:hidden}.video-media video,.video-media img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:cover;background:#111}.video-play-button{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border:0;border-radius:50%;background:#e00000;color:#fff;display:grid;place-items:center;font-size:38px;line-height:1;padding-left:6px;cursor:pointer;box-shadow:0 2px 8px #0003}.video-play-button:hover{background:#c90000;transform:translate(-50%,-50%) scale(1.06)}.video-placeholder{display:grid;place-items:center;width:100%;height:100%;background:linear-gradient(135deg,#182536,#38516d);color:#fff;font-size:20px;font-weight:700}.empty,.error{background:#fff;padding:34px;border-radius:10px;text-align:center;color:#697586}.footer{padding:30px;text-align:center;color:#7b8796;font-size:13px}@media(max-width:1050px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.video-grid{grid-template-columns:1fr;gap:20px}.video-content{min-height:88px;padding:16px 12px}.video-content h2{font-size:19px}.video-play-button{width:64px;height:64px;font-size:30px}}@media(max-width:650px){.site-nav{gap:13px;flex-wrap:wrap;justify-content:center}.site-nav a{font-size:11px}.site-header{height:auto;min-height:64px;padding:15px}.hero h1{font-size:32px}}
 
 /* Match the homepage's full-width rotating hero banners */
 .hero{display:block!important;width:100%!important;min-height:0!important;height:auto!important;aspect-ratio:auto!important;padding:0!important;background:none!important;overflow:hidden}
@@ -177,34 +177,38 @@
 <script>
 (function(){
 const target=document.getElementById("videoList");
-function renderRichContent(value){
-  const raw=String(value||"");if(!raw)return "";
-  const doc=new DOMParser().parseFromString(raw,"text/html");
-  const allowed=new Set(["P","BR","STRONG","B","EM","I","U","UL","OL","LI","H2","H3","BLOCKQUOTE","DIV","SPAN","IMG","A"]);
-  const clean=node=>{Array.from(node.childNodes).forEach(child=>{
-    if(child.nodeType===Node.ELEMENT_NODE){
-      if(!allowed.has(child.tagName)){child.replaceWith(document.createTextNode(child.textContent||""));return;}
-      Array.from(child.attributes).forEach(a=>{if(child.tagName==="IMG"&&["src","alt","title"].includes(a.name))return;if(child.tagName==="A"&&["href","title"].includes(a.name))return;child.removeAttribute(a.name);});
-      if(child.tagName==="IMG"){try{const u=new URL(child.getAttribute("src")||"",location.href);if(u.protocol!=="https:"){child.remove();return;}}catch{child.remove();return;}child.setAttribute("loading","lazy");}
-      if(child.tagName==="A"){try{const u=new URL(child.getAttribute("href")||"",location.href);if(u.protocol!=="https:")child.removeAttribute("href");else{child.setAttribute("rel","noopener noreferrer");child.setAttribute("target","_blank");}}catch{child.removeAttribute("href");}}
-      clean(child);
-    }else if(child.nodeType!==Node.TEXT_NODE){child.remove();}
-  });};
-  clean(doc.body);return doc.body.innerHTML;
-}
-
 function esc(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function directVideo(url){return /\.(mp4|webm|mov)(\?.*)?$/i.test(url||"");}
+function playVideo(card){
+ const url=card.dataset.videoUrl||"";
+ const cover=card.dataset.coverUrl||"";
+ const media=card.querySelector(".video-media");
+ if(!url||!directVideo(url))return;
+ const video=document.createElement("video");
+ video.controls=true;video.autoplay=true;video.playsInline=true;video.preload="metadata";
+ if(cover)video.poster=cover;
+ video.src=url;
+ media.replaceChildren(video);
+ const promise=video.play();if(promise&&promise.catch)promise.catch(()=>{video.controls=true;});
+}
 fetch("https://gotruckfinder.com/api/public/videos",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Unable to load videos.");return r.json();}).then(data=>{
-const items=data.items||[];if(!items.length){target.innerHTML='<div class="empty">No videos have been published yet.</div>';return;}
-target.innerHTML=items.map(item=>{
-const url=String(item.video_url||"");
-const link=url&&!directVideo(url)?'<a class="external-link" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Watch Video</a>':"";
-const text='<div class="video-content"><h2>'+esc(item.title)+'</h2>'+(item.summary?'<div class="video-summary">'+renderRichContent(item.summary)+'</div>':'')+link+'</div>';
-const media=directVideo(url)?'<div class="video-media"><video controls preload="metadata"'+(item.cover_url?' poster="'+esc(item.cover_url)+'"':'')+' src="'+esc(url)+'"></video></div>':(item.cover_url?'<div class="video-media"><img src="'+esc(item.cover_url)+'" alt="'+esc(item.title)+'"></div>':'<div class="video-media"><div class="video-placeholder"><span>▶</span>VIDEO</div></div>');
-return '<article class="video-card">'+text+media+'</article>';
-}).join("");
+ const items=data.items||[];if(!items.length){target.innerHTML='<div class="empty">No videos have been published yet.</div>';return;}
+ target.innerHTML=items.map((item,index)=>{
+  const url=String(item.video_url||"");
+  const cover=String(item.cover_url||"");
+  const clickable=!!url;
+  const media=cover?'<img src="'+esc(cover)+'" alt="'+esc(item.title)+'" loading="lazy">':'<div class="video-placeholder">VIDEO</div>';
+  const play=clickable?'<button class="video-play-button" type="button" aria-label="Play '+esc(item.title)+'">▶</button>':"";
+  const external=clickable&&!directVideo(url);
+  return '<article class="video-card" data-video-index="'+index+'" data-video-url="'+esc(directVideo(url)?url:"")+'" data-external-url="'+esc(external?url:"")+'" data-cover-url="'+esc(cover)+'"><div class="video-media">'+media+play+'</div><div class="video-content"><h2>'+esc(item.title)+'</h2></div></article>';
+ }).join("");
 }).catch(error=>{target.innerHTML='<div class="error">'+esc(error.message)+'</div>';});
+target.addEventListener("click",e=>{
+ const button=e.target.closest(".video-play-button");if(!button)return;
+ const card=button.closest(".video-card");
+ if(card.dataset.videoUrl){playVideo(card);return;}
+ if(card.dataset.externalUrl){window.open(card.dataset.externalUrl,"_blank","noopener,noreferrer");}
+});
 })();
 </script>
 <script>
