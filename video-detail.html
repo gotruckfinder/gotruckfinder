@@ -200,7 +200,7 @@
   const date=item.published_at?'<time class="detail-date">'+esc(item.published_at)+'</time>':"";
   const summary=item.summary?'<div class="detail-summary">'+rich(item.summary)+'</div>':"";
   const body=item.body?'<div class="detail-body">'+rich(item.body)+'</div>':"";
-  const url=String(item.video_url||'');const player=/\\.(mp4|webm|mov)(\\?.*)?$/i.test(url)?'<video class="detail-video" controls playsinline preload="metadata"'+(item.cover_url?' poster="'+esc(item.cover_url)+'"':'')+' src="'+esc(url)+'"></video>':(url?'<a class="detail-external" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Watch Video</a>':'');target.innerHTML='<h1>'+esc(item.title)+'</h1>'+date+player+summary+body+cover;
+  const url=String(item.video_url||'');const player=/\.(mp4|webm|mov)(\?.*)?$/i.test(url)?'<video class="detail-video" controls playsinline preload="metadata"'+(item.cover_url?' poster="'+esc(item.cover_url)+'"':'')+' src="'+esc(url)+'"></video>':(url?'<a class="detail-external" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Watch Video</a>':'');target.innerHTML='<h1>'+esc(item.title)+'</h1>'+date+player+summary+body+cover;
  }).catch(error=>{target.innerHTML='<div class="detail-state">'+esc(error.message)+'</div>';});
 })();
 </script>
