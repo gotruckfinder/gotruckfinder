@@ -200,15 +200,10 @@ fetch("https://gotruckfinder.com/api/public/videos",{cache:"no-store"}).then(r=>
   const media=cover?'<img src="'+esc(cover)+'" alt="'+esc(item.title)+'" loading="lazy">':'<div class="video-placeholder">VIDEO</div>';
   const play=clickable?'<button class="video-play-button" type="button" aria-label="Play '+esc(item.title)+'">▶</button>':"";
   const external=clickable&&!directVideo(url);
-  return '<article class="video-card" data-video-index="'+index+'" data-video-url="'+esc(directVideo(url)?url:"")+'" data-external-url="'+esc(external?url:"")+'" data-cover-url="'+esc(cover)+'"><div class="video-media">'+media+play+'</div><div class="video-content"><h2>'+esc(item.title)+'</h2></div></article>';
+  return '<a class="video-card" href="video-detail.html?slug='+encodeURIComponent(item.slug||"")+'" aria-label="Open video '+esc(item.title)+'"><div class="video-media">'+media+(clickable?'<span class="video-play-button" aria-hidden="true">▶</span>':"")+'</div><div class="video-content"><h2>'+esc(item.title)+'</h2></div></a>';
  }).join("");
 }).catch(error=>{target.innerHTML='<div class="error">'+esc(error.message)+'</div>';});
-target.addEventListener("click",e=>{
- const button=e.target.closest(".video-play-button");if(!button)return;
- const card=button.closest(".video-card");
- if(card.dataset.videoUrl){playVideo(card);return;}
- if(card.dataset.externalUrl){window.open(card.dataset.externalUrl,"_blank","noopener,noreferrer");}
-});
+
 })();
 </script>
 <script>
