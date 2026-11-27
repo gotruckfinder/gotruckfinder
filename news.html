@@ -211,10 +211,9 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeArticle();});
 fetch("https://gotruckfinder.com/api/public/news",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Unable to load news.");return r.json();}).then(data=>{
  const items=data.items||[];if(!items.length){target.innerHTML='<div class="empty">No news articles have been published yet.</div>';return;}
  itemsByCard.push(...items);
- target.innerHTML=items.map((item,index)=>'<article class="news-card" data-news-index="'+index+'" tabindex="0" role="button" aria-label="Read '+esc(item.title)+'">'+(item.cover_url?'<img src="'+esc(item.cover_url)+'" alt="'+esc(item.title)+'" loading="lazy">':'<div class="news-cover-placeholder">NEWS</div>')+'<div class="news-content"><h2>'+esc(item.title)+'</h2></div></article>').join("");
+ target.innerHTML=items.map(item=>'<a class="news-card" href="news-detail.html?slug='+encodeURIComponent(item.slug||"")+'" aria-label="Read '+esc(item.title)+'">'+(item.cover_url?'<img src="'+esc(item.cover_url)+'" alt="'+esc(item.title)+'" loading="lazy">':'<div class="news-cover-placeholder">NEWS</div>')+'<div class="news-content"><h2>'+esc(item.title)+'</h2></div></a>').join("");
 }).catch(error=>{target.innerHTML='<div class="error">'+esc(error.message)+'</div>';});
-target.addEventListener("click",e=>{const card=e.target.closest("[data-news-index]");if(card)openArticle(itemsByCard[Number(card.dataset.newsIndex)]);});
-target.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){const card=e.target.closest("[data-news-index]");if(card){e.preventDefault();openArticle(itemsByCard[Number(card.dataset.newsIndex)]);}}});
+
 })();
 </script>
 <script>
